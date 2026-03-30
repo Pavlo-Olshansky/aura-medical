@@ -1,0 +1,79 @@
+import { createRouter, createWebHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue'),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/',
+      name: 'dashboard',
+      component: () => import('@/views/DashboardView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/visits',
+      name: 'visits',
+      component: () => import('@/views/VisitsListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/visits/new',
+      name: 'visit-create',
+      component: () => import('@/views/VisitFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/visits/:id',
+      name: 'visit-detail',
+      component: () => import('@/views/VisitDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/visits/:id/edit',
+      name: 'visit-edit',
+      component: () => import('@/views/VisitFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/treatments',
+      name: 'treatments',
+      component: () => import('@/views/TreatmentsListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/treatments/new',
+      name: 'treatment-create',
+      component: () => import('@/views/TreatmentFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/treatments/:id/edit',
+      name: 'treatment-edit',
+      component: () => import('@/views/TreatmentFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/references',
+      name: 'references',
+      component: () => import('@/views/ReferencesView.vue'),
+      meta: { requiresAuth: true },
+    },
+  ],
+})
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem('access_token')
+  if (to.meta.requiresAuth !== false && !token) {
+    return { name: 'login' }
+  }
+  if (to.name === 'login' && token) {
+    return { name: 'dashboard' }
+  }
+})
+
+export default router
