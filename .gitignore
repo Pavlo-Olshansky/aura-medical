@@ -1,0 +1,7 @@
+venv
+db.sqlite3
+db copy.sqlite3
+documents/
+.claude
+.DS_Store
+.specify
