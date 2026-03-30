@@ -1,7 +1,18 @@
 venv
+__pycache__/
+*.pyc
+.env
+*.egg-info/
 db.sqlite3
 db copy.sqlite3
 documents/
+backups/
 .claude
 .DS_Store
 .specify
+specs/
+node_modules/
+dist/
+*.log
+.vscode/
+.idea/
