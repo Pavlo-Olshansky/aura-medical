@@ -146,6 +146,14 @@ const tooltipLabel = computed(() => {
             <i class="pi pi-image" />
           </div>
 
+          <!-- Scanning rings overlay (front & back only) -->
+          <div v-if="panel.key !== 'face'" class="scan-rings" aria-hidden="true">
+            <div class="ring ring-1" />
+            <div class="ring ring-2" />
+            <div class="ring ring-3" />
+            <div class="ring ring-4" />
+          </div>
+
           <button
             v-for="(hs, idx) in panel.hotspots"
             :key="`${panel.key}-${idx}`"
@@ -229,6 +237,65 @@ const tooltipLabel = computed(() => {
   background: #0a0a0a;
   color: #334155;
   font-size: 2rem;
+}
+
+/* Scanning rings */
+.scan-rings {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ring {
+  position: absolute;
+  left: 15%;
+  width: 70%;
+  height: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 200, 255, 0.35);
+  box-shadow:
+    0 0 8px rgba(0, 200, 255, 0.25),
+    0 0 20px rgba(0, 200, 255, 0.1);
+  padding-bottom: 14%;
+  animation: ring-scan 6s linear infinite;
+  opacity: 0;
+}
+
+.ring-1 { animation-delay: 0s; }
+.ring-2 { animation-delay: -1.5s; }
+.ring-3 { animation-delay: -3s; }
+.ring-4 { animation-delay: -4.5s; }
+
+@keyframes ring-scan {
+  0% {
+    top: 95%;
+    opacity: 0;
+    transform: scaleX(0.7);
+  }
+  5% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.4;
+    transform: scaleX(1);
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    top: -10%;
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 .hotspot {
