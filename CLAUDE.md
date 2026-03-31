@@ -21,10 +21,6 @@ cd frontend
 npm run dev      # Dev server (http://localhost:5173)
 npm run build    # Production build
 npm run lint     # Lint
-
-# Data migration (one-time, from Django SQLite)
-cd backend && source venv/bin/activate
-python scripts/migrate_from_sqlite.py --sqlite ../db.sqlite3 --pg postgresql://user:pass@localhost/medtracker
 ```
 
 ## Architecture
@@ -36,7 +32,7 @@ python scripts/migrate_from_sqlite.py --sqlite ../db.sqlite3 --pg postgresql://u
   - `app/auth/` — JWT token creation/verification, FastAPI dependencies
   - `app/services/` — Business logic (treatment status calculation)
   - `alembic/` — Database migrations
-  - `scripts/` — Utility scripts (SQLite→PostgreSQL migration)
+  - `scripts/` — Utility scripts
   - `tests/` — pytest tests
 - **`frontend/`** — Vue.js 3 SPA with TypeScript
   - `src/views/` — Page components (Login, Dashboard, Visits, Treatments, References)
@@ -45,7 +41,6 @@ python scripts/migrate_from_sqlite.py --sqlite ../db.sqlite3 --pg postgresql://u
   - `src/stores/` — Pinia state management
   - `src/router/` — Vue Router with auth guard
 - **`documents/`** — Uploaded medical files (production data; do not modify)
-- **`backups/`** — Migration backups
 - Database: PostgreSQL (`medtracker`)
 
 ### Key Models (backend/app/models/)
@@ -70,12 +65,3 @@ python scripts/migrate_from_sqlite.py --sqlite ../db.sqlite3 --pg postgresql://u
 - FastAPI, SQLAlchemy 2.0+ (async), Pydantic v2, Alembic
 - Vue.js 3, Vite, Vue Router, Pinia, PrimeVue, Axios
 - PostgreSQL 15+
-- Python 3.11+ (backend), TypeScript 5.x (frontend) + FastAPI, SQLAlchemy 2.0+, Pydantic v2, Alembic (backend); Vue.js 3, Vite, Vue Router, Pinia, PrimeVue, Axios (frontend) (003-interactive-body-map)
-- Python 3.9+ (backend only — no frontend changes) + FastAPI, SQLAlchemy 2.0+, Pydantic v2, Alembic, bcryp (004-ddd-refactoring)
-- PostgreSQL 15+ (no schema changes) (004-ddd-refactoring)
-- TypeScript 5.x (frontend only — no backend changes) + Vue.js 3 (Composition API), PrimeVue 4.5.4 (Aura preset), Vite 7.3.1 (005-aura-body-image)
-- N/A (no data changes) (005-aura-body-image)
-- PostgreSQL 15+ (existing `user` table extended) (007-user-profile)
-
-## Recent Changes
-- 002-fastapi-vue-migration: Full migration from Django admin to FastAPI + Vue.js
