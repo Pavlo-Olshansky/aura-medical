@@ -1,4 +1,4 @@
-.PHONY: help backend frontend dev test test-backend lint build migrate db-create db-migrate backup
+.PHONY: help backend frontend dev test test-backend lint build db-create db-migrate db-revision backup install
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -42,17 +42,11 @@ db-migrate: ## Run Alembic migrations
 db-revision: ## Generate new Alembic migration (usage: make db-revision msg="add column")
 	cd backend && source venv/bin/activate && alembic revision --autogenerate -m "$(msg)"
 
-# --- Data Migration ---
-
-backup: ## Backup SQLite database and documents
-	mkdir -p backups
-	cp db.sqlite3 backups/db.sqlite3.bak
-	cp -r documents backups/documents
-
-migrate-data: ## One-time SQLite to PostgreSQL migration (set PG_URL)
-	cd backend && source venv/bin/activate && python scripts/migrate_from_sqlite.py \
-		--sqlite ../db.sqlite3 \
-		--pg $(or $(PG_URL),postgresql://postgres:postgres@localhost:5432/medtracker)
+backup: ## Backup PostgreSQL database to backups/
+	@mkdir -p backups
+	pg_dump -Fc medtracker -f backups/medtracker_$$(date +%Y%m%d_%H%M%S).dump
+	@echo "Backup saved to backups/"
+	# Restore: pg_restore -d medtracker --clean --if-exists backups/<filename>.dump
 
 # --- Setup ---
 
