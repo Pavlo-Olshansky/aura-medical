@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Card from 'primevue/card'
+import Sidebar from 'primevue/sidebar'
 import { apiClient } from '@/api/client'
 import type { DashboardData, Visit, Treatment } from '@/types'
+import type { BodyMapSummaryResponse, BodyRegionDetailResponse, BodyRegionKey } from '@/components/body-map/types'
 import StatusBadge from '@/components/StatusBadge.vue'
+import BodyMap from '@/components/body-map/BodyMap.vue'
+import BodyMapDetail from '@/components/body-map/BodyMapDetail.vue'
+import BodyMapLegend from '@/components/body-map/BodyMapLegend.vue'
 
 const router = useRouter()
 
@@ -17,6 +22,13 @@ const totalTreatments = ref(0)
 const recentVisits = ref<Visit[]>([])
 const activeTreatments = ref<Treatment[]>([])
 
+// Body map state
+const bodyMapSummary = ref<BodyMapSummaryResponse>({ regions: {}, unmapped_visit_count: 0, whole_body_visit_count: 0 })
+const selectedRegion = ref<BodyRegionKey | null>(null)
+const regionDetail = ref<BodyRegionDetailResponse | null>(null)
+const detailLoading = ref(false)
+const mobileDetailVisible = ref(false)
+
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
   return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -26,15 +38,51 @@ function onVisitRowClick(event: { data: Visit }) {
   router.push({ name: 'visit-detail', params: { id: event.data.id } })
 }
 
+function onRegionSelect(region: BodyRegionKey | null) {
+  selectedRegion.value = region
+  if (region) {
+    mobileDetailVisible.value = true
+  } else {
+    mobileDetailVisible.value = false
+    regionDetail.value = null
+  }
+}
+
+async function fetchRegionDetail(region: BodyRegionKey) {
+  detailLoading.value = true
+  try {
+    const response = await apiClient.get<BodyRegionDetailResponse>(`/api/dashboard/body-map/${region}/`)
+    regionDetail.value = response.data
+  } catch {
+    regionDetail.value = null
+  } finally {
+    detailLoading.value = false
+  }
+}
+
+watch(selectedRegion, (region) => {
+  if (region) {
+    fetchRegionDetail(region)
+  } else {
+    regionDetail.value = null
+  }
+})
+
 onMounted(async () => {
   try {
-    const response = await apiClient.get<DashboardData>('/api/dashboard/')
-    const data = response.data
+    const [dashResponse, bodyMapResponse] = await Promise.all([
+      apiClient.get<DashboardData>('/api/dashboard/'),
+      apiClient.get<BodyMapSummaryResponse>('/api/dashboard/body-map/'),
+    ])
+
+    const data = dashResponse.data
     totalVisits.value = data.total_visits
     totalTreatments.value = data.total_treatments
     activeTreatmentsCount.value = data.active_treatments_count
     recentVisits.value = data.recent_visits
     activeTreatments.value = data.active_treatments
+
+    bodyMapSummary.value = bodyMapResponse.data
   } catch {
     // silent fail — dashboard is informational
   } finally {
@@ -83,6 +131,40 @@ onMounted(async () => {
           </div>
         </template>
       </Card>
+    </div>
+
+    <!-- Body Map Section -->
+    <div class="body-map-section">
+      <h2>Карта тіла</h2>
+      <div class="body-map-layout">
+        <div class="body-map-left">
+          <BodyMap
+            :regions="bodyMapSummary.regions"
+            :selected-region="selectedRegion"
+            @select="onRegionSelect"
+          />
+          <BodyMapLegend
+            :unmapped-count="bodyMapSummary.unmapped_visit_count"
+            :whole-body-count="bodyMapSummary.whole_body_visit_count"
+          />
+        </div>
+
+        <!-- Desktop detail panel -->
+        <div v-if="selectedRegion" class="body-map-right desktop-only">
+          <BodyMapDetail :detail="regionDetail" :loading="detailLoading" />
+        </div>
+
+        <!-- Mobile bottom sheet -->
+        <Sidebar
+          v-model:visible="mobileDetailVisible"
+          position="bottom"
+          class="mobile-only-sidebar"
+          :showCloseIcon="true"
+          @hide="selectedRegion = null"
+        >
+          <BodyMapDetail :detail="regionDetail" :loading="detailLoading" />
+        </Sidebar>
+      </div>
     </div>
 
     <div class="dashboard-sections">
@@ -195,6 +277,38 @@ onMounted(async () => {
   color: #64748b;
   margin-top: 0.25rem;
 }
+
+/* Body map section */
+.body-map-section {
+  margin-bottom: 2rem;
+}
+.body-map-section h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+.body-map-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+.body-map-left {
+  flex: 0 0 auto;
+  width: 280px;
+}
+.body-map-right {
+  flex: 1;
+  min-width: 0;
+  max-height: 500px;
+  overflow-y: auto;
+  border-left: 1px solid #f1f5f9;
+}
+
 .dashboard-sections {
   display: flex;
   flex-direction: column;
@@ -208,5 +322,29 @@ onMounted(async () => {
 }
 .clickable-table :deep(tr) {
   cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  .body-map-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .body-map-left {
+    width: 100%;
+    max-width: 300px;
+  }
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only-sidebar {
+    display: none !important;
+  }
 }
 </style>

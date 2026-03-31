@@ -12,6 +12,7 @@ export interface TreatmentPayload {
   date_start: string
   days: number
   receipt: string
+  body_region?: string | null
 }
 
 export async function listTreatments(params?: TreatmentListParams): Promise<PaginatedResponse<Treatment>> {

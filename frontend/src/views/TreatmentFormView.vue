@@ -2,11 +2,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Calendar from 'primevue/calendar'
+import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import { useTreatmentsStore } from '@/stores/treatments'
+import { BODY_REGION_OPTIONS } from '@/components/body-map/body-regions'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog'
 
@@ -23,6 +25,7 @@ const name = ref('')
 const dateStart = ref<Date | null>(null)
 const days = ref<number | null>(null)
 const receipt = ref('')
+const bodyRegion = ref<string | null>(null)
 
 const saving = ref(false)
 const errorMessage = ref('')
@@ -56,6 +59,7 @@ async function handleSubmit() {
     date_start: formatDateForApi(dateStart.value),
     days: days.value,
     receipt: receipt.value,
+    body_region: bodyRegion.value,
   }
 
   try {
@@ -97,6 +101,7 @@ onMounted(async () => {
       dateStart.value = new Date(treatment.date_start)
       days.value = treatment.days
       receipt.value = treatment.receipt || ''
+      bodyRegion.value = (treatment as any).body_region || null
     }
   }
 })
@@ -141,6 +146,19 @@ onMounted(async () => {
         <div class="form-field">
           <label for="days">Тривалість (днів) *</label>
           <InputNumber id="days" v-model="days" :min="1" placeholder="Кількість днів" />
+        </div>
+
+        <div class="form-field">
+          <label for="bodyRegion">Ділянка тіла</label>
+          <Dropdown
+            id="bodyRegion"
+            v-model="bodyRegion"
+            :options="BODY_REGION_OPTIONS"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Оберіть ділянку"
+            showClear
+          />
         </div>
 
         <div class="form-field full-width">

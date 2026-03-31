@@ -71,6 +71,8 @@ python scripts/migrate_from_sqlite.py --sqlite ../db.sqlite3 --pg postgresql://u
 - Vue.js 3, Vite, Vue Router, Pinia, PrimeVue, Axios
 - PostgreSQL 15+
 - Python 3.11+ (backend), TypeScript 5.x (frontend) + FastAPI, SQLAlchemy 2.0+, Pydantic v2, Alembic (backend); Vue.js 3, Vite, Vue Router, Pinia, PrimeVue, Axios (frontend) (003-interactive-body-map)
+- Python 3.9+ (backend only — no frontend changes) + FastAPI, SQLAlchemy 2.0+, Pydantic v2, Alembic, bcryp (004-ddd-refactoring)
+- PostgreSQL 15+ (no schema changes) (004-ddd-refactoring)
 
 ## Recent Changes
 - 002-fastapi-vue-migration: Full migration from Django admin to FastAPI + Vue.js

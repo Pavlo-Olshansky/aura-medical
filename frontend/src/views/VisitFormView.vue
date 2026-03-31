@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Calendar from 'primevue/calendar'
 import Dropdown from 'primevue/dropdown'
@@ -10,6 +10,7 @@ import Button from 'primevue/button'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
+import { BODY_REGION_OPTIONS, SPECIALTY_REGION_MAP } from '@/components/body-map/body-regions'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,10 +30,22 @@ const clinicId = ref<number | null>(null)
 const cityId = ref<number | null>(null)
 const comment = ref('')
 const link = ref('')
+const bodyRegion = ref<string | null>(null)
 const selectedFile = ref<File | null>(null)
 
 const saving = ref(false)
 const errorMessage = ref('')
+
+// Auto-suggest body region when position changes
+watch(positionId, (newVal) => {
+  if (!newVal || isEdit.value) return
+  const position = referencesStore.positions.find((p: { id: number }) => p.id === newVal)
+  if (!position) return
+  const regions = SPECIALTY_REGION_MAP[position.name]
+  if (regions && regions.length === 1 && regions[0]) {
+    bodyRegion.value = regions[0]
+  }
+})
 
 function onFileSelect(event: FileUploadSelectEvent) {
   if (event.files && event.files.length > 0) {
@@ -70,6 +83,7 @@ async function handleSubmit() {
   if (cityId.value) formData.append('city_id', String(cityId.value))
   if (comment.value) formData.append('comment', comment.value)
   if (link.value) formData.append('link', link.value)
+  if (bodyRegion.value) formData.append('body_region', bodyRegion.value)
   if (selectedFile.value) formData.append('document', selectedFile.value)
 
   try {
@@ -103,6 +117,7 @@ onMounted(async () => {
       cityId.value = visit.city?.id ?? null
       comment.value = visit.comment || ''
       link.value = visit.link || ''
+      bodyRegion.value = (visit as any).body_region || null
     }
   }
 })
@@ -186,6 +201,19 @@ onMounted(async () => {
             optionLabel="name"
             optionValue="id"
             placeholder="Оберіть місто"
+            showClear
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="bodyRegion">Ділянка тіла</label>
+          <Dropdown
+            id="bodyRegion"
+            v-model="bodyRegion"
+            :options="BODY_REGION_OPTIONS"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Оберіть ділянку"
             showClear
           />
         </div>

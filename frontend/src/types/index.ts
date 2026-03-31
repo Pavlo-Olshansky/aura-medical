@@ -28,6 +28,7 @@ export interface Visit {
   city: Reference | null
   document: string | null
   has_document?: boolean
+  body_region: string | null
   link: string | null
   comment: string | null
   created: string
@@ -41,6 +42,7 @@ export interface Treatment {
   days: number
   receipt: string
   status: 'active' | 'completed'
+  body_region: string | null
   created: string
   updated: string
 }
