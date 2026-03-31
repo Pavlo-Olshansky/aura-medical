@@ -1,13 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
 
 from app.api.dependencies import get_current_user, get_dashboard_service
 from app.application.dashboard_service import DashboardAppService
 from app.domain.entities import User
-from app.domain.value_objects import BODY_REGION_KEYS
-from app.schemas.body_map import BodyMapSummaryResponse, BodyRegionDetailResponse
 
 router = APIRouter()
 
@@ -36,6 +34,7 @@ class DashboardResponse(BaseModel):
     total_visits: int
     total_treatments: int
     active_treatments_count: int
+    treatment_regions: List[str]
 
 
 @router.get("/", response_model=DashboardResponse)
@@ -66,25 +65,5 @@ async def get_dashboard(
         total_visits=data["total_visits"],
         total_treatments=len(data["all_treatments"]),
         active_treatments_count=len(data["active_treatments"]),
+        treatment_regions=data["treatment_regions"],
     )
-
-
-@router.get("/body-map/", response_model=BodyMapSummaryResponse)
-async def get_body_map(
-    current_user: User = Depends(get_current_user),
-    service: DashboardAppService = Depends(get_dashboard_service),
-):
-    return await service.get_body_map_summary(current_user.id)
-
-
-@router.get("/body-map/{region_key}/", response_model=BodyRegionDetailResponse)
-async def get_body_map_region(
-    region_key: str,
-    limit: int = Query(20, ge=1, le=100),
-    offset: int = Query(0, ge=0),
-    current_user: User = Depends(get_current_user),
-    service: DashboardAppService = Depends(get_dashboard_service),
-):
-    if region_key not in BODY_REGION_KEYS:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f"Invalid region key: {region_key}")
-    return await service.get_body_map_detail(current_user.id, region_key, limit, offset)
