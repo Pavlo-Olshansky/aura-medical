@@ -75,6 +75,7 @@ python scripts/migrate_from_sqlite.py --sqlite ../db.sqlite3 --pg postgresql://u
 - PostgreSQL 15+ (no schema changes) (004-ddd-refactoring)
 - TypeScript 5.x (frontend only — no backend changes) + Vue.js 3 (Composition API), PrimeVue 4.5.4 (Aura preset), Vite 7.3.1 (005-aura-body-image)
 - N/A (no data changes) (005-aura-body-image)
+- PostgreSQL 15+ (existing `user` table extended) (007-user-profile)
 
 ## Recent Changes
 - 002-fastapi-vue-migration: Full migration from Django admin to FastAPI + Vue.js

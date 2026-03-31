@@ -16,3 +16,4 @@ class UserResponse(BaseModel):
     id: int
     username: str
     is_active: bool
+    sex: str

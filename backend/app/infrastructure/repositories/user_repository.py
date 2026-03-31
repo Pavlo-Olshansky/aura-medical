@@ -32,4 +32,13 @@ class SqlAlchemyUserRepository:
             username=model.username,
             password_hash=model.password_hash,
             is_active=model.is_active,
+            sex=model.sex,
+            date_of_birth=model.date_of_birth,
+            height_cm=model.height_cm,
+            weight_kg=model.weight_kg,
+            blood_type=model.blood_type,
+            allergies=model.allergies,
+            chronic_conditions=model.chronic_conditions,
+            emergency_contact_name=model.emergency_contact_name,
+            emergency_contact_phone=model.emergency_contact_phone,
         )
