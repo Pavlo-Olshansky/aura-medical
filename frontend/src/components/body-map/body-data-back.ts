@@ -1,47 +1,26 @@
 import type { PolygonData } from './types'
 
 /**
- * Back-view SVG polygon data for the human body silhouette.
- * ViewBox: 0 0 200 400
- * Mirror of front view with back-specific regions (upper back, lower back).
+ * Back-view click zone polygons for the full body image (1400x763).
+ * Coordinates are relative to the full image.
+ * Back body figure occupies roughly x=472..721, y=40..710.
  */
 export const BACK_POLYGONS: PolygonData[] = [
-  // Head (rear)
-  { region: 'head_cranium', points: '85,8 100,2 115,8 118,22 100,20 82,22' },
-  { region: 'head_face', points: '82,22 100,20 118,22 118,40 112,48 100,50 88,48 82,40' },
-
-  // Ears (visible from back)
-  { region: 'ears', points: '78,28 82,22 80,36 78,28 118,22 122,28 120,36 118,22' },
-
-  // Neck (rear)
-  { region: 'neck_throat', points: '90,50 110,50 112,62 88,62' },
-
-  // Shoulders (rear)
-  { region: 'shoulder_left', points: '88,62 72,64 62,72 68,80 84,74 88,68' },
-  { region: 'shoulder_right', points: '112,62 128,64 138,72 132,80 116,74 112,68' },
-
   // Upper Back
-  { region: 'back_upper', points: '84,74 88,68 112,68 116,74 132,80 130,120 100,124 70,120 68,80' },
+  { region: 'back_upper', points: '555,172 565,162 620,162 630,172 660,185 656,250 600,255 535,250 530,185', centerX: 596, centerY: 210 },
 
   // Lower Back
-  { region: 'back_lower', points: '70,120 100,124 130,120 128,175 100,180 72,175' },
+  { region: 'back_lower', points: '535,250 600,255 656,250 652,350 600,355 538,350', centerX: 596, centerY: 300 },
 
-  // Arms (rear view)
-  { region: 'arm_left', points: '62,72 54,90 46,120 42,150 50,152 56,125 64,95 68,80' },
-  { region: 'arm_right', points: '138,72 146,90 154,120 158,150 150,152 144,125 136,95 132,80' },
-
-  // Hands
-  { region: 'hand_left', points: '42,150 50,152 52,168 48,178 38,180 34,172 36,160' },
-  { region: 'hand_right', points: '158,150 150,152 148,168 152,178 162,180 166,172 164,160' },
-
-  // Pelvis (rear)
-  { region: 'pelvis', points: '72,175 100,180 128,175 128,205 100,210 72,205' },
+  // Shoulders (rear)
+  { region: 'shoulder_left', points: '565,162 530,164 510,178 518,192 548,182 558,172', centerX: 538, centerY: 175 },
+  { region: 'shoulder_right', points: '620,162 660,164 680,178 672,192 642,182 632,172', centerX: 652, centerY: 175 },
 
   // Legs (rear)
-  { region: 'leg_left', points: '72,205 100,210 96,215 90,250 86,300 78,340 70,340 74,300 76,250 74,215' },
-  { region: 'leg_right', points: '100,210 128,205 126,215 124,250 126,300 130,340 122,340 114,300 110,250 104,215 96,215' },
+  { region: 'leg_left', points: '538,372 600,378 596,385 588,435 584,500 576,560 564,560 568,500 570,435 562,385', centerX: 578, centerY: 468 },
+  { region: 'leg_right', points: '600,378 662,372 658,385 656,435 658,500 654,560 642,560 636,500 632,435 624,385 596,385', centerX: 636, centerY: 468 },
 
   // Feet (rear)
-  { region: 'foot_left', points: '70,340 78,340 80,360 82,375 74,380 64,378 62,365' },
-  { region: 'foot_right', points: '122,340 130,340 138,365 136,378 126,380 118,375 120,360' },
+  { region: 'foot_left', points: '564,560 576,560 578,585 580,608 572,616 560,613 556,596', centerX: 570, centerY: 590 },
+  { region: 'foot_right', points: '642,560 654,560 660,596 658,613 646,616 638,608 640,585', centerX: 648, centerY: 590 },
 ]

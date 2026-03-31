@@ -78,44 +78,46 @@ const hasData = computed(() => {
 
 <style scoped>
 .body-map-detail {
-  padding: 1rem;
+  padding: 0.5rem;
 }
 .detail-loading {
-  color: #94a3b8;
-  font-size: 0.875rem;
+  color: #52525b;
+  font-size: 0.8125rem;
   text-align: center;
   padding: 2rem 0;
 }
 .detail-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1e293b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #e4e4e7;
   margin: 0 0 1rem;
 }
 .detail-section {
   margin-bottom: 1.25rem;
 }
 .detail-section h4 {
-  font-size: 0.875rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  color: #475569;
+  color: #52525b;
   margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 .detail-item {
   padding: 0.5rem 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 .detail-item:last-child {
   border-bottom: none;
 }
 .item-date {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #334155;
+  color: #a1a1aa;
 }
 .item-info {
   font-size: 0.8125rem;
-  color: #475569;
+  color: #d4d4d8;
 }
 .item-row {
   display: flex;
@@ -125,16 +127,16 @@ const hasData = computed(() => {
 .item-name {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #334155;
+  color: #d4d4d8;
 }
 .item-secondary {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #52525b;
   margin-top: 0.125rem;
 }
 .detail-empty {
-  color: #94a3b8;
-  font-size: 0.875rem;
+  color: #3f3f46;
+  font-size: 0.8125rem;
   text-align: center;
   padding: 2rem 0;
 }

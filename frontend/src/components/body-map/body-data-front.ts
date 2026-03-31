@@ -1,49 +1,41 @@
 import type { PolygonData } from './types'
 
 /**
- * Front-view SVG polygon data for the human body silhouette.
- * ViewBox: 0 0 200 400
- * Polygons are simplified anatomical regions, not individual muscles.
- * Sources grouped from react-native-body-highlighter (MIT) with custom additions.
+ * Front-view click zone polygons for the full body image (1400x763).
+ * Coordinates are relative to the full image.
+ * Front body figure occupies roughly x=75..373, y=35..710.
  */
 export const FRONT_POLYGONS: PolygonData[] = [
-  // Head & Face
-  { region: 'head_cranium', points: '85,8 100,2 115,8 118,22 100,18 82,22' },
-  { region: 'head_face', points: '82,22 100,18 118,22 120,40 112,48 100,50 88,48 80,40' },
-  { region: 'eyes', points: '88,28 96,26 96,32 88,32 88,28 104,26 112,28 112,32 104,32 104,26' },
-  { region: 'ears', points: '78,28 82,22 80,36 78,28 118,22 122,28 120,36 118,22' },
-  { region: 'mouth_teeth', points: '92,40 108,40 108,46 100,48 92,46' },
-
   // Neck
-  { region: 'neck_throat', points: '90,50 110,50 112,62 88,62' },
+  { region: 'neck_throat', points: '200,130 245,130 248,155 197,155', centerX: 222, centerY: 142 },
 
   // Shoulders
-  { region: 'shoulder_left', points: '88,62 72,64 62,72 68,80 84,74 88,68' },
-  { region: 'shoulder_right', points: '112,62 128,64 138,72 132,80 116,74 112,68' },
+  { region: 'shoulder_left', points: '197,155 168,158 148,170 155,185 185,178 197,168', centerX: 175, centerY: 168 },
+  { region: 'shoulder_right', points: '248,155 277,158 297,170 290,185 260,178 248,168', centerX: 270, centerY: 168 },
 
   // Chest
-  { region: 'chest', points: '84,74 88,68 112,68 116,74 132,80 130,110 100,115 70,110 68,80' },
+  { region: 'chest', points: '185,178 197,168 248,168 260,178 290,185 286,230 222,234 158,230 155,185', centerX: 222, centerY: 205 },
 
   // Arms
-  { region: 'arm_left', points: '62,72 54,90 46,120 42,150 50,152 56,125 64,95 68,80' },
-  { region: 'arm_right', points: '138,72 146,90 154,120 158,150 150,152 144,125 136,95 132,80' },
+  { region: 'arm_left', points: '148,170 135,195 120,230 112,275 122,278 132,240 142,205 155,185', centerX: 132, centerY: 225 },
+  { region: 'arm_right', points: '297,170 310,195 325,230 333,275 323,278 313,240 303,205 290,185', centerX: 313, centerY: 225 },
 
   // Hands
-  { region: 'hand_left', points: '42,150 50,152 52,168 48,178 38,180 34,172 36,160' },
-  { region: 'hand_right', points: '158,150 150,152 148,168 152,178 162,180 166,172 164,160' },
+  { region: 'hand_left', points: '112,275 122,278 126,300 122,315 110,320 102,312 105,290', centerX: 114, centerY: 298 },
+  { region: 'hand_right', points: '333,275 323,278 319,300 323,315 335,320 343,312 340,290', centerX: 331, centerY: 298 },
 
   // Abdomen
-  { region: 'abdomen_upper', points: '70,110 100,115 130,110 128,145 100,148 72,145' },
-  { region: 'abdomen_lower', points: '72,145 100,148 128,145 126,175 100,180 74,175' },
+  { region: 'abdomen_upper', points: '158,230 222,234 286,230 284,280 222,284 160,280', centerX: 222, centerY: 257 },
+  { region: 'abdomen_lower', points: '160,280 222,284 284,280 282,330 222,335 162,330', centerX: 222, centerY: 307 },
 
   // Pelvis
-  { region: 'pelvis', points: '74,175 100,180 126,175 128,200 100,205 72,200' },
+  { region: 'pelvis', points: '162,330 222,335 282,330 284,365 222,372 160,365', centerX: 222, centerY: 350 },
 
   // Legs
-  { region: 'leg_left', points: '72,200 100,205 96,210 90,250 86,300 78,340 70,340 74,300 76,250 74,210' },
-  { region: 'leg_right', points: '100,205 128,200 126,210 124,250 126,300 130,340 122,340 114,300 110,250 104,210 96,210' },
+  { region: 'leg_left', points: '160,365 222,372 218,380 210,430 206,500 198,560 186,560 190,500 192,430 185,380', centerX: 200, centerY: 465 },
+  { region: 'leg_right', points: '222,372 284,365 280,380 278,430 280,500 274,560 262,560 256,500 252,430 244,380 218,380', centerX: 260, centerY: 465 },
 
   // Feet
-  { region: 'foot_left', points: '70,340 78,340 80,360 82,375 74,380 64,378 62,365' },
-  { region: 'foot_right', points: '122,340 130,340 138,365 136,378 126,380 118,375 120,360' },
+  { region: 'foot_left', points: '186,560 198,560 200,585 202,610 194,618 182,615 178,598', centerX: 192, centerY: 592 },
+  { region: 'foot_right', points: '262,560 274,560 280,598 278,615 266,618 258,610 260,585', centerX: 268, centerY: 592 },
 ]

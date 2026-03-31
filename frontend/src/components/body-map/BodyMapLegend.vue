@@ -71,19 +71,21 @@ const legendItems = [
   gap: 0.375rem;
 }
 .legend-swatch {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  border: 1px solid #cbd5e1;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
   flex-shrink: 0;
+  box-shadow: 0 0 4px currentColor;
 }
 .treatment-swatch {
   background: #E8E8E8;
   border: 2px solid v-bind('ACTIVE_TREATMENT_STROKE');
+  box-shadow: 0 0 4px v-bind('ACTIVE_TREATMENT_STROKE');
 }
 .legend-label {
   font-size: 0.75rem;
-  color: #64748b;
+  color: #94a3b8;
 }
 .badges {
   display: flex;
@@ -91,16 +93,17 @@ const legendItems = [
   flex-wrap: wrap;
 }
 .badge {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #334155;
   border-radius: 1rem;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
-  color: #475569;
+  color: #94a3b8;
   cursor: pointer;
   transition: background 0.15s;
 }
 .badge:hover {
-  background: #e2e8f0;
+  background: #334155;
+  color: #e2e8f0;
 }
 </style>

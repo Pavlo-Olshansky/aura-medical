@@ -46,9 +46,11 @@ export interface BodyRegionDetailResponse {
   treatments: BodyMapTreatmentItem[]
 }
 
-export type BodyMapView = 'front' | 'back'
+export type BodyMapView = 'front' | 'back' | 'face'
 
 export interface PolygonData {
   region: BodyRegionKey
   points: string
+  centerX: number
+  centerY: number
 }

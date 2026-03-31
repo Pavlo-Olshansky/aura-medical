@@ -231,9 +231,10 @@ onMounted(async () => {
 }
 .dashboard h1 {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
+  font-weight: 300;
+  color: #e4e4e7;
   margin-bottom: 1.5rem;
+  letter-spacing: 0.02em;
 }
 .summary-cards {
   display: grid;
@@ -242,7 +243,15 @@ onMounted(async () => {
   margin-bottom: 2rem;
 }
 .summary-card {
-  border-radius: 0.75rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.summary-card :deep(.p-card-body) {
+  background: transparent;
+}
+.summary-card :deep(.p-card-content) {
+  background: transparent;
 }
 .card-content {
   display: flex;
@@ -252,30 +261,33 @@ onMounted(async () => {
 .card-icon {
   font-size: 2rem;
   padding: 0.75rem;
-  border-radius: 0.75rem;
+  border-radius: 4px;
 }
 .visits-icon {
-  color: #2563eb;
-  background: #dbeafe;
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.1);
 }
 .treatments-icon {
-  color: #16a34a;
-  background: #dcfce7;
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.1);
 }
 .total-icon {
-  color: #9333ea;
-  background: #f3e8ff;
+  color: #22d3ee;
+  background: rgba(34, 211, 238, 0.1);
 }
 .card-value {
   font-size: 1.75rem;
-  font-weight: 700;
-  color: #1e293b;
+  font-weight: 300;
+  color: #e4e4e7;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .card-label {
-  font-size: 0.875rem;
-  color: #64748b;
+  font-size: 0.75rem;
+  color: #52525b;
   margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* Body map section */
@@ -283,30 +295,35 @@ onMounted(async () => {
   margin-bottom: 2rem;
 }
 .body-map-section h2 {
-  font-size: 1.125rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 1rem;
+  color: #52525b;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 .body-map-layout {
   display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
+  gap: 0;
+  align-items: stretch;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
 }
 .body-map-left {
-  flex: 0 0 auto;
-  width: 280px;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 .body-map-right {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 300px;
   max-height: 500px;
   overflow-y: auto;
-  border-left: 1px solid #f1f5f9;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  background: #080808;
+  padding: 1rem;
 }
 
 .dashboard-sections {
@@ -315,10 +332,12 @@ onMounted(async () => {
   gap: 2rem;
 }
 .section h2 {
-  font-size: 1.125rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #52525b;
   margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 .clickable-table :deep(tr) {
   cursor: pointer;
@@ -331,11 +350,17 @@ onMounted(async () => {
   }
   .body-map-layout {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    min-height: 500px;
   }
   .body-map-left {
     width: 100%;
-    max-width: 300px;
+    min-height: 300px;
+  }
+  .body-map-right {
+    flex: none;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
   .desktop-only {
     display: none;

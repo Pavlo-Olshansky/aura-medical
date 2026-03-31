@@ -14,7 +14,7 @@ async function handleLogout() {
 <template>
   <div class="app-layout">
     <aside class="sidebar">
-      <h2 class="sidebar-title">MedTracker</h2>
+      <h2 class="sidebar-title">Aura</h2>
       <nav>
         <RouterLink to="/" class="nav-link">
           <i class="pi pi-home" /> Головна
@@ -49,15 +49,18 @@ async function handleLogout() {
 }
 .sidebar {
   width: 240px;
-  background: #1e293b;
-  color: #e2e8f0;
+  background: #080808;
+  color: #a1a1aa;
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 .sidebar-title {
   font-size: 1.25rem;
   font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   margin-bottom: 2rem;
   color: #fff;
 }
@@ -66,42 +69,53 @@ async function handleLogout() {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  color: #cbd5e1;
+  border-radius: 2px;
+  color: #71717a;
   text-decoration: none;
   margin-bottom: 0.25rem;
-  transition: background 0.15s;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
 }
-.nav-link:hover,
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4d4d8;
+}
 .nav-link.router-link-active {
-  background: #334155;
-  color: #fff;
+  background: rgba(34, 211, 238, 0.08);
+  color: #22d3ee;
+  border-right: 2px solid #22d3ee;
 }
 .sidebar-footer {
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 1px solid #334155;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 .username {
   display: block;
   font-size: 0.875rem;
-  color: #94a3b8;
+  color: #52525b;
   margin-bottom: 0.5rem;
 }
 .logout-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: #71717a;
   cursor: pointer;
   font-size: 0.875rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0;
+  transition: color 0.2s;
+}
+.logout-btn:hover {
+  color: #ef4444;
 }
 .main-content {
   flex: 1;
   padding: 2rem;
-  background: #f8fafc;
+  background: #0a0a0a;
 }
 </style>
