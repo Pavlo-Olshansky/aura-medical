@@ -38,27 +38,6 @@ export const BODY_REGION_OPTIONS = BODY_REGION_KEYS.map(key => ({
   label: BODY_REGION_LABELS[key],
 }))
 
-/** Color tiers for visit density */
-export const DENSITY_COLORS = {
-  0: '#E8E8E8',
-  1: '#B3D4FC',
-  3: '#6BA3E8',
-  6: '#2E6FC2',
-  11: '#1A3D7C',
-} as const
-
-export const ACTIVE_TREATMENT_STROKE = '#F59E0B'
-export const SELECTED_STROKE = '#FFFFFF'
-export const HOVER_FILTER = 'brightness(1.15)'
-
-export function getDensityColor(visitCount: number): string {
-  if (visitCount >= 11) return DENSITY_COLORS[11]
-  if (visitCount >= 6) return DENSITY_COLORS[6]
-  if (visitCount >= 3) return DENSITY_COLORS[3]
-  if (visitCount >= 1) return DENSITY_COLORS[1]
-  return DENSITY_COLORS[0]
-}
-
 export const SPECIALTY_REGION_MAP: Record<string, string[]> = {
   'Кардіолог': ['chest'],
   'Офтальмолог': ['eyes'],

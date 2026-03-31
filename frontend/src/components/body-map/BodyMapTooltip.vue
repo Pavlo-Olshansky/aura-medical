@@ -1,8 +1,6 @@
 <script setup lang="ts">
 defineProps<{
   label: string
-  visitCount: number
-  treatmentCount: number
   x: number
   y: number
 }>()
@@ -14,10 +12,6 @@ defineProps<{
     :style="{ left: x + 'px', top: y + 'px' }"
   >
     <div class="tooltip-label">{{ label }}</div>
-    <div class="tooltip-stat">{{ visitCount }} візитів</div>
-    <div v-if="treatmentCount > 0" class="tooltip-stat treatment">
-      {{ treatmentCount }} активних лікувань
-    </div>
   </div>
 </template>
 
@@ -41,13 +35,6 @@ defineProps<{
 }
 .tooltip-label {
   font-weight: 600;
-  margin-bottom: 0.125rem;
   color: #fff;
-}
-.tooltip-stat {
-  opacity: 0.85;
-}
-.tooltip-stat.treatment {
-  color: #F59E0B;
 }
 </style>
