@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 from typing import Optional
 
 from app.domain.exceptions import DomainError
@@ -33,6 +34,15 @@ class User:
     username: str
     password_hash: str
     is_active: bool
+    sex: str = "male"
+    date_of_birth: Optional[date] = None
+    height_cm: Optional[int] = None
+    weight_kg: Optional[Decimal] = None
+    blood_type: Optional[str] = None
+    allergies: Optional[str] = None
+    chronic_conditions: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
 
     def ensure_active(self) -> None:
         if not self.is_active:

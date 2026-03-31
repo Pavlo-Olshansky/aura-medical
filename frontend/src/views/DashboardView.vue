@@ -9,11 +9,13 @@ import { apiClient } from '@/api/client'
 import type { DashboardData, Visit, Treatment } from '@/types'
 import type { BodyMapSummaryResponse, BodyRegionDetailResponse, BodyRegionKey } from '@/components/body-map/types'
 import StatusBadge from '@/components/StatusBadge.vue'
+import { useAuthStore } from '@/stores/auth'
 import BodyMap from '@/components/body-map/BodyMap.vue'
 import BodyMapDetail from '@/components/body-map/BodyMapDetail.vue'
 import BodyMapLegend from '@/components/body-map/BodyMapLegend.vue'
 
 const router = useRouter()
+const auth = useAuthStore()
 
 const loading = ref(true)
 const totalVisits = ref(0)
@@ -70,6 +72,9 @@ watch(selectedRegion, (region) => {
 
 onMounted(async () => {
   try {
+    if (!auth.user) {
+      await auth.fetchUser()
+    }
     const [dashResponse, bodyMapResponse] = await Promise.all([
       apiClient.get<DashboardData>('/api/dashboard/'),
       apiClient.get<BodyMapSummaryResponse>('/api/dashboard/body-map/'),
@@ -141,6 +146,7 @@ onMounted(async () => {
           <BodyMap
             :regions="bodyMapSummary.regions"
             :selected-region="selectedRegion"
+            :sex="auth.user?.sex"
             @select="onRegionSelect"
           />
           <BodyMapLegend

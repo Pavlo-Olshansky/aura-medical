@@ -7,9 +7,12 @@ import {
 } from './body-regions'
 import BodyMapTooltip from './BodyMapTooltip.vue'
 
-import frontImage from '@/assets/body/front.jpg'
-import backImage from '@/assets/body/back.jpg'
-import faceImage from '@/assets/body/face.jpg'
+import frontMaleImage from '@/assets/body/front.jpg'
+import backMaleImage from '@/assets/body/back.jpg'
+import faceMaleImage from '@/assets/body/face.jpg'
+import frontFemaleImage from '@/assets/body/front-woman.png'
+import backFemaleImage from '@/assets/body/back-woman.png'
+import faceFemaleImage from '@/assets/body/face-woman.png'
 
 // --- Hotspot coordinate data (% relative to each panel viewport after object-fit:cover) ---
 
@@ -18,10 +21,10 @@ const FRONT_HOTSPOTS: HotspotData[] = [
   { region: 'shoulder_left',  top: '18%',  left: '31%',  width: '17%',  height: '8%' },
   { region: 'shoulder_right', top: '18%',  left: '61%',  width: '17%',  height: '8%' },
   { region: 'chest',          top: '20%',  left: '41%',  width: '28%',  height: '13%' },
-  { region: 'arm_left',       top: '26%',  left: '27%',  width: '14%',  height: '34%' },
-  { region: 'arm_right',      top: '26%',  left: '67%',  width: '14%',  height: '34%' },
-  { region: 'hand_left',      top: '47%',  left: '27%',  width: '12%',  height: '8%' },
-  { region: 'hand_right',     top: '47%',  left: '69%',  width: '12%',  height: '8%' },
+  { region: 'arm_left',       top: '26%',  left: '27%',  width: '14%',  height: '21%' },
+  { region: 'arm_right',      top: '26%',  left: '67%',  width: '14%',  height: '21%' },
+  { region: 'hand_left',      top: '47%',  left: '27%',  width: '12%',  height: '9%' },
+  { region: 'hand_right',     top: '47%',  left: '69%',  width: '12%',  height: '9%' },
   { region: 'abdomen_upper',  top: '33%',  left: '42%',  width: '26%',  height: '10%' },
   { region: 'pelvis',         top: '42%',  left: '40%',  width: '30%',  height: '9%' },
   { region: 'leg_left',       top: '51%',  left: '39%',  width: '16%',  height: '33%' },
@@ -31,14 +34,14 @@ const FRONT_HOTSPOTS: HotspotData[] = [
 ]
 
 const BACK_HOTSPOTS: HotspotData[] = [
-  { region: 'shoulder_left',  top: '18%',  left: '18%',  width: '17%',  height: '8%' },
-  { region: 'shoulder_right', top: '18%',  left: '62%',  width: '17%',  height: '8%' },
+  { region: 'shoulder_left',  top: '16%',  left: '25%',  width: '17%',  height: '8%' },
+  { region: 'shoulder_right', top: '16%',  left: '60%',  width: '17%',  height: '8%' },
   { region: 'back_upper',     top: '20%',  left: '30%',  width: '40%',  height: '16%' },
   { region: 'back_lower',     top: '36%',  left: '34%',  width: '32%',  height: '15%' },
   { region: 'leg_left',       top: '53%',  left: '34%',  width: '16%',  height: '33%' },
   { region: 'leg_right',      top: '53%',  left: '52%',  width: '16%',  height: '33%' },
-  { region: 'foot_left',      top: '84%',  left: '36%',  width: '16%',  height: '5%' },
-  { region: 'foot_right',     top: '84%',  left: '52%',  width: '16%',  height: '5%' },
+  { region: 'foot_left',      top: '87%',  left: '33%',  width: '17%',  height: '5%' },
+  { region: 'foot_right',     top: '87%',  left: '53%',  width: '18%',  height: '5%' },
 ]
 
 const FACE_HOTSPOTS: HotspotData[] = [
@@ -50,16 +53,20 @@ const FACE_HOTSPOTS: HotspotData[] = [
   { region: 'mouth_teeth',   top: '63%',  left: '25%',  width: '46%',  height: '10%' },
 ]
 
-const PANELS = [
-  { key: 'front' as const, label: 'Спереду', image: frontImage, hotspots: FRONT_HOTSPOTS },
-  { key: 'back' as const, label: 'Ззаду', image: backImage, hotspots: BACK_HOTSPOTS },
-  { key: 'face' as const, label: 'Обличчя', image: faceImage, hotspots: FACE_HOTSPOTS },
-]
-
 const props = defineProps<{
   regions: Record<string, BodyRegionSummary>
   selectedRegion: BodyRegionKey | null
+  sex?: string
 }>()
+
+const panels = computed(() => {
+  const isFemale = props.sex === 'female'
+  return [
+    { key: 'front' as const, label: 'Спереду', image: isFemale ? frontFemaleImage : frontMaleImage, hotspots: FRONT_HOTSPOTS },
+    { key: 'back' as const, label: 'Ззаду', image: isFemale ? backFemaleImage : backMaleImage, hotspots: BACK_HOTSPOTS },
+    { key: 'face' as const, label: 'Обличчя', image: isFemale ? faceFemaleImage : faceMaleImage, hotspots: FACE_HOTSPOTS },
+  ]
+})
 
 const emit = defineEmits<{
   (e: 'select', region: BodyRegionKey | null): void
@@ -145,7 +152,7 @@ const tooltipData = computed(() => {
   <div class="body-map-container" @mousemove="onMouseMove">
     <div class="panels">
       <div
-        v-for="panel in PANELS"
+        v-for="panel in panels"
         :key="panel.key"
         class="panel"
       >

@@ -30,6 +30,9 @@ async function handleLogout() {
         </RouterLink>
       </nav>
       <div class="sidebar-footer">
+        <RouterLink to="/profile" class="nav-link profile-link">
+          <i class="pi pi-user" /> Профіль
+        </RouterLink>
         <span class="username">{{ auth.user?.username }}</span>
         <button class="logout-btn" @click="handleLogout">
           <i class="pi pi-sign-out" /> Вийти
@@ -55,6 +58,10 @@ async function handleLogout() {
   display: flex;
   flex-direction: column;
   border-right: 1px solid rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 .sidebar-title {
   font-size: 1.25rem;
@@ -91,6 +98,9 @@ async function handleLogout() {
   margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.profile-link {
+  margin-bottom: 0.75rem;
 }
 .username {
   display: block;

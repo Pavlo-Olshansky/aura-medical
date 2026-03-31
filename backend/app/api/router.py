@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api import auth, visits, treatments, references, dashboard
+from app.api import auth, visits, treatments, references, dashboard, profile
 
 api_router = APIRouter(prefix="/api")
 
@@ -12,3 +12,4 @@ api_router.include_router(references.procedures_router, prefix="/procedures", ta
 api_router.include_router(references.clinics_router, prefix="/clinics", tags=["references"])
 api_router.include_router(references.cities_router, prefix="/cities", tags=["references"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
+api_router.include_router(profile.router, prefix="/profile", tags=["profile"])
