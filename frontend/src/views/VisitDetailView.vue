@@ -126,7 +126,7 @@ onMounted(async () => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #e4e4e7;
   margin: 0;
 }
 .actions {
@@ -136,13 +136,13 @@ onMounted(async () => {
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #64748b;
+  color: #52525b;
 }
 .detail-card {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 0.75rem;
   padding: 2rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 .detail-grid {
   display: grid;
@@ -159,14 +159,14 @@ onMounted(async () => {
 }
 .detail-label {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #52525b;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
 .detail-value {
   font-size: 1rem;
-  color: #1e293b;
+  color: #d4d4d8;
 }
 .detail-link {
   color: #2563eb;
@@ -179,18 +179,18 @@ onMounted(async () => {
 .document-section {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 .document-section h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #e4e4e7;
   margin-bottom: 1rem;
 }
 .timestamps {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   gap: 2rem;
   font-size: 0.8rem;

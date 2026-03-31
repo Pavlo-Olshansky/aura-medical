@@ -170,7 +170,7 @@ onMounted(async () => {
 .references-view h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #e4e4e7;
   margin-bottom: 1.5rem;
 }
 .add-row {
