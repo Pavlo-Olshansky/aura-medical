@@ -48,7 +48,7 @@ const FACE_HOTSPOTS: HotspotData[] = [
   { region: 'ears',          top: '42%',  left: '2%',   width: '12%',  height: '19%' },
   { region: 'ears',          top: '42%',  left: '86%',  width: '12%',  height: '19%' },
   { region: 'nose',          top: '43%',  left: '39%',  width: '20%',  height: '19%' },
-  { region: 'mouth_teeth',   top: '63%',  left: '25%',  width: '46%',  height: '10%' },
+  { region: 'mouth_teeth',   top: '63%',  left: '25%',  width: '49%',  height: '10%' },
 ]
 
 const props = defineProps<{
