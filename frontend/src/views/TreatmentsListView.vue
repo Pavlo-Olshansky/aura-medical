@@ -126,15 +126,15 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #e4e4e7;
   margin: 0;
 }
 .filters {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
   margin-bottom: 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   gap: 1rem;
   align-items: flex-end;
@@ -146,7 +146,7 @@ onMounted(() => {
 }
 .filter-item label {
   font-size: 0.8rem;
-  color: #64748b;
+  color: #a1a1aa;
   font-weight: 500;
 }
 .receipt-text {
