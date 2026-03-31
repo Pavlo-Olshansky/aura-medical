@@ -48,6 +48,7 @@ def _visit_to_dict(visit: Visit) -> dict:
         "city": visit.city,
         "document": visit.document,
         "has_document": bool(visit.document),
+        "body_region": visit.body_region,
         "link": visit.link,
         "comment": visit.comment,
         "created": visit.created,
@@ -104,6 +105,7 @@ async def list_visits(
     city_id: Optional[int] = None,
     procedure_id: Optional[int] = None,
     position_id: Optional[int] = None,
+    body_region: Optional[str] = None,
     sort: str = "-date",
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
@@ -145,6 +147,9 @@ async def list_visits(
     if position_id:
         query = query.where(Visit.position_id == position_id)
         count_query = count_query.where(Visit.position_id == position_id)
+    if body_region:
+        query = query.where(Visit.body_region == body_region)
+        count_query = count_query.where(Visit.body_region == body_region)
 
     order = SORT_FIELDS.get(sort, Visit.date.desc())
     query = query.order_by(order)
@@ -204,6 +209,7 @@ async def create_visit(
     city_id: Optional[int] = Form(None),
     link: Optional[str] = Form(None),
     comment: Optional[str] = Form(None),
+    body_region: Optional[str] = Form(None),
     document: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
@@ -219,6 +225,7 @@ async def create_visit(
         city_id=city_id,
         link=link,
         comment=comment,
+        body_region=body_region,
     )
 
     if document and document.filename:
@@ -256,6 +263,7 @@ async def update_visit(
     city_id: Optional[int] = Form(None),
     link: Optional[str] = Form(None),
     comment: Optional[str] = Form(None),
+    body_region: Optional[str] = Form(None),
     document: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
@@ -286,6 +294,8 @@ async def update_visit(
         visit.link = link
     if comment is not None:
         visit.comment = comment
+    if body_region is not None:
+        visit.body_region = body_region
 
     if document and document.filename:
         effective_date = date if date is not None else visit.date

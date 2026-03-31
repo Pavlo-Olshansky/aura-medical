@@ -9,6 +9,7 @@ class TreatmentCreate(BaseModel):
     name: str
     days: int
     receipt: str
+    body_region: Optional[str] = None
 
 
 class TreatmentUpdate(BaseModel):
@@ -16,6 +17,7 @@ class TreatmentUpdate(BaseModel):
     name: Optional[str] = None
     days: Optional[int] = None
     receipt: Optional[str] = None
+    body_region: Optional[str] = None
 
 
 class TreatmentResponse(BaseModel):
@@ -25,6 +27,7 @@ class TreatmentResponse(BaseModel):
     days: int
     receipt: str
     status: str
+    body_region: Optional[str] = None
     created: datetime
     updated: datetime
 

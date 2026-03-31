@@ -1,17 +1,20 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.auth.dependencies import get_current_user
+from app.constants.body_regions import BODY_REGION_VALUES
 from app.database import get_session
 from app.models.treatment import Treatment, KYIV_TZ
 from app.models.user import User
 from app.models.visit import Visit
+from app.schemas.body_map import BodyMapSummaryResponse, BodyRegionDetailResponse
+from app.services.body_map import get_body_map_detail, get_body_map_summary
 
 router = APIRouter()
 
@@ -104,3 +107,27 @@ async def get_dashboard(
         total_treatments=total_treatments,
         active_treatments_count=len(active_treatments),
     )
+
+
+@router.get("/body-map/", response_model=BodyMapSummaryResponse)
+async def get_body_map(
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    return await get_body_map_summary(current_user.id, session)
+
+
+@router.get("/body-map/{region_key}/", response_model=BodyRegionDetailResponse)
+async def get_body_map_region(
+    region_key: str,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    if region_key not in BODY_REGION_VALUES:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Invalid region key: {region_key}",
+        )
+    return await get_body_map_detail(current_user.id, region_key, session, limit, offset)

@@ -14,6 +14,7 @@ class VisitCreate(BaseModel):
     city_id: Optional[int] = None
     link: Optional[str] = None
     comment: Optional[str] = None
+    body_region: Optional[str] = None
 
 
 class VisitUpdate(BaseModel):
@@ -26,6 +27,7 @@ class VisitUpdate(BaseModel):
     city_id: Optional[int] = None
     link: Optional[str] = None
     comment: Optional[str] = None
+    body_region: Optional[str] = None
 
 
 class ReferenceInline(BaseModel):
@@ -48,6 +50,7 @@ class VisitResponse(BaseModel):
     city: Optional[ReferenceInline] = None
     document: Optional[str] = None
     has_document: bool = False
+    body_region: Optional[str] = None
     link: Optional[str] = None
     comment: Optional[str] = None
     created: datetime

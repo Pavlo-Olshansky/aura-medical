@@ -29,6 +29,7 @@ def _treatment_to_response(treatment: Treatment) -> TreatmentResponse:
         days=treatment.days,
         receipt=treatment.receipt,
         status=compute_status(treatment.date_start, treatment.days),
+        body_region=treatment.body_region,
         created=treatment.created,
         updated=treatment.updated,
     )
@@ -124,6 +125,7 @@ async def create_treatment(
         name=data.name,
         days=data.days,
         receipt=data.receipt,
+        body_region=data.body_region,
     )
     session.add(treatment)
     await session.commit()
