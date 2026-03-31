@@ -1,42 +1,33 @@
-from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from pydantic import BaseModel, ConfigDict
 
-from app.auth.dependencies import get_current_user
-from app.constants.body_regions import BODY_REGION_VALUES
-from app.database import get_session
-from app.models import Treatment, User, Visit
+from app.api.dependencies import get_current_user, get_dashboard_service
+from app.application.dashboard_service import DashboardAppService
+from app.domain.entities import User
+from app.domain.value_objects import BODY_REGION_KEYS
 from app.schemas.body_map import BodyMapSummaryResponse, BodyRegionDetailResponse
-from app.services.body_map import get_body_map_detail, get_body_map_summary
 
 router = APIRouter()
 
 
 class DashboardVisit(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
-    date: datetime
+    date: str = None
     doctor: str = None
     procedure_name: str = None
     clinic_name: str = None
 
-    class Config:
-        from_attributes = True
-
 
 class DashboardTreatment(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
-    date_start: datetime
+    date_start: str = None
     days: int
     status: str
-
-    class Config:
-        from_attributes = True
 
 
 class DashboardResponse(BaseModel):
@@ -50,69 +41,40 @@ class DashboardResponse(BaseModel):
 @router.get("/", response_model=DashboardResponse)
 async def get_dashboard(
     current_user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
+    service: DashboardAppService = Depends(get_dashboard_service),
 ):
-    # Recent visits (last 10)
-    visits_query = (
-        select(Visit)
-        .where(Visit.user_id == current_user.id, Visit.deleted_at.is_(None))
-        .options(selectinload(Visit.procedure), selectinload(Visit.clinic))
-        .order_by(Visit.date.desc())
-        .limit(10)
-    )
-    visits_result = await session.execute(visits_query)
-    visits = visits_result.scalars().all()
-
-    recent_visits = [
+    data = await service.get_dashboard(current_user.id)
+    recent = [
         DashboardVisit(
-            id=v.id,
-            date=v.date,
+            id=v.id, date=v.date.isoformat() if v.date else None,
             doctor=v.doctor,
             procedure_name=v.procedure.name if v.procedure else None,
             clinic_name=v.clinic.name if v.clinic else None,
         )
-        for v in visits
+        for v in data["recent_visits"]
     ]
-
-    # Total visits count
-    total_visits_result = await session.execute(
-        select(func.count(Visit.id)).where(
-            Visit.user_id == current_user.id, Visit.deleted_at.is_(None)
-        )
-    )
-    total_visits = total_visits_result.scalar() or 0
-
-    # All treatments
-    treatments_query = select(Treatment).where(
-        Treatment.user_id == current_user.id, Treatment.deleted_at.is_(None)
-    )
-    treatments_result = await session.execute(treatments_query)
-    treatments = treatments_result.scalars().all()
-
-    total_treatments = len(treatments)
-    active_treatments = [
+    active = [
         DashboardTreatment(
-            id=t.id, name=t.name, date_start=t.date_start, days=t.days, status=t.status
+            id=t.id, name=t.name,
+            date_start=t.date_start.isoformat() if t.date_start else None,
+            days=t.days, status=t.status,
         )
-        for t in treatments
-        if t.status == "active"
+        for t in data["active_treatments"]
     ]
-
     return DashboardResponse(
-        recent_visits=recent_visits,
-        active_treatments=active_treatments,
-        total_visits=total_visits,
-        total_treatments=total_treatments,
-        active_treatments_count=len(active_treatments),
+        recent_visits=recent, active_treatments=active,
+        total_visits=data["total_visits"],
+        total_treatments=len(data["all_treatments"]),
+        active_treatments_count=len(data["active_treatments"]),
     )
 
 
 @router.get("/body-map/", response_model=BodyMapSummaryResponse)
 async def get_body_map(
     current_user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
+    service: DashboardAppService = Depends(get_dashboard_service),
 ):
-    return await get_body_map_summary(current_user.id, session)
+    return await service.get_body_map_summary(current_user.id)
 
 
 @router.get("/body-map/{region_key}/", response_model=BodyRegionDetailResponse)
@@ -121,11 +83,8 @@ async def get_body_map_region(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
+    service: DashboardAppService = Depends(get_dashboard_service),
 ):
-    if region_key not in BODY_REGION_VALUES:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Invalid region key: {region_key}",
-        )
-    return await get_body_map_detail(current_user.id, region_key, session, limit, offset)
+    if region_key not in BODY_REGION_KEYS:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f"Invalid region key: {region_key}")
+    return await service.get_body_map_detail(current_user.id, region_key, limit, offset)

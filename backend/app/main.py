@@ -2,9 +2,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.router import api_router
-from app.database import engine
+from app.domain.exceptions import AuthenticationError, DomainError, EntityNotFound, ReferenceInUse
+from app.infrastructure.database import engine
 
 
 @asynccontextmanager
@@ -27,5 +29,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(EntityNotFound)
+async def entity_not_found_handler(request, exc):
+    return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+
+@app.exception_handler(AuthenticationError)
+async def authentication_error_handler(request, exc):
+    return JSONResponse(status_code=401, content={"detail": str(exc)})
+
+
+@app.exception_handler(ReferenceInUse)
+async def reference_in_use_handler(request, exc):
+    return JSONResponse(status_code=409, content={"detail": str(exc)})
+
+
+@app.exception_handler(DomainError)
+async def domain_error_handler(request, exc):
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
+
 
 app.include_router(api_router)

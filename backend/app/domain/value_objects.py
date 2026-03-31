@@ -1,3 +1,4 @@
+from __future__ import annotations
 from app.domain.exceptions import DomainError
 
 BODY_REGION_KEYS = (

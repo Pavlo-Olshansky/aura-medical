@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional, Type
 
 from sqlalchemy import func, select
@@ -40,12 +41,15 @@ class SqlAlchemyReferenceRepository:
         return self._to_entity(model)
 
     async def is_referenced(self, ref_id: int) -> bool:
+        return (await self.reference_count(ref_id)) > 0
+
+    async def reference_count(self, ref_id: int) -> int:
         fk_column = getattr(VisitModel, self._visit_fk_name)
         result = await self._session.execute(
             select(func.count()).select_from(VisitModel)
             .where(fk_column == ref_id, VisitModel.deleted_at.is_(None))
         )
-        return (result.scalar() or 0) > 0
+        return result.scalar() or 0
 
     @staticmethod
     def _to_entity(model) -> Reference:
