@@ -41,7 +41,17 @@ const BACK_HOTSPOTS: HotspotData[] = [
   { region: 'foot_right',     top: '87%',  left: '53%',  width: '18%',  height: '5%' },
 ]
 
-const FACE_HOTSPOTS: HotspotData[] = [
+const FACE_HOTSPOTS_MALE: HotspotData[] = [
+  { region: 'head_cranium',  top: '0%',   left: '10%',  width: '80%',  height: '28%' },
+  { region: 'head_face',     top: '26%',  left: '12%',  width: '76%',  height: '46%' },
+  { region: 'eyes',          top: '40%',  left: '18%',  width: '64%',  height: '9%' },
+  { region: 'ears',          top: '42%',  left: '2%',   width: '12%',  height: '19%' },
+  { region: 'ears',          top: '42%',  left: '86%',  width: '12%',  height: '19%' },
+  { region: 'nose',          top: '43%',  left: '38%',  width: '17%',  height: '19%' },
+  { region: 'mouth_teeth',   top: '63%',  left: '25%',  width: '49%',  height: '10%' },
+]
+
+const FACE_HOTSPOTS_FEMALE: HotspotData[] = [
   { region: 'head_cranium',  top: '0%',   left: '10%',  width: '80%',  height: '28%' },
   { region: 'head_face',     top: '26%',  left: '12%',  width: '76%',  height: '46%' },
   { region: 'eyes',          top: '40%',  left: '18%',  width: '64%',  height: '9%' },
@@ -62,7 +72,7 @@ const panels = computed(() => {
   return [
     { key: 'front' as const, label: 'Спереду', image: isFemale ? frontFemaleImage : frontMaleImage, hotspots: FRONT_HOTSPOTS },
     { key: 'back' as const, label: 'Ззаду', image: isFemale ? backFemaleImage : backMaleImage, hotspots: BACK_HOTSPOTS },
-    { key: 'face' as const, label: 'Обличчя', image: isFemale ? faceFemaleImage : faceMaleImage, hotspots: FACE_HOTSPOTS },
+    { key: 'face' as const, label: 'Обличчя', image: isFemale ? faceFemaleImage : faceMaleImage, hotspots: isFemale ? FACE_HOTSPOTS_FEMALE : FACE_HOTSPOTS_MALE },
   ]
 })
 
