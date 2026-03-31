@@ -351,11 +351,9 @@ onMounted(async () => {
   .body-map-layout {
     flex-direction: column;
     align-items: stretch;
-    min-height: 500px;
   }
   .body-map-left {
     width: 100%;
-    min-height: 300px;
   }
   .body-map-right {
     flex: none;
