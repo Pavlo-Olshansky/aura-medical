@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Card from 'primevue/card'
+import Dialog from 'primevue/dialog'
+import Button from 'primevue/button'
+import type { DataTablePageEvent } from 'primevue/datatable'
 import { apiClient } from '@/api/client'
-import type { DashboardData, Visit } from '@/types'
+import type { DashboardData, Visit, PaginatedResponse } from '@/types'
 import type { BodyRegionKey } from '@/components/body-map/types'
+import { BODY_REGION_LABELS } from '@/components/body-map/body-regions'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { useAuthStore } from '@/stores/auth'
 import BodyMap from '@/components/body-map/BodyMap.vue'
@@ -25,6 +29,66 @@ const treatmentRegions = ref<string[]>([])
 // Body map state
 const selectedRegion = ref<BodyRegionKey | null>(null)
 
+// Modal state
+const modalVisible = ref(false)
+const modalVisits = ref<Visit[]>([])
+const modalTotal = ref(0)
+const modalPage = ref(1)
+const modalPageSize = ref(10)
+const modalLoading = ref(false)
+
+const modalHeader = computed(() => {
+  if (!selectedRegion.value) return ''
+  const label = BODY_REGION_LABELS[selectedRegion.value] || selectedRegion.value
+  return `${label} — Візити`
+})
+
+async function fetchModalVisits() {
+  if (!selectedRegion.value) return
+  modalLoading.value = true
+  try {
+    const response = await apiClient.get<PaginatedResponse<Visit>>('/api/visits/', {
+      params: {
+        body_region: selectedRegion.value,
+        page: modalPage.value,
+        size: modalPageSize.value,
+        sort_by: 'date',
+        sort_order: 'desc',
+      },
+    })
+    modalVisits.value = response.data.items
+    modalTotal.value = response.data.total
+  } catch {
+    modalVisits.value = []
+    modalTotal.value = 0
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+function onModalPage(event: DataTablePageEvent) {
+  modalPage.value = event.page + 1
+  modalPageSize.value = event.rows
+  fetchModalVisits()
+}
+
+function onModalRowClick(event: { data: Visit }) {
+  modalVisible.value = false
+  router.push({ name: 'visit-detail', params: { id: event.data.id } })
+}
+
+function onModalClose() {
+  selectedRegion.value = null
+  modalVisits.value = []
+  modalTotal.value = 0
+  modalPage.value = 1
+}
+
+function addVisitFromModal() {
+  modalVisible.value = false
+  router.push({ name: 'visit-create', query: { body_region: selectedRegion.value || undefined } })
+}
+
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr)
   return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -36,6 +100,11 @@ function onVisitRowClick(event: { data: Visit }) {
 
 function onRegionSelect(region: BodyRegionKey | null) {
   selectedRegion.value = region
+  if (region) {
+    modalPage.value = 1
+    modalVisible.value = true
+    fetchModalVisits()
+  }
 }
 
 onMounted(async () => {
@@ -114,6 +183,63 @@ onMounted(async () => {
         />
       </div>
     </div>
+
+    <!-- Body Region Visits Modal -->
+    <Dialog
+      v-model:visible="modalVisible"
+      :header="modalHeader"
+      modal
+      dismissableMask
+      :style="{ width: '900px' }"
+      :breakpoints="{ '960px': '95vw' }"
+      @hide="onModalClose"
+    >
+      <div class="modal-toolbar">
+        <Button label="Додати візит" icon="pi pi-plus" @click="addVisitFromModal" />
+      </div>
+      <DataTable
+        :value="modalVisits"
+        :loading="modalLoading"
+        :lazy="true"
+        :paginator="true"
+        :rows="modalPageSize"
+        :totalRecords="modalTotal"
+        :rowsPerPageOptions="[10, 20, 50]"
+        @page="onModalPage"
+        @row-click="onModalRowClick"
+        rowHover
+        stripedRows
+        class="clickable-table"
+      >
+        <template #empty>Немає візитів для цієї ділянки</template>
+        <Column field="date" header="Дата">
+          <template #body="{ data }">{{ formatDate(data.date) }}</template>
+        </Column>
+        <Column header="Лікар">
+          <template #body="{ data }">
+            <span v-if="data.position">{{ data.position.name }}</span>
+            <span v-if="data.position && data.doctor"> - </span>
+            <span v-if="data.doctor">{{ data.doctor }}</span>
+            <span v-if="!data.position && !data.doctor">-</span>
+          </template>
+        </Column>
+        <Column header="Процедура">
+          <template #body="{ data }">{{ data.procedure?.name || '-' }}</template>
+        </Column>
+        <Column header="Клініка">
+          <template #body="{ data }">{{ data.clinic?.name || '-' }}</template>
+        </Column>
+        <Column header="Місто">
+          <template #body="{ data }">{{ data.city?.name || '-' }}</template>
+        </Column>
+        <Column header="Документ" style="width: 80px; text-align: center">
+          <template #body="{ data }">
+            <i v-if="data.document || data.has_document" class="pi pi-file" style="color: #2563eb" />
+            <span v-else>-</span>
+          </template>
+        </Column>
+      </DataTable>
+    </Dialog>
 
     <div class="dashboard-sections">
       <div class="section">
@@ -272,6 +398,11 @@ onMounted(async () => {
 }
 .clickable-table :deep(tr) {
   cursor: pointer;
+}
+.modal-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
 }
 
 /* Responsive */
