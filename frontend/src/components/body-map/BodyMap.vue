@@ -7,53 +7,53 @@ import {
 } from './body-regions'
 import BodyMapTooltip from './BodyMapTooltip.vue'
 
-import bodyImage from '@/assets/body/body-image.jpg'
+import frontImage from '@/assets/body/front.jpg'
+import backImage from '@/assets/body/back.jpg'
+import faceImage from '@/assets/body/face.jpg'
 
-// --- Hotspot coordinate data (% relative to each panel) ---
+// --- Hotspot coordinate data (% relative to each panel viewport after object-fit:cover) ---
 
 const FRONT_HOTSPOTS: HotspotData[] = [
-  { region: 'neck_throat', top: '16%', left: '38%', width: '24%', height: '5%' },
-  { region: 'shoulder_left', top: '20%', left: '15%', width: '18%', height: '10%' },
-  { region: 'shoulder_right', top: '20%', left: '67%', width: '18%', height: '10%' },
-  { region: 'chest', top: '25%', left: '22%', width: '56%', height: '16%' },
-  { region: 'arm_left', top: '22%', left: '4%', width: '16%', height: '38%' },
-  { region: 'arm_right', top: '22%', left: '80%', width: '16%', height: '38%' },
-  { region: 'hand_left', top: '55%', left: '0%', width: '14%', height: '12%' },
-  { region: 'hand_right', top: '55%', left: '86%', width: '14%', height: '12%' },
-  { region: 'abdomen_upper', top: '41%', left: '28%', width: '44%', height: '10%' },
-  { region: 'abdomen_lower', top: '51%', left: '30%', width: '40%', height: '10%' },
-  { region: 'pelvis', top: '61%', left: '28%', width: '44%', height: '9%' },
-  { region: 'leg_left', top: '70%', left: '22%', width: '24%', height: '24%' },
-  { region: 'leg_right', top: '70%', left: '54%', width: '24%', height: '24%' },
-  { region: 'foot_left', top: '92%', left: '22%', width: '18%', height: '7%' },
-  { region: 'foot_right', top: '92%', left: '60%', width: '18%', height: '7%' },
+  { region: 'neck_throat',    top: '16%',  left: '47%',  width: '17%',  height: '5%' },
+  { region: 'shoulder_left',  top: '18%',  left: '31%',  width: '17%',  height: '8%' },
+  { region: 'shoulder_right', top: '18%',  left: '61%',  width: '17%',  height: '8%' },
+  { region: 'chest',          top: '20%',  left: '41%',  width: '28%',  height: '13%' },
+  { region: 'arm_left',       top: '26%',  left: '27%',  width: '14%',  height: '34%' },
+  { region: 'arm_right',      top: '26%',  left: '67%',  width: '14%',  height: '34%' },
+  { region: 'hand_left',      top: '47%',  left: '27%',  width: '12%',  height: '8%' },
+  { region: 'hand_right',     top: '47%',  left: '69%',  width: '12%',  height: '8%' },
+  { region: 'abdomen_upper',  top: '33%',  left: '42%',  width: '26%',  height: '10%' },
+  { region: 'pelvis',         top: '42%',  left: '40%',  width: '30%',  height: '9%' },
+  { region: 'leg_left',       top: '51%',  left: '39%',  width: '16%',  height: '33%' },
+  { region: 'leg_right',      top: '51%',  left: '55%',  width: '16%',  height: '33%' },
+  { region: 'foot_left',      top: '84%',  left: '36%',  width: '16%',  height: '5%' },
+  { region: 'foot_right',     top: '84%',  left: '58%',  width: '16%',  height: '5%' },
 ]
 
 const BACK_HOTSPOTS: HotspotData[] = [
-  { region: 'back_upper', top: '20%', left: '18%', width: '64%', height: '22%' },
-  { region: 'back_lower', top: '42%', left: '22%', width: '56%', height: '18%' },
-  { region: 'shoulder_left', top: '18%', left: '5%', width: '20%', height: '12%' },
-  { region: 'shoulder_right', top: '18%', left: '75%', width: '20%', height: '12%' },
-  { region: 'leg_left', top: '70%', left: '20%', width: '26%', height: '24%' },
-  { region: 'leg_right', top: '70%', left: '54%', width: '26%', height: '24%' },
-  { region: 'foot_left', top: '92%', left: '20%', width: '20%', height: '7%' },
-  { region: 'foot_right', top: '92%', left: '60%', width: '20%', height: '7%' },
+  { region: 'shoulder_left',  top: '18%',  left: '18%',  width: '17%',  height: '8%' },
+  { region: 'shoulder_right', top: '18%',  left: '62%',  width: '17%',  height: '8%' },
+  { region: 'back_upper',     top: '20%',  left: '30%',  width: '40%',  height: '16%' },
+  { region: 'back_lower',     top: '36%',  left: '34%',  width: '32%',  height: '15%' },
+  { region: 'leg_left',       top: '53%',  left: '34%',  width: '16%',  height: '33%' },
+  { region: 'leg_right',      top: '53%',  left: '52%',  width: '16%',  height: '33%' },
+  { region: 'foot_left',      top: '84%',  left: '36%',  width: '16%',  height: '5%' },
+  { region: 'foot_right',     top: '84%',  left: '52%',  width: '16%',  height: '5%' },
 ]
 
 const FACE_HOTSPOTS: HotspotData[] = [
-  { region: 'head_cranium', top: '5%', left: '15%', width: '65%', height: '25%' },
-  { region: 'head_face', top: '25%', left: '12%', width: '70%', height: '50%' },
-  { region: 'eyes', top: '30%', left: '18%', width: '60%', height: '10%' },
-  { region: 'ears', top: '32%', left: '78%', width: '15%', height: '20%' },
-  { region: 'mouth_teeth', top: '55%', left: '22%', width: '50%', height: '15%' },
+  { region: 'head_cranium',  top: '0%',   left: '10%',  width: '80%',  height: '28%' },
+  { region: 'head_face',     top: '26%',  left: '12%',  width: '76%',  height: '46%' },
+  { region: 'eyes',          top: '40%',  left: '18%',  width: '64%',  height: '9%' },
+  { region: 'ears',          top: '42%',  left: '2%',   width: '12%',  height: '19%' },
+  { region: 'ears',          top: '42%',  left: '86%',  width: '12%',  height: '19%' },
+  { region: 'mouth_teeth',   top: '63%',  left: '25%',  width: '46%',  height: '10%' },
 ]
 
-// Image: bodyimage_divided.png (1380x752), three figures
-// Panel crop: each panel shows one figure via CSS overflow + margin shift
 const PANELS = [
-  { key: 'front' as const, label: 'Спереду', offsetPct: -12, widthPct: 17, hotspots: FRONT_HOTSPOTS },
-  { key: 'back' as const, label: 'Ззаду', offsetPct: -40, widthPct: 15, hotspots: BACK_HOTSPOTS },
-  { key: 'face' as const, label: 'Обличчя', offsetPct: -64, widthPct: 34, hotspots: FACE_HOTSPOTS },
+  { key: 'front' as const, label: 'Спереду', image: frontImage, hotspots: FRONT_HOTSPOTS },
+  { key: 'back' as const, label: 'Ззаду', image: backImage, hotspots: BACK_HOTSPOTS },
+  { key: 'face' as const, label: 'Обличчя', image: faceImage, hotspots: FACE_HOTSPOTS },
 ]
 
 const props = defineProps<{
@@ -152,12 +152,8 @@ const tooltipData = computed(() => {
         <div class="panel-viewport">
           <img
             v-if="!imageErrors[panel.key]"
-            :src="bodyImage"
+            :src="panel.image"
             class="panel-img"
-            :style="{
-              width: `${100 / (panel.widthPct / 100)}%`,
-              marginLeft: `${panel.offsetPct / (panel.widthPct / 100)}%`,
-            }"
             alt=""
             @error="imageErrors[panel.key] = true"
           />
@@ -166,8 +162,8 @@ const tooltipData = computed(() => {
           </div>
 
           <button
-            v-for="hs in panel.hotspots"
-            :key="hs.region"
+            v-for="(hs, idx) in panel.hotspots"
+            :key="`${panel.key}-${idx}`"
             :class="hotspotClasses(hs.region)"
             :style="hotspotStyle(hs)"
             :aria-label="BODY_REGION_LABELS[hs.region] || hs.region"
@@ -177,6 +173,7 @@ const tooltipData = computed(() => {
             @keydown="onKeydown(hs.region, $event)"
           />
         </div>
+        <div class="panel-label">{{ panel.label }}</div>
       </div>
     </div>
 
@@ -208,25 +205,40 @@ const tooltipData = computed(() => {
 .panels {
   display: flex;
   width: 100%;
-  gap: 2px;
-  align-items: flex-end;
+  gap: 4px;
+  align-items: flex-start;
 }
 
 .panel {
   flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .panel-viewport {
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: auto;
+  aspect-ratio: 3 / 5;
+  border-radius: 4px;
 }
 
 .panel-img {
   display: block;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.panel-label {
+  font-size: 0.6875rem;
+  color: #52525b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  text-align: center;
 }
 
 .panel-fallback {
@@ -234,7 +246,7 @@ const tooltipData = computed(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  aspect-ratio: 1 / 2;
+  height: 100%;
   background: #0a0a0a;
   color: #334155;
   font-size: 2rem;
@@ -242,7 +254,7 @@ const tooltipData = computed(() => {
 
 .hotspot {
   position: absolute;
-  border: 1px solid transparent;
+  border: 1px dashed rgba(0, 240, 255, 0.25);
   background: transparent;
   border-radius: 2px;
   cursor: pointer;
@@ -289,12 +301,11 @@ const tooltipData = computed(() => {
   .panels {
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 16px;
   }
 
   .panel {
-    width: 80%;
-    max-width: 300px;
+    width: 95%;
   }
 }
 </style>
