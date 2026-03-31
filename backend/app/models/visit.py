@@ -29,6 +29,7 @@ class Visit(SoftDeleteModel):
     document: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     link: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
     comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    body_region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
 
     user = relationship("User", lazy="selectin")
     position = relationship("Position", lazy="selectin")
