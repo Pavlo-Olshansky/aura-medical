@@ -5,9 +5,7 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.reference import City, Clinic, Position, Procedure
-from app.models.user import User
-from app.models.visit import Visit
+from app.models import City, Clinic, Position, Procedure, User, Visit
 
 
 @pytest.mark.asyncio

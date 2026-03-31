@@ -1,20 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.models.base import SoftDeleteModel
-
-try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    from backports.zoneinfo import ZoneInfo
-
-KYIV_TZ = ZoneInfo("Europe/Kyiv")
+from app.infrastructure.models.base import SoftDeleteModel
 
 
-class Treatment(SoftDeleteModel):
+class TreatmentModel(SoftDeleteModel):
     __tablename__ = "treatment"
 
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("user.id"), nullable=False)
@@ -25,11 +18,3 @@ class Treatment(SoftDeleteModel):
     body_region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
 
     __table_args__ = (Index("ix_treatment_user_id", "user_id"),)
-
-    @property
-    def status(self) -> str:
-        now = datetime.now(KYIV_TZ)
-        end_date = self.date_start + timedelta(days=self.days)
-        if end_date.tzinfo is None:
-            end_date = end_date.replace(tzinfo=KYIV_TZ)
-        return "active" if end_date > now else "completed"

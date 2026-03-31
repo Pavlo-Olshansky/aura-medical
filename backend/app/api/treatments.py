@@ -8,8 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import get_current_user
 from app.database import get_session
-from app.models.treatment import Treatment
-from app.models.user import User
+from app.models import Treatment, User
 from app.schemas.treatment import (
     TreatmentCreate,
     TreatmentListResponse,

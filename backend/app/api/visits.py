@@ -13,9 +13,7 @@ from sqlalchemy.orm import selectinload
 from app.auth.dependencies import get_current_user
 from app.config import settings
 from app.database import get_session
-from app.models.reference import Procedure
-from app.models.user import User
-from app.models.visit import Visit
+from app.models import Procedure, User, Visit
 from app.schemas.visit import VisitListResponse, VisitResponse
 
 router = APIRouter()

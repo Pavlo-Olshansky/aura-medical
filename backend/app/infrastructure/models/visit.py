@@ -4,10 +4,10 @@ from typing import Optional
 from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import SoftDeleteModel
+from app.infrastructure.models.base import SoftDeleteModel
 
 
-class Visit(SoftDeleteModel):
+class VisitModel(SoftDeleteModel):
     __tablename__ = "visit"
 
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("user.id"), nullable=False)
@@ -31,11 +31,11 @@ class Visit(SoftDeleteModel):
     comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     body_region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
 
-    user = relationship("User", lazy="selectin")
-    position = relationship("Position", lazy="selectin")
-    procedure = relationship("Procedure", lazy="selectin")
-    clinic = relationship("Clinic", lazy="selectin")
-    city = relationship("City", lazy="selectin")
+    user = relationship("UserModel", lazy="selectin")
+    position = relationship("PositionModel", lazy="selectin")
+    procedure = relationship("ProcedureModel", lazy="selectin")
+    clinic = relationship("ClinicModel", lazy="selectin")
+    city = relationship("CityModel", lazy="selectin")
 
     __table_args__ = (
         Index("ix_visit_user_id", "user_id"),

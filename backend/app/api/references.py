@@ -7,9 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import get_current_user
 from app.database import get_session
-from app.models.reference import City, Clinic, Position, Procedure
-from app.models.user import User
-from app.models.visit import Visit
+from app.models import City, Clinic, Position, Procedure, User, Visit
 from app.schemas.reference import ReferenceCreate, ReferenceResponse, ReferenceUpdate
 
 

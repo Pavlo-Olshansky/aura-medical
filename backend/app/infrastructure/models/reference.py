@@ -1,24 +1,24 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.models.base import BaseModel
+from app.infrastructure.models.base import BaseModel
 
 
-class Position(BaseModel):
+class PositionModel(BaseModel):
     __tablename__ = "position"
     name: Mapped[str] = mapped_column(String(256), unique=True, nullable=False)
 
 
-class Procedure(BaseModel):
+class ProcedureModel(BaseModel):
     __tablename__ = "procedure"
     name: Mapped[str] = mapped_column(String(256), unique=True, nullable=False)
 
 
-class Clinic(BaseModel):
+class ClinicModel(BaseModel):
     __tablename__ = "clinic"
     name: Mapped[str] = mapped_column(String(256), unique=True, nullable=False)
 
 
-class City(BaseModel):
+class CityModel(BaseModel):
     __tablename__ = "city"
     name: Mapped[str] = mapped_column(String(256), unique=True, nullable=False)

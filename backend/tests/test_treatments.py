@@ -5,8 +5,7 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.treatment import Treatment
-from app.models.user import User
+from app.models import Treatment, User
 
 try:
     from zoneinfo import ZoneInfo

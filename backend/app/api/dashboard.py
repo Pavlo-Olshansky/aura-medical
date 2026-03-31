@@ -10,9 +10,7 @@ from sqlalchemy.orm import selectinload
 from app.auth.dependencies import get_current_user
 from app.constants.body_regions import BODY_REGION_VALUES
 from app.database import get_session
-from app.models.treatment import Treatment, KYIV_TZ
-from app.models.user import User
-from app.models.visit import Visit
+from app.models import Treatment, User, Visit
 from app.schemas.body_map import BodyMapSummaryResponse, BodyRegionDetailResponse
 from app.services.body_map import get_body_map_detail, get_body_map_summary
 

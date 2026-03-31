@@ -10,8 +10,7 @@ from app.auth.jwt import create_access_token
 from app.config import settings
 from app.database import get_session
 from app.main import app
-from app.models import Base
-from app.models.user import User
+from app.models import Base, User
 
 TEST_DB_URL = settings.DATABASE_URL.replace("/medtracker", "/medtracker_test")
 

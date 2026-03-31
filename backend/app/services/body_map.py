@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.constants.body_regions import BODY_REGION_LABELS, BODY_REGION_VALUES
-from app.models.treatment import Treatment, KYIV_TZ
-from app.models.visit import Visit
+from app.models import Treatment, Visit
+from app.domain.entities import KYIV_TZ
 from app.schemas.body_map import (
     BodyMapSummaryResponse,
     BodyMapTreatmentItem,

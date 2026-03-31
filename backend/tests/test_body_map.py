@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 import pytest
 import pytest_asyncio
 
-from app.models.treatment import Treatment, KYIV_TZ
-from app.models.visit import Visit
+from app.models import Treatment, Visit
+from app.domain.entities import KYIV_TZ
 
 
 @pytest_asyncio.fixture
