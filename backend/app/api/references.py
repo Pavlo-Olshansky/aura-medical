@@ -66,12 +66,7 @@ def _create_reference_router(get_service) -> APIRouter:
         ref_count = await service._repo.reference_count(item_id)
         if ref_count > 0:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Cannot delete: referenced by {ref_count} visit(s)")
-        # Hard delete at infrastructure level
-        from sqlalchemy import delete as sa_delete
-        model_class = service._repo._model_class
-        session = service._repo._session
-        await session.execute(sa_delete(model_class).where(model_class.id == item_id))
-        await session.commit()
+        await service._repo.delete(item_id)
 
     return router
 

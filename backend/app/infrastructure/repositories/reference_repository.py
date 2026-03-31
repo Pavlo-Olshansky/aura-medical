@@ -51,6 +51,11 @@ class SqlAlchemyReferenceRepository:
         )
         return result.scalar() or 0
 
+    async def delete(self, ref_id: int) -> None:
+        from sqlalchemy import delete as sa_delete
+        await self._session.execute(sa_delete(self._model_class).where(self._model_class.id == ref_id))
+        await self._session.commit()
+
     @staticmethod
     def _to_entity(model) -> Reference:
         return Reference(
