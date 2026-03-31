@@ -28,8 +28,8 @@ export const BODY_REGION_LABELS: Record<BodyRegionKey, string> = {
 
 export const BODY_REGION_KEYS: BodyRegionKey[] = Object.keys(BODY_REGION_LABELS) as BodyRegionKey[]
 
-/** Keys excluding whole_body — the selectable regions shown in SVG */
-export const SVG_REGION_KEYS: BodyRegionKey[] = BODY_REGION_KEYS.filter(k => k !== 'whole_body')
+/** Keys excluding whole_body — the selectable regions on the body map */
+export const SELECTABLE_REGION_KEYS: BodyRegionKey[] = BODY_REGION_KEYS.filter(k => k !== 'whole_body')
 
 /** Dropdown options for forms (includes whole_body) */
 export const BODY_REGION_OPTIONS = BODY_REGION_KEYS.map(key => ({
