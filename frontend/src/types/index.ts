@@ -2,6 +2,19 @@ export interface User {
   id: number
   username: string
   is_active: boolean
+  sex: string
+}
+
+export interface ProfileData {
+  sex: string
+  date_of_birth: string
+  height_cm: number | null
+  weight_kg: number | null
+  blood_type: string | null
+  allergies: string | null
+  chronic_conditions: string | null
+  emergency_contact_name: string | null
+  emergency_contact_phone: string | null
 }
 
 export interface TokenResponse {

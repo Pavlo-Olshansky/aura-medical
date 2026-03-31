@@ -22,4 +22,4 @@ async def refresh(token: str, auth_service: AuthAppService = Depends(get_auth_se
 
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)):
-    return UserResponse(id=current_user.id, username=current_user.username, is_active=current_user.is_active)
+    return UserResponse(id=current_user.id, username=current_user.username, is_active=current_user.is_active, sex=current_user.sex)
