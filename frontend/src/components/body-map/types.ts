@@ -48,9 +48,10 @@ export interface BodyRegionDetailResponse {
 
 export type BodyMapView = 'front' | 'back' | 'face'
 
-export interface PolygonData {
+export interface HotspotData {
   region: BodyRegionKey
-  points: string
-  centerX: number
-  centerY: number
+  top: string
+  left: string
+  width: string
+  height: string
 }
