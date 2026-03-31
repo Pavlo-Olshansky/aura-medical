@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { BodyRegionKey, BodyRegionSummary, HotspotData } from './types'
-import {
-  BODY_REGION_LABELS,
-  getDensityColor,
-} from './body-regions'
+import type { BodyRegionKey, HotspotData } from './types'
+import { BODY_REGION_LABELS } from './body-regions'
 import BodyMapTooltip from './BodyMapTooltip.vue'
 
 import frontMaleImage from '@/assets/body/front.jpg'
@@ -55,9 +52,9 @@ const FACE_HOTSPOTS: HotspotData[] = [
 ]
 
 const props = defineProps<{
-  regions: Record<string, BodyRegionSummary>
   selectedRegion: BodyRegionKey | null
   sex?: string
+  treatmentRegions?: string[]
 }>()
 
 const panels = computed(() => {
@@ -77,10 +74,6 @@ const hoveredRegion = ref<BodyRegionKey | null>(null)
 const tooltipX = ref(0)
 const tooltipY = ref(0)
 const imageErrors = ref<Record<string, boolean>>({})
-
-function getRegionData(key: string): BodyRegionSummary {
-  return props.regions[key] || { visit_count: 0, active_treatment_count: 0, last_visit_date: null, visits_last_year: 0 }
-}
 
 function onMouseEnter(region: BodyRegionKey, event: MouseEvent) {
   hoveredRegion.value = region
@@ -109,42 +102,26 @@ function onKeydown(region: BodyRegionKey, event: KeyboardEvent) {
 }
 
 function hotspotClasses(region: BodyRegionKey) {
-  const data = getRegionData(region)
   return {
     hotspot: true,
     hovered: hoveredRegion.value === region,
     selected: props.selectedRegion === region,
-    'has-treatment': data.active_treatment_count > 0,
-    'has-visits': data.visit_count > 0,
+    'has-treatment': props.treatmentRegions?.includes(region) ?? false,
   }
 }
 
 function hotspotStyle(hs: HotspotData) {
-  const data = getRegionData(hs.region)
-  const style: Record<string, string> = {
+  return {
     top: hs.top,
     left: hs.left,
     width: hs.width,
     height: hs.height,
   }
-  if (data.visit_count > 0) {
-    const color = getDensityColor(data.visit_count)
-    style.borderColor = color
-    style.boxShadow = `inset 0 0 8px ${color}40`
-  }
-  return style
 }
 
-const hasAnyData = computed(() => Object.keys(props.regions).length > 0)
-
-const tooltipData = computed(() => {
+const tooltipLabel = computed(() => {
   if (!hoveredRegion.value) return null
-  const data = getRegionData(hoveredRegion.value)
-  return {
-    label: BODY_REGION_LABELS[hoveredRegion.value] || hoveredRegion.value,
-    visitCount: data.visit_count,
-    treatmentCount: data.active_treatment_count,
-  }
+  return BODY_REGION_LABELS[hoveredRegion.value] || hoveredRegion.value
 })
 
 </script>
@@ -185,16 +162,10 @@ const tooltipData = computed(() => {
       </div>
     </div>
 
-    <p v-if="!hasAnyData" class="empty-message">
-      Додайте ділянку тіла до візитів, щоб побачити карту
-    </p>
-
     <Teleport to="body">
       <BodyMapTooltip
-        v-if="tooltipData"
-        :label="tooltipData.label"
-        :visit-count="tooltipData.visitCount"
-        :treatment-count="tooltipData.treatmentCount"
+        v-if="tooltipLabel"
+        :label="tooltipLabel"
         :x="tooltipX"
         :y="tooltipY"
       />
@@ -296,13 +267,6 @@ const tooltipData = computed(() => {
 .hotspot:focus-visible {
   outline: 2px solid #22d3ee;
   outline-offset: 1px;
-}
-
-.empty-message {
-  font-size: 0.8125rem;
-  color: #3f3f46;
-  text-align: center;
-  margin-top: 0.5rem;
 }
 
 @media (max-width: 768px) {
