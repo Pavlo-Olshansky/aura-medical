@@ -17,18 +17,18 @@ import faceFemaleImage from '@/assets/body/face-woman.png'
 // --- Hotspot coordinate data (% relative to each panel viewport after object-fit:cover) ---
 
 const FRONT_HOTSPOTS: HotspotData[] = [
-  { region: 'neck_throat',    top: '16%',  left: '47%',  width: '17%',  height: '5%' },
-  { region: 'shoulder_left',  top: '18%',  left: '31%',  width: '17%',  height: '8%' },
-  { region: 'shoulder_right', top: '18%',  left: '61%',  width: '17%',  height: '8%' },
+  { region: 'neck_throat',    top: '16%',  left: '47%',  width: '14%',  height: '5%' },
+  { region: 'shoulder_left',  top: '18%',  left: '30%',  width: '16%',  height: '8%' },
+  { region: 'shoulder_right', top: '18%',  left: '62%',  width: '16%',  height: '8%' },
   { region: 'chest',          top: '20%',  left: '41%',  width: '28%',  height: '13%' },
   { region: 'arm_left',       top: '26%',  left: '27%',  width: '14%',  height: '21%' },
   { region: 'arm_right',      top: '26%',  left: '67%',  width: '14%',  height: '21%' },
-  { region: 'hand_left',      top: '47%',  left: '27%',  width: '12%',  height: '9%' },
-  { region: 'hand_right',     top: '47%',  left: '69%',  width: '12%',  height: '9%' },
+  { region: 'hand_left',      top: '48%',  left: '25%',  width: '12%',  height: '9%' },
+  { region: 'hand_right',     top: '48%',  left: '71%',  width: '12%',  height: '9%' },
   { region: 'abdomen_upper',  top: '33%',  left: '42%',  width: '26%',  height: '10%' },
   { region: 'pelvis',         top: '42%',  left: '40%',  width: '30%',  height: '9%' },
-  { region: 'leg_left',       top: '51%',  left: '39%',  width: '16%',  height: '33%' },
-  { region: 'leg_right',      top: '51%',  left: '55%',  width: '16%',  height: '33%' },
+  { region: 'leg_left',       top: '52%',  left: '39%',  width: '15%',  height: '31%' },
+  { region: 'leg_right',      top: '52%',  left: '55%',  width: '15%',  height: '31%' },
   { region: 'foot_left',      top: '84%',  left: '36%',  width: '16%',  height: '5%' },
   { region: 'foot_right',     top: '84%',  left: '58%',  width: '16%',  height: '5%' },
 ]
@@ -50,6 +50,7 @@ const FACE_HOTSPOTS: HotspotData[] = [
   { region: 'eyes',          top: '40%',  left: '18%',  width: '64%',  height: '9%' },
   { region: 'ears',          top: '42%',  left: '2%',   width: '12%',  height: '19%' },
   { region: 'ears',          top: '42%',  left: '86%',  width: '12%',  height: '19%' },
+  { region: 'nose',          top: '43%',  left: '39%',  width: '20%',  height: '19%' },
   { region: 'mouth_teeth',   top: '63%',  left: '25%',  width: '46%',  height: '10%' },
 ]
 
