@@ -2,7 +2,7 @@ from __future__ import annotations
 from app.domain.exceptions import DomainError
 
 BODY_REGION_KEYS = (
-    "head_cranium", "head_face", "eyes", "ears", "mouth_teeth",
+    "head_cranium", "head_face", "eyes", "ears", "nose", "mouth_teeth",
     "neck_throat", "chest", "abdomen_upper", "abdomen_lower", "pelvis",
     "back_upper", "back_lower",
     "shoulder_left", "shoulder_right",
@@ -24,6 +24,7 @@ BODY_REGION_LABELS: dict[str, str] = {
     "head_face": "Обличчя",
     "eyes": "Очі",
     "ears": "Вуха",
+    "nose": "Ніс",
     "mouth_teeth": "Рот і зуби",
     "neck_throat": "Шия / горло",
     "chest": "Грудна клітка",
@@ -49,8 +50,8 @@ SPECIALTY_REGION_MAP: dict[str, list[str]] = {
     "Кардіолог": ["chest"],
     "Офтальмолог": ["eyes"],
     "Стоматолог": ["mouth_teeth"],
-    "Отоларинголог": ["ears", "neck_throat", "head_face"],
-    "ЛОР": ["ears", "neck_throat", "head_face"],
+    "Отоларинголог": ["ears", "nose", "neck_throat", "head_face"],
+    "ЛОР": ["ears", "nose", "neck_throat", "head_face"],
     "Гастроентеролог": ["abdomen_upper", "abdomen_lower"],
     "Невролог": ["head_cranium", "neck_throat", "back_upper", "back_lower"],
     "Пульмонолог": ["chest", "back_upper"],

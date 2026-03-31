@@ -1,5 +1,5 @@
 export type BodyRegionKey =
-  | 'head_cranium' | 'head_face' | 'eyes' | 'ears' | 'mouth_teeth'
+  | 'head_cranium' | 'head_face' | 'eyes' | 'ears' | 'nose' | 'mouth_teeth'
   | 'neck_throat' | 'chest' | 'abdomen_upper' | 'abdomen_lower' | 'pelvis'
   | 'back_upper' | 'back_lower'
   | 'shoulder_left' | 'shoulder_right'
