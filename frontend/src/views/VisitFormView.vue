@@ -104,6 +104,12 @@ async function handleSubmit() {
 onMounted(async () => {
   await referencesStore.fetchAll()
 
+  // Pre-fill body region from query param (e.g. from body map modal)
+  const queryRegion = route.query.body_region as string | undefined
+  if (queryRegion && !isEdit.value) {
+    bodyRegion.value = queryRegion
+  }
+
   if (isEdit.value && editId.value) {
     await visitsStore.fetchVisit(editId.value)
     const visit = visitsStore.currentVisit
