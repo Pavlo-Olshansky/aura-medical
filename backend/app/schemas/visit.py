@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
@@ -15,6 +16,7 @@ class VisitCreate(BaseModel):
     link: Optional[str] = None
     comment: Optional[str] = None
     body_region: Optional[str] = None
+    price: Optional[Decimal] = None
 
 
 class VisitUpdate(BaseModel):
@@ -28,6 +30,7 @@ class VisitUpdate(BaseModel):
     link: Optional[str] = None
     comment: Optional[str] = None
     body_region: Optional[str] = None
+    price: Optional[Decimal] = None
 
 
 class ReferenceInline(BaseModel):
@@ -53,6 +56,7 @@ class VisitResponse(BaseModel):
     body_region: Optional[str] = None
     link: Optional[str] = None
     comment: Optional[str] = None
+    price: Optional[Decimal] = None
     created: datetime
     updated: datetime
 
