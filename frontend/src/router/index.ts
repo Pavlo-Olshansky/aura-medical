@@ -58,6 +58,36 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/lab-results',
+      name: 'lab-results',
+      component: () => import('@/views/LabResultsListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/lab-results/new',
+      name: 'lab-result-create',
+      component: () => import('@/views/LabResultFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/lab-results/:id',
+      name: 'lab-result-detail',
+      component: () => import('@/views/LabResultDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/lab-results/:id/edit',
+      name: 'lab-result-edit',
+      component: () => import('@/views/LabResultFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/timeline',
+      name: 'timeline',
+      component: () => import('@/views/TimelineView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/references',
       name: 'references',
       component: () => import('@/views/ReferencesView.vue'),
