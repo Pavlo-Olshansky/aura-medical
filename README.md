@@ -4,6 +4,8 @@ Personal medical records tracker with an interactive body map, visit history, tr
 
 ## Demo
 
+![MedTracker Demo](medical.gif)
+
 
 ## Features
 
