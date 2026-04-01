@@ -28,6 +28,13 @@ class DashboardTreatment(BaseModel):
     status: str
 
 
+class VaccinationAlert(BaseModel):
+    id: int
+    vaccine_name: str
+    next_due_date: str = None
+    status: str
+
+
 class DashboardResponse(BaseModel):
     recent_visits: List[DashboardVisit]
     active_treatments: List[DashboardTreatment]
@@ -35,6 +42,10 @@ class DashboardResponse(BaseModel):
     total_treatments: int
     active_treatments_count: int
     treatment_regions: List[str]
+    upcoming_vaccinations: List[VaccinationAlert] = []
+    overdue_vaccinations: List[VaccinationAlert] = []
+    expenses_year: float = 0
+    expenses_total: float = 0
 
 
 @router.get("/", response_model=DashboardResponse)
@@ -66,4 +77,8 @@ async def get_dashboard(
         total_treatments=len(data["all_treatments"]),
         active_treatments_count=len(data["active_treatments"]),
         treatment_regions=data["treatment_regions"],
+        upcoming_vaccinations=[VaccinationAlert(**v) for v in data.get("upcoming_vaccinations", [])],
+        overdue_vaccinations=[VaccinationAlert(**v) for v in data.get("overdue_vaccinations", [])],
+        expenses_year=data.get("expenses_year", 0),
+        expenses_total=data.get("expenses_total", 0),
     )

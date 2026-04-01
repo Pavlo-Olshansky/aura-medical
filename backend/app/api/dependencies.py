@@ -115,4 +115,5 @@ def get_dashboard_service(session: AsyncSession = Depends(get_session)) -> Dashb
     return DashboardAppService(
         SqlAlchemyVisitRepository(session),
         SqlAlchemyTreatmentRepository(session),
+        session=session,
     )
