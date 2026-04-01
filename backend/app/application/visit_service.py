@@ -27,6 +27,7 @@ class VisitAppService:
             doctor=cmd.doctor, procedure_id=cmd.procedure_id,
             procedure_details=cmd.procedure_details, clinic_id=cmd.clinic_id,
             city_id=cmd.city_id, link=cmd.link, comment=cmd.comment,
+            price=cmd.price,
         )
         if cmd.body_region:
             visit.set_body_region(cmd.body_region)
@@ -47,6 +48,7 @@ class VisitAppService:
         if cmd.link is not None: visit.link = cmd.link
         if cmd.comment is not None: visit.comment = cmd.comment
         if cmd.body_region is not None: visit.set_body_region(cmd.body_region)
+        if cmd.price is not None: visit.price = cmd.price
         if file_data:
             path = await self._storage.save(file_data[0], file_data[1], visit.date, visit.procedure_id)
             visit.attach_document(path)

@@ -1,6 +1,7 @@
 import math
 import os
 from datetime import date, datetime
+from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
@@ -26,7 +27,7 @@ def _to_response(v: Visit) -> VisitResponse:
         city={"id": v.city.id, "name": v.city.name} if v.city else None,
         document=v.document, has_document=v.has_document,
         body_region=v.body_region, link=v.link, comment=v.comment,
-        created=v.created, updated=v.updated,
+        price=v.price, created=v.created, updated=v.updated,
     )
 
 
@@ -65,6 +66,7 @@ async def create_visit(
     clinic_id: Optional[int] = Form(None), city_id: Optional[int] = Form(None),
     link: Optional[str] = Form(None), comment: Optional[str] = Form(None),
     body_region: Optional[str] = Form(None),
+    price: Optional[float] = Form(None),
     document: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     service: VisitAppService = Depends(get_visit_service),
@@ -72,7 +74,8 @@ async def create_visit(
     cmd = CreateVisitCommand(date=date, position_id=position_id, doctor=doctor,
                              procedure_id=procedure_id, procedure_details=procedure_details,
                              clinic_id=clinic_id, city_id=city_id, link=link,
-                             comment=comment, body_region=body_region)
+                             comment=comment, body_region=body_region,
+                             price=Decimal(str(price)) if price is not None else None)
     file_data = None
     if document and document.filename:
         file_data = (document.filename, await document.read())
@@ -88,6 +91,7 @@ async def update_visit(
     clinic_id: Optional[int] = Form(None), city_id: Optional[int] = Form(None),
     link: Optional[str] = Form(None), comment: Optional[str] = Form(None),
     body_region: Optional[str] = Form(None),
+    price: Optional[float] = Form(None),
     document: Optional[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     service: VisitAppService = Depends(get_visit_service),
@@ -95,7 +99,8 @@ async def update_visit(
     cmd = UpdateVisitCommand(date=date, position_id=position_id, doctor=doctor,
                              procedure_id=procedure_id, procedure_details=procedure_details,
                              clinic_id=clinic_id, city_id=city_id, link=link,
-                             comment=comment, body_region=body_region)
+                             comment=comment, body_region=body_region,
+                             price=Decimal(str(price)) if price is not None else None)
     file_data = None
     if document and document.filename:
         file_data = (document.filename, await document.read())

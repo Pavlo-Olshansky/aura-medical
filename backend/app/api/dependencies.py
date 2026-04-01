@@ -3,9 +3,15 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.auth_service import AuthAppService
+from app.application.biomarker_reference_service import BiomarkerReferenceAppService
 from app.application.dashboard_service import DashboardAppService
+from app.application.health_metric_service import HealthMetricAppService
+from app.application.lab_result_service import LabResultAppService
+from app.application.metric_type_service import MetricTypeAppService
 from app.application.reference_service import ReferenceAppService
+from app.application.timeline_service import TimelineAppService
 from app.application.treatment_service import TreatmentAppService
+from app.application.vaccination_service import VaccinationAppService
 from app.application.visit_service import VisitAppService
 from app.config import settings
 from app.domain.entities import User
@@ -14,9 +20,14 @@ from app.infrastructure.database import get_session
 from app.infrastructure.jwt_token_service import JoseTokenService
 from app.infrastructure.local_document_storage import LocalDocumentStorage
 from app.infrastructure.models.reference import ClinicModel, CityModel, PositionModel, ProcedureModel
+from app.infrastructure.repositories.biomarker_reference_repository import SqlAlchemyBiomarkerReferenceRepository
+from app.infrastructure.repositories.health_metric_repository import SqlAlchemyHealthMetricRepository
+from app.infrastructure.repositories.lab_result_repository import SqlAlchemyLabResultRepository
+from app.infrastructure.repositories.metric_type_repository import SqlAlchemyMetricTypeRepository
 from app.infrastructure.repositories.reference_repository import SqlAlchemyReferenceRepository
 from app.infrastructure.repositories.treatment_repository import SqlAlchemyTreatmentRepository
 from app.infrastructure.repositories.user_repository import SqlAlchemyUserRepository
+from app.infrastructure.repositories.vaccination_repository import SqlAlchemyVaccinationRepository
 from app.infrastructure.repositories.visit_repository import SqlAlchemyVisitRepository
 
 security = HTTPBearer()
@@ -65,6 +76,39 @@ def get_clinic_service(session: AsyncSession = Depends(get_session)) -> Referenc
 
 def get_city_service(session: AsyncSession = Depends(get_session)) -> ReferenceAppService:
     return ReferenceAppService(SqlAlchemyReferenceRepository(session, CityModel, "city_id"))
+
+
+def get_biomarker_reference_service(session: AsyncSession = Depends(get_session)) -> BiomarkerReferenceAppService:
+    return BiomarkerReferenceAppService(SqlAlchemyBiomarkerReferenceRepository(session))
+
+
+def get_metric_type_service(session: AsyncSession = Depends(get_session)) -> MetricTypeAppService:
+    return MetricTypeAppService(SqlAlchemyMetricTypeRepository(session))
+
+
+def get_lab_result_service(session: AsyncSession = Depends(get_session)) -> LabResultAppService:
+    return LabResultAppService(SqlAlchemyLabResultRepository(session))
+
+
+def get_health_metric_service(session: AsyncSession = Depends(get_session)) -> HealthMetricAppService:
+    return HealthMetricAppService(
+        SqlAlchemyHealthMetricRepository(session),
+        SqlAlchemyMetricTypeRepository(session),
+    )
+
+
+def get_vaccination_service(session: AsyncSession = Depends(get_session)) -> VaccinationAppService:
+    storage = LocalDocumentStorage(settings.DOCUMENTS_DIR, session)
+    return VaccinationAppService(SqlAlchemyVaccinationRepository(session), storage)
+
+
+def get_timeline_service(session: AsyncSession = Depends(get_session)) -> TimelineAppService:
+    return TimelineAppService(
+        SqlAlchemyVisitRepository(session),
+        SqlAlchemyTreatmentRepository(session),
+        SqlAlchemyLabResultRepository(session),
+        SqlAlchemyVaccinationRepository(session),
+    )
 
 
 def get_dashboard_service(session: AsyncSession = Depends(get_session)) -> DashboardAppService:
