@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import Calendar from 'primevue/calendar'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
 import FileUpload from 'primevue/fileupload'
 import Button from 'primevue/button'
@@ -31,6 +32,7 @@ const cityId = ref<number | null>(null)
 const comment = ref('')
 const link = ref('')
 const bodyRegion = ref<string | null>(null)
+const price = ref<number | null>(null)
 const selectedFile = ref<File | null>(null)
 
 const saving = ref(false)
@@ -84,6 +86,7 @@ async function handleSubmit() {
   if (comment.value) formData.append('comment', comment.value)
   if (link.value) formData.append('link', link.value)
   if (bodyRegion.value) formData.append('body_region', bodyRegion.value)
+  if (price.value !== null) formData.append('price', String(price.value))
   if (selectedFile.value) formData.append('document', selectedFile.value)
 
   try {
@@ -124,6 +127,7 @@ onMounted(async () => {
       comment.value = visit.comment || ''
       link.value = visit.link || ''
       bodyRegion.value = (visit as any).body_region || null
+      price.value = visit.price ?? null
     }
   }
 })
@@ -222,6 +226,11 @@ onMounted(async () => {
             placeholder="Оберіть ділянку"
             showClear
           />
+        </div>
+
+        <div class="form-field">
+          <label for="price">Вартість</label>
+          <InputNumber id="price" v-model="price" mode="decimal" :maxFractionDigits="2" placeholder="Вартість" />
         </div>
 
         <div class="form-field full-width">

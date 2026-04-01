@@ -7,16 +7,20 @@ import Card from 'primevue/card'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import type { DataTablePageEvent } from 'primevue/datatable'
+import Tag from 'primevue/tag'
 import { apiClient } from '@/api/client'
-import type { DashboardData, Visit, PaginatedResponse } from '@/types'
+import type { DashboardData, Visit, Vaccination, PaginatedResponse } from '@/types'
+import { useVaccinationsStore } from '@/stores/vaccinations'
 import type { BodyRegionKey } from '@/components/body-map/types'
 import { BODY_REGION_LABELS } from '@/components/body-map/body-regions'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { useAuthStore } from '@/stores/auth'
 import BodyMap from '@/components/body-map/BodyMap.vue'
+import HealthMetricModal from '@/components/HealthMetricModal.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
+const vaccinationsStore = useVaccinationsStore()
 
 const loading = ref(true)
 const totalVisits = ref(0)
@@ -25,6 +29,35 @@ const totalTreatments = ref(0)
 const recentVisits = ref<Visit[]>([])
 const activeTreatments = ref<any[]>([])
 const treatmentRegions = ref<string[]>([])
+
+// Vaccination data
+const upcomingVaccinations = ref<Vaccination[]>([])
+const overdueVaccinations = ref<Vaccination[]>([])
+
+// Expense data
+const expensesYear = ref<number | null>(null)
+const expensesTotal = ref<number | null>(null)
+
+function vaccinationStatusLabel(status: string): string {
+  switch (status) {
+    case 'upcoming': return 'Заплановано'
+    case 'overdue': return 'Прострочено'
+    case 'completed': return 'Завершено'
+    default: return status
+  }
+}
+
+function vaccinationStatusSeverity(status: string): string {
+  switch (status) {
+    case 'upcoming': return 'warn'
+    case 'overdue': return 'danger'
+    case 'completed': return 'secondary'
+    default: return 'info'
+  }
+}
+
+// Health metric modal
+const metricModalVisible = ref(false)
 
 // Body map state
 const selectedRegion = ref<BodyRegionKey | null>(null)
@@ -107,6 +140,26 @@ function onRegionSelect(region: BodyRegionKey | null) {
   }
 }
 
+async function onMetricSaved() {
+  // Refresh dashboard data after adding a health metric
+  try {
+    const dashResponse = await apiClient.get<DashboardData>('/api/dashboard/')
+    const data = dashResponse.data
+    totalVisits.value = data.total_visits
+    totalTreatments.value = data.total_treatments
+    activeTreatmentsCount.value = data.active_treatments_count
+    recentVisits.value = data.recent_visits
+    activeTreatments.value = data.active_treatments
+    treatmentRegions.value = data.treatment_regions
+    expensesYear.value = data.expenses_year ?? null
+    expensesTotal.value = data.expenses_total ?? null
+    if (data.upcoming_vaccinations) upcomingVaccinations.value = data.upcoming_vaccinations
+    if (data.overdue_vaccinations) overdueVaccinations.value = data.overdue_vaccinations
+  } catch {
+    // silent
+  }
+}
+
 onMounted(async () => {
   try {
     if (!auth.user) {
@@ -121,6 +174,26 @@ onMounted(async () => {
     recentVisits.value = data.recent_visits
     activeTreatments.value = data.active_treatments
     treatmentRegions.value = data.treatment_regions
+    expensesYear.value = data.expenses_year ?? null
+    expensesTotal.value = data.expenses_total ?? null
+
+    // Load vaccinations from dashboard or fallback to store
+    if (data.upcoming_vaccinations) {
+      upcomingVaccinations.value = data.upcoming_vaccinations
+    }
+    if (data.overdue_vaccinations) {
+      overdueVaccinations.value = data.overdue_vaccinations
+    }
+    if (!data.upcoming_vaccinations && !data.overdue_vaccinations) {
+      try {
+        const upcomingRes = await vaccinationsStore.fetchVaccinations({ status: 'upcoming', size: 10 })
+        upcomingVaccinations.value = vaccinationsStore.vaccinations.filter(v => v.status === 'upcoming')
+        await vaccinationsStore.fetchVaccinations({ status: 'overdue', size: 10 })
+        overdueVaccinations.value = vaccinationsStore.vaccinations.filter(v => v.status === 'overdue')
+      } catch {
+        // silent
+      }
+    }
   } catch {
     // silent fail — dashboard is informational
   } finally {
@@ -133,42 +206,77 @@ onMounted(async () => {
   <div class="dashboard">
     <h1>Головна</h1>
 
-    <div class="summary-cards">
-      <Card class="summary-card">
-        <template #content>
-          <div class="card-content">
-            <i class="pi pi-calendar card-icon visits-icon" />
-            <div>
-              <div class="card-value">{{ totalVisits }}</div>
-              <div class="card-label">Всього візитів</div>
+    <div class="summary-row">
+      <div class="summary-cards">
+        <Card class="summary-card">
+          <template #content>
+            <div class="card-content">
+              <i class="pi pi-calendar card-icon visits-icon" />
+              <div>
+                <div class="card-value">{{ totalVisits }}</div>
+                <div class="card-label">Всього візитів</div>
+              </div>
             </div>
-          </div>
-        </template>
-      </Card>
+          </template>
+        </Card>
 
-      <Card class="summary-card">
-        <template #content>
-          <div class="card-content">
-            <i class="pi pi-heart card-icon treatments-icon" />
-            <div>
-              <div class="card-value">{{ activeTreatmentsCount }}</div>
-              <div class="card-label">Активних лікувань</div>
+        <Card class="summary-card">
+          <template #content>
+            <div class="card-content">
+              <i class="pi pi-heart card-icon treatments-icon" />
+              <div>
+                <div class="card-value">{{ activeTreatmentsCount }}</div>
+                <div class="card-label">Активних лікувань</div>
+              </div>
             </div>
-          </div>
-        </template>
-      </Card>
+          </template>
+        </Card>
 
-      <Card class="summary-card">
-        <template #content>
-          <div class="card-content">
-            <i class="pi pi-list card-icon total-icon" />
-            <div>
-              <div class="card-value">{{ totalTreatments }}</div>
-              <div class="card-label">Всього лікувань</div>
+        <Card class="summary-card">
+          <template #content>
+            <div class="card-content">
+              <i class="pi pi-list card-icon total-icon" />
+              <div>
+                <div class="card-value">{{ totalTreatments }}</div>
+                <div class="card-label">Всього лікувань</div>
+              </div>
             </div>
-          </div>
-        </template>
-      </Card>
+          </template>
+        </Card>
+
+        <Card v-if="expensesYear != null" class="summary-card">
+          <template #content>
+            <div class="card-content">
+              <i class="pi pi-wallet card-icon expenses-icon" />
+              <div>
+                <div class="card-value">{{ expensesYear }} <span class="card-currency">грн</span></div>
+                <div class="card-label">Витрати за рік</div>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <Card v-if="expensesTotal != null" class="summary-card">
+          <template #content>
+            <div class="card-content">
+              <i class="pi pi-wallet card-icon expenses-icon" />
+              <div>
+                <div class="card-value">{{ expensesTotal }} <span class="card-currency">грн</span></div>
+                <div class="card-label">Витрати всього</div>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
+      <div class="quick-actions">
+        <Button
+          label="Додати показник"
+          icon="pi pi-plus"
+          severity="secondary"
+          outlined
+          @click="metricModalVisible = true"
+        />
+      </div>
     </div>
 
     <!-- Body Map Section -->
@@ -241,6 +349,11 @@ onMounted(async () => {
       </DataTable>
     </Dialog>
 
+    <HealthMetricModal
+      v-model:visible="metricModalVisible"
+      @saved="onMetricSaved"
+    />
+
     <div class="dashboard-sections">
       <div class="section">
         <h2>Останні візити</h2>
@@ -295,6 +408,56 @@ onMounted(async () => {
           </Column>
         </DataTable>
       </div>
+
+      <div v-if="overdueVaccinations.length > 0" class="section">
+        <h2 class="overdue-header">Прострочені вакцинації</h2>
+        <DataTable
+          :value="overdueVaccinations"
+          :loading="loading"
+          @row-click="(e: { data: Vaccination }) => router.push({ name: 'vaccination-edit', params: { id: e.data.id } })"
+          rowHover
+          stripedRows
+          class="clickable-table"
+        >
+          <Column field="vaccine_name" header="Назва вакцини" />
+          <Column field="date" header="Дата">
+            <template #body="{ data }">{{ formatDate(data.date) }}</template>
+          </Column>
+          <Column field="next_due_date" header="Наступна дата">
+            <template #body="{ data }">{{ data.next_due_date ? formatDate(data.next_due_date) : '-' }}</template>
+          </Column>
+          <Column header="Статус" style="width: 150px">
+            <template #body="{ data }">
+              <Tag :value="vaccinationStatusLabel(data.status)" :severity="vaccinationStatusSeverity(data.status)" />
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+
+      <div v-if="upcomingVaccinations.length > 0" class="section">
+        <h2>Заплановані вакцинації</h2>
+        <DataTable
+          :value="upcomingVaccinations"
+          :loading="loading"
+          @row-click="(e: { data: Vaccination }) => router.push({ name: 'vaccination-edit', params: { id: e.data.id } })"
+          rowHover
+          stripedRows
+          class="clickable-table"
+        >
+          <Column field="vaccine_name" header="Назва вакцини" />
+          <Column field="date" header="Дата">
+            <template #body="{ data }">{{ formatDate(data.date) }}</template>
+          </Column>
+          <Column field="next_due_date" header="Наступна дата">
+            <template #body="{ data }">{{ data.next_due_date ? formatDate(data.next_due_date) : '-' }}</template>
+          </Column>
+          <Column header="Статус" style="width: 150px">
+            <template #body="{ data }">
+              <Tag :value="vaccinationStatusLabel(data.status)" :severity="vaccinationStatusSeverity(data.status)" />
+            </template>
+          </Column>
+        </DataTable>
+      </div>
     </div>
   </div>
 </template>
@@ -310,11 +473,18 @@ onMounted(async () => {
   margin-bottom: 1.5rem;
   letter-spacing: 0.02em;
 }
+.summary-row {
+  margin-bottom: 2rem;
+}
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.25rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+.quick-actions {
+  display: flex;
+  gap: 0.75rem;
 }
 .summary-card {
   border-radius: 4px;
@@ -348,6 +518,18 @@ onMounted(async () => {
 .total-icon {
   color: #22d3ee;
   background: rgba(34, 211, 238, 0.1);
+}
+.expenses-icon {
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+}
+.card-currency {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #71717a;
+}
+.overdue-header {
+  color: #ef4444 !important;
 }
 .card-value {
   font-size: 1.75rem;
