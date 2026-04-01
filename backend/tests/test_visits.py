@@ -242,3 +242,72 @@ async def test_visit_not_found(
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "Visit not found"
+
+
+@pytest.mark.asyncio
+async def test_create_visit_with_price(
+    client: AsyncClient,
+    auth_headers: dict,
+    test_user,
+):
+    response = await client.post(
+        "/api/visits/",
+        headers=auth_headers,
+        data={
+            "date": "2026-03-15T10:00:00",
+            "doctor": "Іванов І.І.",
+            "price": "1500.00",
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["price"] is not None
+    assert float(data["price"]) == 1500.00
+
+
+@pytest.mark.asyncio
+async def test_update_visit_price(
+    client: AsyncClient,
+    auth_headers: dict,
+    test_user,
+    session: AsyncSession,
+):
+    visit = Visit(
+        user_id=test_user.id,
+        date=datetime(2026, 3, 15, 10, 0, 0),
+        doctor="Іванов І.І.",
+    )
+    session.add(visit)
+    await session.commit()
+    await session.refresh(visit)
+
+    response = await client.put(
+        f"/api/visits/{visit.id}",
+        headers=auth_headers,
+        data={
+            "price": "2500.50",
+        },
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["price"] is not None
+    assert float(data["price"]) == 2500.50
+
+
+@pytest.mark.asyncio
+async def test_visit_price_null(
+    client: AsyncClient,
+    auth_headers: dict,
+    test_user,
+):
+    response = await client.post(
+        "/api/visits/",
+        headers=auth_headers,
+        data={
+            "date": "2026-03-15T10:00:00",
+            "doctor": "Петров П.П.",
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["price"] is None
