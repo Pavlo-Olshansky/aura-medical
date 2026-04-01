@@ -83,6 +83,10 @@ onMounted(async () => {
           <span class="detail-label">Місто</span>
           <span class="detail-value">{{ visitsStore.currentVisit.city?.name || '-' }}</span>
         </div>
+        <div v-if="visitsStore.currentVisit.price != null" class="detail-item">
+          <span class="detail-label">Вартість</span>
+          <span class="detail-value">{{ visitsStore.currentVisit.price }} грн</span>
+        </div>
         <div v-if="visitsStore.currentVisit.comment" class="detail-item full-width">
           <span class="detail-label">Коментар</span>
           <span class="detail-value">{{ visitsStore.currentVisit.comment }}</span>

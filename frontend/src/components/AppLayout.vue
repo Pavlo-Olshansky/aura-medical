@@ -28,8 +28,14 @@ async function handleLogout() {
         <RouterLink to="/lab-results" class="nav-link">
           <i class="pi pi-chart-bar" /> Аналізи
         </RouterLink>
+        <RouterLink to="/health-metrics" class="nav-link">
+          <i class="pi pi-heart" /> Показники
+        </RouterLink>
         <RouterLink to="/timeline" class="nav-link">
           <i class="pi pi-history" /> Хронологія
+        </RouterLink>
+        <RouterLink to="/vaccinations" class="nav-link">
+          <i class="pi pi-shield" /> Вакцинації
         </RouterLink>
         <RouterLink to="/references" class="nav-link">
           <i class="pi pi-book" /> Довідники

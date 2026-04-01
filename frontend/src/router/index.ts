@@ -88,6 +88,30 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/vaccinations',
+      name: 'vaccinations',
+      component: () => import('@/views/VaccinationsListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/vaccinations/new',
+      name: 'vaccination-create',
+      component: () => import('@/views/VaccinationFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/vaccinations/:id/edit',
+      name: 'vaccination-edit',
+      component: () => import('@/views/VaccinationFormView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/health-metrics',
+      name: 'health-metrics',
+      component: () => import('@/views/HealthMetricsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/references',
       name: 'references',
       component: () => import('@/views/ReferencesView.vue'),
