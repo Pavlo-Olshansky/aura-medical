@@ -83,7 +83,7 @@ class SqlAlchemyVisitRepository:
         if visit.id:
             model = await self._session.get(VisitModel, visit.id)
             for attr in ("date", "position_id", "doctor", "procedure_id", "procedure_details",
-                         "clinic_id", "city_id", "document", "link", "comment", "body_region", "deleted_at"):
+                         "clinic_id", "city_id", "document", "link", "comment", "body_region", "price", "deleted_at"):
                 setattr(model, attr, getattr(visit, attr))
         else:
             model = VisitModel(
@@ -91,7 +91,7 @@ class SqlAlchemyVisitRepository:
                 doctor=visit.doctor, procedure_id=visit.procedure_id,
                 procedure_details=visit.procedure_details, clinic_id=visit.clinic_id,
                 city_id=visit.city_id, document=visit.document, link=visit.link,
-                comment=visit.comment, body_region=visit.body_region,
+                comment=visit.comment, body_region=visit.body_region, price=visit.price,
             )
             self._session.add(model)
         await self._session.commit()
@@ -170,7 +170,7 @@ class SqlAlchemyVisitRepository:
             procedure_id=model.procedure_id, procedure_details=model.procedure_details,
             clinic_id=model.clinic_id, city_id=model.city_id,
             document=model.document, link=model.link, comment=model.comment,
-            body_region=model.body_region, deleted_at=model.deleted_at,
+            body_region=model.body_region, price=model.price, deleted_at=model.deleted_at,
             created=model.created, updated=model.updated,
             position=Reference(id=model.position.id, name=model.position.name) if model.position else None,
             procedure=Reference(id=model.procedure.id, name=model.procedure.name) if model.procedure else None,

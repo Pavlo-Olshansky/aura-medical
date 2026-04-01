@@ -17,6 +17,7 @@ class CreateVisitCommand:
     link: Optional[str] = None
     comment: Optional[str] = None
     body_region: Optional[str] = None
+    price: Optional[Decimal] = None
 
 
 @dataclass
@@ -31,6 +32,7 @@ class UpdateVisitCommand:
     link: Optional[str] = None
     comment: Optional[str] = None
     body_region: Optional[str] = None
+    price: Optional[Decimal] = None
 
 
 @dataclass
