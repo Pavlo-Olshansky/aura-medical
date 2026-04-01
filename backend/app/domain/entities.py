@@ -72,6 +72,7 @@ class Visit(SoftDeletable):
     link: Optional[str] = None
     comment: Optional[str] = None
     body_region: Optional[str] = None
+    price: Optional[Decimal] = None
     created: Optional[datetime] = None
     updated: Optional[datetime] = None
 
@@ -118,3 +119,117 @@ class Treatment(SoftDeletable):
     @property
     def end_date(self) -> datetime:
         return self.date_start + timedelta(days=self.days)
+
+
+@dataclass
+class BiomarkerReference:
+    id: Optional[int] = None
+    name: str = ""
+    abbreviation: Optional[str] = None
+    unit: str = ""
+    category: str = ""
+    ref_min: Optional[Decimal] = None
+    ref_max: Optional[Decimal] = None
+    ref_min_male: Optional[Decimal] = None
+    ref_max_male: Optional[Decimal] = None
+    ref_min_female: Optional[Decimal] = None
+    ref_max_female: Optional[Decimal] = None
+    sort_order: int = 0
+    created: Optional[datetime] = None
+    updated: Optional[datetime] = None
+
+
+@dataclass
+class MetricType:
+    id: Optional[int] = None
+    name: str = ""
+    unit: str = ""
+    has_secondary_value: bool = False
+    ref_min: Optional[Decimal] = None
+    ref_max: Optional[Decimal] = None
+    ref_min_secondary: Optional[Decimal] = None
+    ref_max_secondary: Optional[Decimal] = None
+    sort_order: int = 0
+    created: Optional[datetime] = None
+    updated: Optional[datetime] = None
+
+
+@dataclass
+class LabResult(SoftDeletable):
+    id: Optional[int] = None
+    user_id: int = 0
+    visit_id: Optional[int] = None
+    date: datetime = field(default_factory=lambda: datetime.now(KYIV_TZ))
+    notes: Optional[str] = None
+    created: Optional[datetime] = None
+    updated: Optional[datetime] = None
+    entries: list = field(default_factory=list)
+
+
+@dataclass
+class LabTestEntry:
+    id: Optional[int] = None
+    lab_result_id: Optional[int] = None
+    biomarker_id: Optional[int] = None
+    biomarker_name: str = ""
+    value: Decimal = Decimal("0")
+    unit: str = ""
+    ref_min: Optional[Decimal] = None
+    ref_max: Optional[Decimal] = None
+    created: Optional[datetime] = None
+    updated: Optional[datetime] = None
+
+    @property
+    def is_normal(self) -> Optional[bool]:
+        if self.ref_min is None and self.ref_max is None:
+            return None
+        if self.ref_min is not None and self.value < self.ref_min:
+            return False
+        if self.ref_max is not None and self.value > self.ref_max:
+            return False
+        return True
+
+
+@dataclass
+class HealthMetric:
+    id: Optional[int] = None
+    user_id: int = 0
+    metric_type_id: int = 0
+    date: datetime = field(default_factory=lambda: datetime.now(KYIV_TZ))
+    value: Decimal = Decimal("0")
+    secondary_value: Optional[Decimal] = None
+    notes: Optional[str] = None
+    created: Optional[datetime] = None
+    updated: Optional[datetime] = None
+    metric_type: Optional[MetricType] = field(default=None, repr=False)
+
+
+@dataclass
+class Vaccination(SoftDeletable):
+    id: Optional[int] = None
+    user_id: int = 0
+    date: datetime = field(default_factory=lambda: datetime.now(KYIV_TZ))
+    vaccine_name: str = ""
+    manufacturer: Optional[str] = None
+    lot_number: Optional[str] = None
+    dose_number: int = 1
+    next_due_date: Optional[datetime] = None
+    notes: Optional[str] = None
+    document_path: Optional[str] = None
+    created: Optional[datetime] = None
+    updated: Optional[datetime] = None
+
+    @property
+    def status(self) -> str:
+        if self.next_due_date is None:
+            return "completed"
+        now = datetime.now(KYIV_TZ)
+        if self.next_due_date.tzinfo is None:
+            due = self.next_due_date.replace(tzinfo=KYIV_TZ)
+        else:
+            due = self.next_due_date
+        return "upcoming" if due > now else "overdue"
+
+    @property
+    def has_document(self) -> bool:
+        return bool(self.document_path)
