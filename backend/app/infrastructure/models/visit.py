@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, String, Text
+from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.infrastructure.models.base import SoftDeleteModel
@@ -30,6 +31,7 @@ class VisitModel(SoftDeleteModel):
     link: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
     comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     body_region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
+    price: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
 
     user = relationship("UserModel", lazy="selectin")
     position = relationship("PositionModel", lazy="selectin")

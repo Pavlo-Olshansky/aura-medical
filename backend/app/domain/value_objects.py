@@ -62,3 +62,7 @@ SPECIALTY_REGION_MAP: dict[str, list[str]] = {
     "Нефролог": ["back_lower", "abdomen_lower"],
     "Психіатр": ["head_cranium"],
 }
+
+BIOMARKER_CATEGORIES = ("cbc", "biochemistry", "thyroid", "vitamins")
+
+VACCINATION_STATUSES = ("upcoming", "overdue", "completed")
