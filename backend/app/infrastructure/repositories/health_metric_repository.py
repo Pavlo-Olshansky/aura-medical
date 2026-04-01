@@ -158,6 +158,8 @@ class SqlAlchemyHealthMetricRepository:
                 ref_min_secondary=model.metric_type.ref_min_secondary,
                 ref_max_secondary=model.metric_type.ref_max_secondary,
                 sort_order=model.metric_type.sort_order,
+                created=model.metric_type.created,
+                updated=model.metric_type.updated,
             )
         return HealthMetric(
             id=model.id,
