@@ -47,9 +47,19 @@ export async function deleteHealthMetric(id: number): Promise<void> {
   await apiClient.delete(`/api/health-metrics/${id}`)
 }
 
+export interface MetricTrendResponse {
+  metric_type: string
+  unit: string
+  ref_min: number | null
+  ref_max: number | null
+  ref_min_secondary: number | null
+  ref_max_secondary: number | null
+  data_points: MetricTrendPoint[]
+}
+
 export async function getMetricTrend(params: MetricTrendParams): Promise<MetricTrendPoint[]> {
-  const response = await apiClient.get('/api/health-metrics/trend', { params })
-  return response.data
+  const response = await apiClient.get<MetricTrendResponse>('/api/health-metrics/trend', { params })
+  return response.data.data_points
 }
 
 // Metric types
