@@ -186,7 +186,7 @@ onMounted(async () => {
     }
     if (!data.upcoming_vaccinations && !data.overdue_vaccinations) {
       try {
-        const upcomingRes = await vaccinationsStore.fetchVaccinations({ status: 'upcoming', size: 10 })
+        await vaccinationsStore.fetchVaccinations({ status: 'upcoming', size: 10 })
         upcomingVaccinations.value = vaccinationsStore.vaccinations.filter(v => v.status === 'upcoming')
         await vaccinationsStore.fetchVaccinations({ status: 'overdue', size: 10 })
         overdueVaccinations.value = vaccinationsStore.vaccinations.filter(v => v.status === 'overdue')
