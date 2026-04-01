@@ -369,19 +369,14 @@ onMounted(async () => {
           <Column field="date" header="Дата">
             <template #body="{ data }">{{ formatDate(data.date) }}</template>
           </Column>
-          <Column header="Лікар">
-            <template #body="{ data }">
-              <span v-if="data.position">{{ data.position.name }}</span>
-              <span v-if="data.position && data.doctor"> - </span>
-              <span v-if="data.doctor">{{ data.doctor }}</span>
-              <span v-if="!data.position && !data.doctor">-</span>
-            </template>
+          <Column field="doctor" header="Лікар">
+            <template #body="{ data }">{{ data.doctor || '-' }}</template>
           </Column>
           <Column header="Процедура">
-            <template #body="{ data }">{{ data.procedure?.name || '-' }}</template>
+            <template #body="{ data }">{{ data.procedure_name || '-' }}</template>
           </Column>
           <Column header="Клініка">
-            <template #body="{ data }">{{ data.clinic?.name || '-' }}</template>
+            <template #body="{ data }">{{ data.clinic_name || '-' }}</template>
           </Column>
         </DataTable>
       </div>
