@@ -1,11 +1,17 @@
 import datetime
+import enum
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import Boolean, Date, Integer, Numeric, String, Text
+from sqlalchemy import Boolean, Date, Enum, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.models.base import BaseModel
+
+
+class SexEnum(str, enum.Enum):
+    male = "male"
+    female = "female"
 
 
 class UserModel(BaseModel):
@@ -16,7 +22,10 @@ class UserModel(BaseModel):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Profile fields
-    sex: Mapped[str] = mapped_column(String(10), nullable=False, server_default="male")
+    sex: Mapped[str] = mapped_column(
+        Enum(SexEnum, values_callable=lambda e: [x.value for x in e]),
+        nullable=False, server_default="male",
+    )
     date_of_birth: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default="1997-07-29")
     height_cm: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     weight_kg: Mapped[Optional[Decimal]] = mapped_column(Numeric(5, 1), nullable=True)
