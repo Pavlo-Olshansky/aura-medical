@@ -17,7 +17,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    sync_url = settings.DATABASE_URL.replace("+asyncpg", "")
+    sync_url = settings.DATABASE_URL.replace("+psycopg_async", "+psycopg")
     context.configure(
         url=sync_url,
         target_metadata=target_metadata,
