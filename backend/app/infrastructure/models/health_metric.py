@@ -26,4 +26,5 @@ class HealthMetricModel(BaseModel):
         Index("ix_health_metric_user_id", "user_id"),
         Index("ix_health_metric_date", "date"),
         Index("ix_health_metric_metric_type_id", "metric_type_id"),
+        Index("ix_health_metric_user_date", "user_id", "date"),
     )

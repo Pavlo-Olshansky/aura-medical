@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, Integer, String
+from sqlalchemy import BigInteger, CheckConstraint, DateTime, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.models.base import SoftDeleteModel
@@ -17,4 +17,8 @@ class TreatmentModel(SoftDeleteModel):
     receipt: Mapped[str] = mapped_column(String(1024), nullable=False)
     body_region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
 
-    __table_args__ = (Index("ix_treatment_user_id", "user_id"),)
+    __table_args__ = (
+        Index("ix_treatment_user_id", "user_id"),
+        Index("ix_treatment_user_date_start", "user_id", "date_start"),
+        CheckConstraint("days >= 1", name="ck_treatment_days_positive"),
+    )
