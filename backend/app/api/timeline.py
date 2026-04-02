@@ -1,10 +1,10 @@
-import math
 from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies import get_current_user, get_timeline_service
+from app.application.pagination import calculate_pages
 from app.application.timeline_service import TimelineAppService, TimelineEvent
 from app.domain.entities import User
 from app.schemas.timeline import TimelineEventResponse, TimelineListResponse
@@ -37,7 +37,7 @@ async def list_timeline(
     service: TimelineAppService = Depends(get_timeline_service),
 ):
     items, total = await service.list(current_user.id, event_type, date_from, date_to, page, size)
-    pages = math.ceil(total / size) if total > 0 else 1
+    pages = calculate_pages(total, size)
     return TimelineListResponse(
         items=[_to_response(e) for e in items],
         total=total, page=page, size=size, pages=pages,

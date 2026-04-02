@@ -22,12 +22,11 @@ class ReferenceAppService:
         ref.name = name
         return await self._repo.save(ref)
 
-    async def delete(self, ref_id: int) -> None:
+    async def reference_count(self, ref_id: int) -> int:
+        return await self._repo.reference_count(ref_id)
+
+    async def hard_delete(self, ref_id: int) -> None:
         ref = await self._repo.get_by_id(ref_id)
         if not ref:
             raise EntityNotFound("Reference not found")
-        if await self._repo.is_referenced(ref_id):
-            raise ReferenceInUse("Cannot delete — referenced by visits")
-        # Hard delete for references (they don't use soft delete)
-        # For now, we'll need to handle this at the infrastructure level
-        raise NotImplementedError("Hard delete not yet implemented in repository")
+        await self._repo.delete(ref_id)

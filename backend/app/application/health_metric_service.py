@@ -66,6 +66,9 @@ class HealthMetricAppService:
         await self.get(metric_id, user_id)
         await self._repo.delete(metric_id, user_id)
 
+    async def get_metric_type(self, metric_type_id: int):
+        return await self._metric_type_repo.get_by_id(metric_type_id)
+
     async def trend(
         self,
         user_id: int,
