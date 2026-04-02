@@ -1,5 +1,4 @@
 from __future__ import annotations
-import asyncio
 import math
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -59,10 +58,9 @@ class TimelineAppService:
             types_to_fetch.append("vaccination")
             tasks.append(self._fetch_vaccinations(user_id, date_from, date_to))
 
-        results = await asyncio.gather(*tasks)
-
         all_events: list[TimelineEvent] = []
-        for events in results:
+        for task in tasks:
+            events = await task
             all_events.extend(events)
 
         all_events.sort(key=lambda e: e.date, reverse=True)
