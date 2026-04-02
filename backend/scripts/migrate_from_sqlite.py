@@ -13,7 +13,10 @@ import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-import psycopg2
+try:
+    import psycopg2
+except ModuleNotFoundError:  # psycopg2 removed in Python 3.14 migration; only needed if running the script
+    psycopg2 = None  # type: ignore[assignment]
 
 KYIV_TZ_OFFSET = "+03:00"
 
