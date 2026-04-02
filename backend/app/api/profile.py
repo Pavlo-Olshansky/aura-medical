@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -49,10 +49,14 @@ async def update_profile(
         "emergency_contact_name": body.emergency_contact_name,
         "emergency_contact_phone": body.emergency_contact_phone,
     }
-    await session.execute(
-        update(UserModel).where(UserModel.id == current_user.id).values(**values)
-    )
-    await session.commit()
+    try:
+        await session.execute(
+            update(UserModel).where(UserModel.id == current_user.id).values(**values)
+        )
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail="Помилка оновлення профілю")
 
     # Return updated profile
     for key, val in values.items():
