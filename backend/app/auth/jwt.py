@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 
 from app.config import settings
 
@@ -20,7 +21,7 @@ def create_refresh_token(user_id: int) -> str:
 def verify_token(token: str, expected_type: str = "access") -> int:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-    except JWTError:
+    except InvalidTokenError:
         raise ValueError("Invalid token")
     if payload.get("type") != expected_type:
         raise ValueError(f"Expected {expected_type} token")
