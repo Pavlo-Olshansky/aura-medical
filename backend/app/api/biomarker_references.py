@@ -5,24 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.dependencies import get_biomarker_reference_service, get_current_user
 from app.application.biomarker_reference_service import BiomarkerReferenceAppService
 from app.application.commands import CreateBiomarkerReferenceCommand, UpdateBiomarkerReferenceCommand
-from app.domain.entities import BiomarkerReference, User
+from app.domain.entities import User
 from app.domain.exceptions import EntityNotFound, ReferenceInUse
 from app.schemas.biomarker_reference import (
     BiomarkerReferenceCreate, BiomarkerReferenceResponse, BiomarkerReferenceUpdate,
 )
 
 router = APIRouter()
-
-
-def _to_response(ref: BiomarkerReference) -> BiomarkerReferenceResponse:
-    return BiomarkerReferenceResponse(
-        id=ref.id, name=ref.name, abbreviation=ref.abbreviation,
-        unit=ref.unit, category=ref.category,
-        ref_min=ref.ref_min, ref_max=ref.ref_max,
-        ref_min_male=ref.ref_min_male, ref_max_male=ref.ref_max_male,
-        ref_min_female=ref.ref_min_female, ref_max_female=ref.ref_max_female,
-        sort_order=ref.sort_order, created=ref.created, updated=ref.updated,
-    )
 
 
 @router.get("/", response_model=List[BiomarkerReferenceResponse])
@@ -32,7 +21,7 @@ async def list_biomarker_references(
     service: BiomarkerReferenceAppService = Depends(get_biomarker_reference_service),
 ):
     items = await service.list_all(search)
-    return [_to_response(r) for r in items]
+    return [BiomarkerReferenceResponse.model_validate(r) for r in items]
 
 
 @router.post("/", response_model=BiomarkerReferenceResponse, status_code=201)
@@ -47,7 +36,7 @@ async def create_biomarker_reference(
         ref_min_male=data.ref_min_male, ref_max_male=data.ref_max_male,
         ref_min_female=data.ref_min_female, ref_max_female=data.ref_max_female,
     )
-    return _to_response(await service.create(cmd))
+    return BiomarkerReferenceResponse.model_validate(await service.create(cmd))
 
 
 @router.put("/{ref_id}", response_model=BiomarkerReferenceResponse)
@@ -59,7 +48,7 @@ async def update_biomarker_reference(
 ):
     cmd = UpdateBiomarkerReferenceCommand(**data.model_dump(exclude_unset=True))
     try:
-        return _to_response(await service.update(ref_id, cmd))
+        return BiomarkerReferenceResponse.model_validate(await service.update(ref_id, cmd))
     except EntityNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Biomarker reference not found")
 

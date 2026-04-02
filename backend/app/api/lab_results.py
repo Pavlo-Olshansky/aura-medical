@@ -1,4 +1,3 @@
-import math
 from datetime import date
 from typing import Optional
 
@@ -7,31 +6,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.api.dependencies import get_current_user, get_lab_result_service
 from app.application.commands import CreateLabResultCommand, LabTestEntryData, UpdateLabResultCommand
 from app.application.lab_result_service import LabResultAppService
-from app.domain.entities import LabResult, LabTestEntry, User
+from app.application.pagination import calculate_pages
+from app.domain.entities import LabResult, User
 from app.domain.exceptions import EntityNotFound
 from app.schemas.lab_result import (
     BiomarkerTrendPoint, BiomarkerTrendResponse,
     LabResultCreate, LabResultListItem, LabResultListResponse,
-    LabResultResponse, LabResultUpdate, LabTestEntryResponse,
+    LabResultResponse, LabResultUpdate,
 )
 
 router = APIRouter()
-
-
-def _entry_to_response(e: LabTestEntry) -> LabTestEntryResponse:
-    return LabTestEntryResponse(
-        id=e.id, biomarker_id=e.biomarker_id, biomarker_name=e.biomarker_name,
-        value=e.value, unit=e.unit, ref_min=e.ref_min, ref_max=e.ref_max,
-        is_normal=e.is_normal,
-    )
-
-
-def _to_response(lr: LabResult) -> LabResultResponse:
-    return LabResultResponse(
-        id=lr.id, visit_id=lr.visit_id, date=lr.date, notes=lr.notes,
-        entries=[_entry_to_response(e) for e in lr.entries],
-        created=lr.created, updated=lr.updated,
-    )
 
 
 def _to_list_item(lr: LabResult) -> LabResultListItem:
@@ -75,7 +59,7 @@ async def list_lab_results(
     service: LabResultAppService = Depends(get_lab_result_service),
 ):
     items, total = await service.list(current_user.id, visit_id, date_from, date_to, sort, page, size)
-    pages = math.ceil(total / size) if total > 0 else 1
+    pages = calculate_pages(total, size)
     return LabResultListResponse(
         items=[_to_list_item(lr) for lr in items],
         total=total, page=page, size=size, pages=pages,
@@ -89,7 +73,7 @@ async def get_lab_result(
     service: LabResultAppService = Depends(get_lab_result_service),
 ):
     try:
-        return _to_response(await service.get(lab_result_id, current_user.id))
+        return LabResultResponse.model_validate(await service.get(lab_result_id, current_user.id))
     except EntityNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lab result not found")
 
@@ -110,7 +94,7 @@ async def create_lab_result(
             for e in data.entries
         ],
     )
-    return _to_response(await service.create(current_user.id, cmd))
+    return LabResultResponse.model_validate(await service.create(current_user.id, cmd))
 
 
 @router.put("/{lab_result_id}", response_model=LabResultResponse)
@@ -134,7 +118,7 @@ async def update_lab_result(
         entries=entries,
     )
     try:
-        return _to_response(await service.update(lab_result_id, current_user.id, cmd))
+        return LabResultResponse.model_validate(await service.update(lab_result_id, current_user.id, cmd))
     except EntityNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lab result not found")
 

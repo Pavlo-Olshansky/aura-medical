@@ -1,4 +1,3 @@
-import math
 import os
 from datetime import date, datetime
 from decimal import Decimal
@@ -9,26 +8,12 @@ from fastapi.responses import FileResponse
 
 from app.api.dependencies import get_current_user, get_visit_service
 from app.application.commands import CreateVisitCommand, UpdateVisitCommand, VisitFilter
+from app.application.pagination import calculate_pages
 from app.application.visit_service import VisitAppService
-from app.domain.entities import User, Visit
+from app.domain.entities import User
 from app.schemas.visit import VisitListResponse, VisitResponse
 
 router = APIRouter()
-
-
-def _to_response(v: Visit) -> VisitResponse:
-    return VisitResponse(
-        id=v.id, date=v.date,
-        position={"id": v.position.id, "name": v.position.name} if v.position else None,
-        doctor=v.doctor,
-        procedure={"id": v.procedure.id, "name": v.procedure.name} if v.procedure else None,
-        procedure_details=v.procedure_details,
-        clinic={"id": v.clinic.id, "name": v.clinic.name} if v.clinic else None,
-        city={"id": v.city.id, "name": v.city.name} if v.city else None,
-        document=v.document, has_document=v.has_document,
-        body_region=v.body_region, link=v.link, comment=v.comment,
-        price=v.price, created=v.created, updated=v.updated,
-    )
 
 
 @router.get("/", response_model=VisitListResponse)
@@ -45,8 +30,8 @@ async def list_visits(
                           city_id=city_id, procedure_id=procedure_id, position_id=position_id,
                           body_region=body_region)
     items, total = await service.list(current_user.id, filters, sort, page, size)
-    pages = math.ceil(total / size) if size > 0 else 0
-    return VisitListResponse(items=[_to_response(v) for v in items], total=total, page=page, size=size, pages=pages)
+    pages = calculate_pages(total, size)
+    return VisitListResponse(items=[VisitResponse.model_validate(v) for v in items], total=total, page=page, size=size, pages=pages)
 
 
 @router.get("/{visit_id}", response_model=VisitResponse)
@@ -55,7 +40,7 @@ async def get_visit(
     current_user: User = Depends(get_current_user),
     service: VisitAppService = Depends(get_visit_service),
 ):
-    return _to_response(await service.get(visit_id, current_user.id))
+    return VisitResponse.model_validate(await service.get(visit_id, current_user.id))
 
 
 @router.post("/", response_model=VisitResponse, status_code=201)
@@ -79,7 +64,7 @@ async def create_visit(
     file_data = None
     if document and document.filename:
         file_data = (document.filename, await document.read())
-    return _to_response(await service.create(current_user.id, cmd, file_data))
+    return VisitResponse.model_validate(await service.create(current_user.id, cmd, file_data))
 
 
 @router.put("/{visit_id}", response_model=VisitResponse)
@@ -104,7 +89,7 @@ async def update_visit(
     file_data = None
     if document and document.filename:
         file_data = (document.filename, await document.read())
-    return _to_response(await service.update(visit_id, current_user.id, cmd, file_data))
+    return VisitResponse.model_validate(await service.update(visit_id, current_user.id, cmd, file_data))
 
 
 @router.delete("/{visit_id}", status_code=204)

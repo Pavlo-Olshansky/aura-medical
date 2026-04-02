@@ -1,4 +1,3 @@
-import math
 import os
 from datetime import datetime
 from typing import Optional
@@ -8,22 +7,13 @@ from fastapi.responses import FileResponse
 
 from app.api.dependencies import get_current_user, get_vaccination_service
 from app.application.commands import CreateVaccinationCommand, UpdateVaccinationCommand
+from app.application.pagination import calculate_pages
 from app.application.vaccination_service import VaccinationAppService
-from app.domain.entities import User, Vaccination
+from app.domain.entities import User
 from app.domain.exceptions import EntityNotFound
 from app.schemas.vaccination import VaccinationListResponse, VaccinationResponse
 
 router = APIRouter()
-
-
-def _to_response(v: Vaccination) -> VaccinationResponse:
-    return VaccinationResponse(
-        id=v.id, date=v.date, vaccine_name=v.vaccine_name,
-        manufacturer=v.manufacturer, lot_number=v.lot_number,
-        dose_number=v.dose_number, next_due_date=v.next_due_date,
-        notes=v.notes, has_document=v.has_document, status=v.status,
-        created=v.created, updated=v.updated,
-    )
 
 
 @router.get("/", response_model=VaccinationListResponse)
@@ -35,9 +25,9 @@ async def list_vaccinations(
     service: VaccinationAppService = Depends(get_vaccination_service),
 ):
     items, total = await service.list(current_user.id, sort, page, size)
-    pages = math.ceil(total / size) if total > 0 else 1
+    pages = calculate_pages(total, size)
     return VaccinationListResponse(
-        items=[_to_response(v) for v in items],
+        items=[VaccinationResponse.model_validate(v) for v in items],
         total=total, page=page, size=size, pages=pages,
     )
 
@@ -49,7 +39,7 @@ async def get_vaccination(
     service: VaccinationAppService = Depends(get_vaccination_service),
 ):
     try:
-        return _to_response(await service.get(vaccination_id, current_user.id))
+        return VaccinationResponse.model_validate(await service.get(vaccination_id, current_user.id))
     except EntityNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaccination not found")
 
@@ -75,7 +65,7 @@ async def create_vaccination(
     file_data = None
     if document and document.filename:
         file_data = (document.filename, await document.read())
-    return _to_response(await service.create(current_user.id, cmd, file_data))
+    return VaccinationResponse.model_validate(await service.create(current_user.id, cmd, file_data))
 
 
 @router.put("/{vaccination_id}", response_model=VaccinationResponse)
@@ -101,7 +91,7 @@ async def update_vaccination(
     if document and document.filename:
         file_data = (document.filename, await document.read())
     try:
-        return _to_response(await service.update(vaccination_id, current_user.id, cmd, file_data))
+        return VaccinationResponse.model_validate(await service.update(vaccination_id, current_user.id, cmd, file_data))
     except EntityNotFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vaccination not found")
 
