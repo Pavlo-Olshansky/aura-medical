@@ -60,6 +60,20 @@ frontend/
 
 ## Getting Started
 
+### Quick Start with Docker
+
+**Prerequisites:** Docker Desktop
+
+```bash
+git clone
+make docker-up        # Start PostgreSQL + backend + frontend
+make docker-seed      # Create default user (admin / admin)
+```
+
+Open `http://localhost:5173` and log in with `admin` / `admin`.
+
+### Local Development
+
 **Prerequisites:** Python 3.14+, Node.js 20+, PostgreSQL 15+
 
 ```bash
@@ -71,9 +85,10 @@ make install
 cp backend/.env.example backend/.env
 # Edit backend/.env — set SECRET_KEY (required) and other settings
 
-# Create database and run migrations
+# Create database, run migrations, create user
 make db-create
 make db-migrate
+make seed             # Creates admin/admin user
 
 # Start development servers
 make dev
@@ -87,12 +102,19 @@ Backend runs at `http://localhost:8000` (API docs at `/docs`), frontend at `http
 make dev              # Start backend + frontend
 make backend          # Start backend only
 make frontend         # Start frontend only
+make seed             # Create default admin/admin user
 make test             # Run tests
 make lint             # Lint frontend
 make build            # Production frontend build
 make db-migrate       # Run Alembic migrations
 make db-revision msg="description"  # Generate new migration
 make backup           # Backup PostgreSQL database
+
+# Docker
+make docker-up        # Start dev environment (PostgreSQL + backend + frontend)
+make docker-down      # Stop Docker services
+make docker-seed      # Create admin user in Docker
+make docker-logs      # Tail Docker logs
 ```
 
 ## License
