@@ -15,6 +15,8 @@ from app.rate_limit import limiter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from app.logging import setup_logging
+    setup_logging()
     yield
     await engine.dispose()
 
