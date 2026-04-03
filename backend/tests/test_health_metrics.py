@@ -41,7 +41,7 @@ async def test_create_health_metric(
     metric_type_simple: MetricTypeModel,
 ):
     response = await client.post(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         json={
             "metric_type_id": metric_type_simple.id,
             "date": "2026-03-20T08:00:00+02:00",
@@ -69,7 +69,7 @@ async def test_create_blood_pressure(
 ):
     # Blood pressure requires secondary_value
     response = await client.post(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         json={
             "metric_type_id": metric_type_bp.id,
             "date": "2026-03-20T08:00:00+02:00",
@@ -86,7 +86,7 @@ async def test_create_blood_pressure(
 
     # Without secondary_value should fail for BP type
     response = await client.post(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         json={
             "metric_type_id": metric_type_bp.id,
             "date": "2026-03-20T09:00:00+02:00",
@@ -104,7 +104,7 @@ async def test_list_health_metrics(
 ):
     # Create metrics of different types
     await client.post(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         json={
             "metric_type_id": metric_type_simple.id,
             "date": "2026-03-20T08:00:00+02:00",
@@ -113,7 +113,7 @@ async def test_list_health_metrics(
         headers=auth_headers,
     )
     await client.post(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         json={
             "metric_type_id": metric_type_bp.id,
             "date": "2026-03-20T08:00:00+02:00",
@@ -124,14 +124,14 @@ async def test_list_health_metrics(
     )
 
     # List all
-    response = await client.get("/api/health-metrics/", headers=auth_headers)
+    response = await client.get("/api/v1/health-metrics/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 2
 
     # Filter by metric_type_id
     response = await client.get(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         params={"metric_type_id": metric_type_simple.id},
         headers=auth_headers,
     )
@@ -148,7 +148,7 @@ async def test_delete_health_metric(
 ):
     # Create
     create_resp = await client.post(
-        "/api/health-metrics/",
+        "/api/v1/health-metrics/",
         json={
             "metric_type_id": metric_type_simple.id,
             "date": "2026-03-20T08:00:00+02:00",
@@ -161,13 +161,13 @@ async def test_delete_health_metric(
 
     # Delete (hard)
     response = await client.delete(
-        f"/api/health-metrics/{metric_id}", headers=auth_headers,
+        f"/api/v1/health-metrics/{metric_id}", headers=auth_headers,
     )
     assert response.status_code == 204
 
     # Verify 404 on subsequent GET
     response = await client.get(
-        f"/api/health-metrics/{metric_id}", headers=auth_headers,
+        f"/api/v1/health-metrics/{metric_id}", headers=auth_headers,
     )
     assert response.status_code == 404
 
@@ -186,7 +186,7 @@ async def test_trend(
     values = ["68", "72", "75"]
     for date_str, value in zip(dates, values):
         await client.post(
-            "/api/health-metrics/",
+            "/api/v1/health-metrics/",
             json={
                 "metric_type_id": metric_type_simple.id,
                 "date": date_str,
@@ -196,7 +196,7 @@ async def test_trend(
         )
 
     response = await client.get(
-        "/api/health-metrics/trend",
+        "/api/v1/health-metrics/trend",
         params={"metric_type_id": metric_type_simple.id},
         headers=auth_headers,
     )

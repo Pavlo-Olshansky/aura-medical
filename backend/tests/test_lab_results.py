@@ -25,7 +25,7 @@ async def test_create_lab_result(
     client: AsyncClient, auth_headers: dict, test_user, visit: VisitModel,
 ):
     response = await client.post(
-        "/api/lab-results/",
+        "/api/v1/lab-results/",
         json={
             "date": "2026-03-20T10:00:00+02:00",
             "visit_id": visit.id,
@@ -67,7 +67,7 @@ async def test_get_lab_result(
 ):
     # Create first
     create_resp = await client.post(
-        "/api/lab-results/",
+        "/api/v1/lab-results/",
         json={
             "date": "2026-03-20T10:00:00+02:00",
             "visit_id": visit.id,
@@ -88,7 +88,7 @@ async def test_get_lab_result(
 
     # Get detail
     response = await client.get(
-        f"/api/lab-results/{lab_result_id}", headers=auth_headers,
+        f"/api/v1/lab-results/{lab_result_id}", headers=auth_headers,
     )
     assert response.status_code == 200
     data = response.json()
@@ -104,7 +104,7 @@ async def test_list_lab_results(
     # Create two lab results
     for i in range(2):
         await client.post(
-            "/api/lab-results/",
+            "/api/v1/lab-results/",
             json={
                 "date": f"2026-03-{20+i}T10:00:00+02:00",
                 "entries": [
@@ -128,7 +128,7 @@ async def test_list_lab_results(
         )
 
     response = await client.get(
-        "/api/lab-results/",
+        "/api/v1/lab-results/",
         headers=auth_headers,
         params={"page": 1, "size": 10},
     )
@@ -148,7 +148,7 @@ async def test_update_lab_result(
 ):
     # Create
     create_resp = await client.post(
-        "/api/lab-results/",
+        "/api/v1/lab-results/",
         json={
             "date": "2026-03-20T10:00:00+02:00",
             "entries": [
@@ -166,7 +166,7 @@ async def test_update_lab_result(
 
     # Update — replace entries
     response = await client.put(
-        f"/api/lab-results/{lab_result_id}",
+        f"/api/v1/lab-results/{lab_result_id}",
         json={
             "notes": "Оновлені результати",
             "entries": [
@@ -203,7 +203,7 @@ async def test_delete_lab_result(
 ):
     # Create
     create_resp = await client.post(
-        "/api/lab-results/",
+        "/api/v1/lab-results/",
         json={
             "date": "2026-03-20T10:00:00+02:00",
             "entries": [
@@ -221,13 +221,13 @@ async def test_delete_lab_result(
 
     # Delete (soft)
     response = await client.delete(
-        f"/api/lab-results/{lab_result_id}", headers=auth_headers,
+        f"/api/v1/lab-results/{lab_result_id}", headers=auth_headers,
     )
     assert response.status_code == 204
 
     # Verify it's gone from GET
     response = await client.get(
-        f"/api/lab-results/{lab_result_id}", headers=auth_headers,
+        f"/api/v1/lab-results/{lab_result_id}", headers=auth_headers,
     )
     assert response.status_code == 404
 
@@ -245,7 +245,7 @@ async def test_biomarker_trend(
     values = ["130", "140", "150"]
     for date_str, value in zip(dates, values):
         await client.post(
-            "/api/lab-results/",
+            "/api/v1/lab-results/",
             json={
                 "date": date_str,
                 "entries": [
@@ -262,7 +262,7 @@ async def test_biomarker_trend(
         )
 
     response = await client.get(
-        "/api/lab-results/biomarker-trend",
+        "/api/v1/lab-results/biomarker-trend",
         params={"biomarker_name": "Гемоглобін"},
         headers=auth_headers,
     )
@@ -277,7 +277,7 @@ async def test_out_of_range_computed(
     client: AsyncClient, auth_headers: dict, test_user, visit: VisitModel,
 ):
     response = await client.post(
-        "/api/lab-results/",
+        "/api/v1/lab-results/",
         json={
             "date": "2026-03-20T10:00:00+02:00",
             "entries": [

@@ -9,7 +9,7 @@ from app.models import User
 @pytest.mark.asyncio
 async def test_login_success(client: AsyncClient, test_user: User):
     response = await client.post(
-        "/api/auth/login",
+        "/api/v1/auth/login",
         json={"username": "testuser", "password": "testpass"},
     )
     assert response.status_code == 200
@@ -22,7 +22,7 @@ async def test_login_success(client: AsyncClient, test_user: User):
 @pytest.mark.asyncio
 async def test_login_invalid_password(client: AsyncClient, test_user: User):
     response = await client.post(
-        "/api/auth/login",
+        "/api/v1/auth/login",
         json={"username": "testuser", "password": "wrongpass"},
     )
     assert response.status_code == 401
@@ -32,7 +32,7 @@ async def test_login_invalid_password(client: AsyncClient, test_user: User):
 @pytest.mark.asyncio
 async def test_login_invalid_username(client: AsyncClient, test_user: User):
     response = await client.post(
-        "/api/auth/login",
+        "/api/v1/auth/login",
         json={"username": "nonexistent", "password": "testpass"},
     )
     assert response.status_code == 401
@@ -42,14 +42,14 @@ async def test_login_invalid_username(client: AsyncClient, test_user: User):
 @pytest.mark.asyncio
 async def test_refresh_token(client: AsyncClient, test_user: User):
     login_response = await client.post(
-        "/api/auth/login",
+        "/api/v1/auth/login",
         json={"username": "testuser", "password": "testpass"},
     )
     assert login_response.status_code == 200
     refresh_token = login_response.json()["refresh_token"]
 
     refresh_response = await client.post(
-        "/api/auth/refresh",
+        "/api/v1/auth/refresh",
         params={"token": refresh_token},
     )
     assert refresh_response.status_code == 200
@@ -61,7 +61,7 @@ async def test_refresh_token(client: AsyncClient, test_user: User):
 
 @pytest.mark.asyncio
 async def test_me_endpoint(client: AsyncClient, test_user: User, auth_headers: dict):
-    response = await client.get("/api/auth/me", headers=auth_headers)
+    response = await client.get("/api/v1/auth/me", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == test_user.id
@@ -71,5 +71,5 @@ async def test_me_endpoint(client: AsyncClient, test_user: User, auth_headers: d
 
 @pytest.mark.asyncio
 async def test_unauthenticated_access(client: AsyncClient):
-    response = await client.get("/api/auth/me")
+    response = await client.get("/api/v1/auth/me")
     assert response.status_code in (401, 403)

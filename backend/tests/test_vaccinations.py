@@ -18,7 +18,7 @@ async def test_create_vaccination(
     client: AsyncClient, auth_headers: dict, test_user,
 ):
     response = await client.post(
-        "/api/vaccinations/",
+        "/api/v1/vaccinations/",
         data={
             "date": "2026-03-15T10:00:00",
             "vaccine_name": "COVID-19 Pfizer",
@@ -51,7 +51,7 @@ async def test_list_vaccinations(
     # Create two vaccinations
     for i in range(2):
         await client.post(
-            "/api/vaccinations/",
+            "/api/v1/vaccinations/",
             data={
                 "date": f"2026-03-{15+i}T10:00:00",
                 "vaccine_name": f"Вакцина {i}",
@@ -60,7 +60,7 @@ async def test_list_vaccinations(
             headers=auth_headers,
         )
 
-    response = await client.get("/api/vaccinations/", headers=auth_headers)
+    response = await client.get("/api/v1/vaccinations/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 2
@@ -77,7 +77,7 @@ async def test_update_vaccination(
 ):
     # Create
     create_resp = await client.post(
-        "/api/vaccinations/",
+        "/api/v1/vaccinations/",
         data={
             "date": "2026-03-15T10:00:00",
             "vaccine_name": "Грип",
@@ -90,7 +90,7 @@ async def test_update_vaccination(
 
     # Update
     response = await client.put(
-        f"/api/vaccinations/{vacc_id}",
+        f"/api/v1/vaccinations/{vacc_id}",
         data={
             "vaccine_name": "Грип (оновлено)",
             "notes": "Оновлений запис",
@@ -109,7 +109,7 @@ async def test_delete_vaccination(
 ):
     # Create
     create_resp = await client.post(
-        "/api/vaccinations/",
+        "/api/v1/vaccinations/",
         data={
             "date": "2026-03-15T10:00:00",
             "vaccine_name": "Гепатит B",
@@ -122,13 +122,13 @@ async def test_delete_vaccination(
 
     # Delete (soft)
     response = await client.delete(
-        f"/api/vaccinations/{vacc_id}", headers=auth_headers,
+        f"/api/v1/vaccinations/{vacc_id}", headers=auth_headers,
     )
     assert response.status_code == 204
 
     # Verify it no longer appears
     response = await client.get(
-        f"/api/vaccinations/{vacc_id}", headers=auth_headers,
+        f"/api/v1/vaccinations/{vacc_id}", headers=auth_headers,
     )
     assert response.status_code == 404
 
@@ -139,7 +139,7 @@ async def test_vaccination_status_upcoming(
 ):
     future_date = (datetime.now(KYIV_TZ) + timedelta(days=30)).isoformat()
     response = await client.post(
-        "/api/vaccinations/",
+        "/api/v1/vaccinations/",
         data={
             "date": "2026-03-15T10:00:00",
             "vaccine_name": "COVID-19 бустер",
@@ -159,7 +159,7 @@ async def test_vaccination_status_overdue(
 ):
     past_date = (datetime.now(KYIV_TZ) - timedelta(days=30)).isoformat()
     response = await client.post(
-        "/api/vaccinations/",
+        "/api/v1/vaccinations/",
         data={
             "date": "2025-01-15T10:00:00",
             "vaccine_name": "Правець",
@@ -178,7 +178,7 @@ async def test_vaccination_status_completed(
     client: AsyncClient, auth_headers: dict, test_user,
 ):
     response = await client.post(
-        "/api/vaccinations/",
+        "/api/v1/vaccinations/",
         data={
             "date": "2026-03-15T10:00:00",
             "vaccine_name": "Кір-краснуха-паротит",

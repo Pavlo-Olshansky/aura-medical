@@ -83,7 +83,7 @@ async def seed_biomarkers(session: AsyncSession):
 async def test_list_biomarker_references(
     client: AsyncClient, auth_headers: dict, seed_biomarkers,
 ):
-    response = await client.get("/api/biomarker-references/", headers=auth_headers)
+    response = await client.get("/api/v1/biomarker-references/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 28
@@ -94,7 +94,7 @@ async def test_create_biomarker_reference(
     client: AsyncClient, auth_headers: dict,
 ):
     response = await client.post(
-        "/api/biomarker-references/",
+        "/api/v1/biomarker-references/",
         json={
             "name": "Інсулін",
             "abbreviation": "INS",
@@ -128,7 +128,7 @@ async def test_update_biomarker_reference(
     await session.refresh(obj)
 
     response = await client.put(
-        f"/api/biomarker-references/{obj.id}",
+        f"/api/v1/biomarker-references/{obj.id}",
         json={"name": "Оновлений маркер", "unit": "г/л"},
         headers=auth_headers,
     )
@@ -151,12 +151,12 @@ async def test_delete_biomarker_reference(
     await session.refresh(obj)
 
     response = await client.delete(
-        f"/api/biomarker-references/{obj.id}", headers=auth_headers,
+        f"/api/v1/biomarker-references/{obj.id}", headers=auth_headers,
     )
     assert response.status_code == 204
 
     # Verify deleted
-    response = await client.get("/api/biomarker-references/", headers=auth_headers)
+    response = await client.get("/api/v1/biomarker-references/", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()) == 0
 
@@ -166,7 +166,7 @@ async def test_search_biomarker_references(
     client: AsyncClient, auth_headers: dict, seed_biomarkers,
 ):
     response = await client.get(
-        "/api/biomarker-references/",
+        "/api/v1/biomarker-references/",
         params={"search": "Глюк"},
         headers=auth_headers,
     )
@@ -220,6 +220,6 @@ async def test_delete_in_use_returns_409(
 
     # Try to delete — should fail with 409
     response = await client.delete(
-        f"/api/biomarker-references/{biomarker.id}", headers=auth_headers,
+        f"/api/v1/biomarker-references/{biomarker.id}", headers=auth_headers,
     )
     assert response.status_code == 409

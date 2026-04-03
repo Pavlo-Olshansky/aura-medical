@@ -39,7 +39,7 @@ async def seed_metric_types(session: AsyncSession):
 async def test_list_metric_types(
     client: AsyncClient, auth_headers: dict, seed_metric_types,
 ):
-    response = await client.get("/api/metric-types/", headers=auth_headers)
+    response = await client.get("/api/v1/metric-types/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 7
@@ -50,7 +50,7 @@ async def test_create_metric_type(
     client: AsyncClient, auth_headers: dict,
 ):
     response = await client.post(
-        "/api/metric-types/",
+        "/api/v1/metric-types/",
         json={
             "name": "Індекс маси тіла",
             "unit": "кг/м²",
@@ -82,7 +82,7 @@ async def test_update_metric_type(
     await session.refresh(obj)
 
     response = await client.put(
-        f"/api/metric-types/{obj.id}",
+        f"/api/v1/metric-types/{obj.id}",
         json={"name": "Оновлений тип", "unit": "нова од"},
         headers=auth_headers,
     )
@@ -105,12 +105,12 @@ async def test_delete_metric_type(
     await session.refresh(obj)
 
     response = await client.delete(
-        f"/api/metric-types/{obj.id}", headers=auth_headers,
+        f"/api/v1/metric-types/{obj.id}", headers=auth_headers,
     )
     assert response.status_code == 204
 
     # Verify deleted
-    response = await client.get("/api/metric-types/", headers=auth_headers)
+    response = await client.get("/api/v1/metric-types/", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()) == 0
 
@@ -139,6 +139,6 @@ async def test_delete_in_use_returns_409(
 
     # Try to delete — should fail with 409
     response = await client.delete(
-        f"/api/metric-types/{mt.id}", headers=auth_headers,
+        f"/api/v1/metric-types/{mt.id}", headers=auth_headers,
     )
     assert response.status_code == 409

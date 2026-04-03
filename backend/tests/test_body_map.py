@@ -41,7 +41,7 @@ async def treatment_with_region(session, test_user):
 
 @pytest.mark.asyncio
 async def test_body_map_summary(client, auth_headers, visits_with_regions, treatment_with_region):
-    response = await client.get("/api/dashboard/body-map/", headers=auth_headers)
+    response = await client.get("/api/v1/dashboard/body-map/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
 
@@ -64,7 +64,7 @@ async def test_body_map_summary(client, auth_headers, visits_with_regions, treat
 
 @pytest.mark.asyncio
 async def test_body_map_summary_empty(client, auth_headers, test_user):
-    response = await client.get("/api/dashboard/body-map/", headers=auth_headers)
+    response = await client.get("/api/v1/dashboard/body-map/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert data["regions"] == {}
@@ -74,7 +74,7 @@ async def test_body_map_summary_empty(client, auth_headers, test_user):
 
 @pytest.mark.asyncio
 async def test_body_map_detail(client, auth_headers, visits_with_regions, treatment_with_region):
-    response = await client.get("/api/dashboard/body-map/chest/", headers=auth_headers)
+    response = await client.get("/api/v1/dashboard/body-map/chest/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
 
@@ -89,26 +89,26 @@ async def test_body_map_detail(client, auth_headers, visits_with_regions, treatm
 
 @pytest.mark.asyncio
 async def test_body_map_detail_invalid_region(client, auth_headers, test_user):
-    response = await client.get("/api/dashboard/body-map/invalid_region/", headers=auth_headers)
+    response = await client.get("/api/v1/dashboard/body-map/invalid_region/", headers=auth_headers)
     assert response.status_code == 422
 
 
 @pytest.mark.asyncio
 async def test_body_map_detail_pagination(client, auth_headers, visits_with_regions):
-    response = await client.get("/api/dashboard/body-map/chest/?limit=2&offset=0", headers=auth_headers)
+    response = await client.get("/api/v1/dashboard/body-map/chest/?limit=2&offset=0", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert len(data["visits"]) == 2
 
-    response2 = await client.get("/api/dashboard/body-map/chest/?limit=2&offset=2", headers=auth_headers)
+    response2 = await client.get("/api/v1/dashboard/body-map/chest/?limit=2&offset=2", headers=auth_headers)
     data2 = response2.json()
     assert len(data2["visits"]) == 1
 
 
 @pytest.mark.asyncio
 async def test_body_map_requires_auth(client):
-    response = await client.get("/api/dashboard/body-map/")
+    response = await client.get("/api/v1/dashboard/body-map/")
     assert response.status_code == 401
 
-    response2 = await client.get("/api/dashboard/body-map/chest/")
+    response2 = await client.get("/api/v1/dashboard/body-map/chest/")
     assert response2.status_code == 401

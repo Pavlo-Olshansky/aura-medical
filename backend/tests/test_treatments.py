@@ -37,7 +37,7 @@ async def test_create_treatment(
 ):
     payload = _make_treatment_payload()
     response = await client.post(
-        "/api/treatments/", json=payload, headers=auth_headers
+        "/api/v1/treatments/", json=payload, headers=auth_headers
     )
     assert response.status_code == 201
     data = response.json()
@@ -58,10 +58,10 @@ async def test_list_treatments(
     for i in range(2):
         payload = _make_treatment_payload(name=f"Treatment {i}")
         await client.post(
-            "/api/treatments/", json=payload, headers=auth_headers
+            "/api/v1/treatments/", json=payload, headers=auth_headers
         )
 
-    response = await client.get("/api/treatments/", headers=auth_headers)
+    response = await client.get("/api/v1/treatments/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert "items" in data
@@ -80,7 +80,7 @@ async def test_treatment_status_active(
     now = datetime.now(KYIV_TZ)
     payload = _make_treatment_payload(date_start=now, days=10)
     response = await client.post(
-        "/api/treatments/", json=payload, headers=auth_headers
+        "/api/v1/treatments/", json=payload, headers=auth_headers
     )
     assert response.status_code == 201
     data = response.json()
@@ -94,7 +94,7 @@ async def test_treatment_status_completed(
     past = datetime.now(KYIV_TZ) - timedelta(days=30)
     payload = _make_treatment_payload(date_start=past, days=5)
     response = await client.post(
-        "/api/treatments/", json=payload, headers=auth_headers
+        "/api/v1/treatments/", json=payload, headers=auth_headers
     )
     assert response.status_code == 201
     data = response.json()
@@ -107,20 +107,20 @@ async def test_soft_delete_treatment(
 ):
     payload = _make_treatment_payload()
     create_resp = await client.post(
-        "/api/treatments/", json=payload, headers=auth_headers
+        "/api/v1/treatments/", json=payload, headers=auth_headers
     )
     assert create_resp.status_code == 201
     treatment_id = create_resp.json()["id"]
 
     # Delete
     delete_resp = await client.delete(
-        f"/api/treatments/{treatment_id}", headers=auth_headers
+        f"/api/v1/treatments/{treatment_id}", headers=auth_headers
     )
     assert delete_resp.status_code == 204
 
     # Confirm it no longer appears
     get_resp = await client.get(
-        f"/api/treatments/{treatment_id}", headers=auth_headers
+        f"/api/v1/treatments/{treatment_id}", headers=auth_headers
     )
     assert get_resp.status_code == 404
 
@@ -135,7 +135,7 @@ async def test_filter_by_status(
         date_start=now, name="Active Treatment", days=10
     )
     await client.post(
-        "/api/treatments/", json=active_payload, headers=auth_headers
+        "/api/v1/treatments/", json=active_payload, headers=auth_headers
     )
 
     # Create a completed treatment (started 30 days ago, 5 days)
@@ -144,12 +144,12 @@ async def test_filter_by_status(
         date_start=past, name="Completed Treatment", days=5
     )
     await client.post(
-        "/api/treatments/", json=completed_payload, headers=auth_headers
+        "/api/v1/treatments/", json=completed_payload, headers=auth_headers
     )
 
     # Filter active
     active_resp = await client.get(
-        "/api/treatments/", params={"status": "active"}, headers=auth_headers
+        "/api/v1/treatments/", params={"status": "active"}, headers=auth_headers
     )
     assert active_resp.status_code == 200
     active_data = active_resp.json()
@@ -158,7 +158,7 @@ async def test_filter_by_status(
 
     # Filter completed
     completed_resp = await client.get(
-        "/api/treatments/",
+        "/api/v1/treatments/",
         params={"status": "completed"},
         headers=auth_headers,
     )
