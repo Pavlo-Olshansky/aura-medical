@@ -8,6 +8,9 @@ db.sqlite3
 documents/
 backups/
 *.mov
+FEATURE_IDEAS.md
+IMPROVEMENTS.md
+INFRASTRUCTURE_IDEAS.md
 .claude
 .DS_Store
 .specify
