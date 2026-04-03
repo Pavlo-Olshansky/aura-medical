@@ -11,6 +11,7 @@ import { useTreatmentsStore } from '@/stores/treatments'
 import { BODY_REGION_OPTIONS } from '@/components/body-map/body-regions'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog'
+import { formatDateForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,13 +30,6 @@ const bodyRegion = ref<string | null>(null)
 
 const saving = ref(false)
 const errorMessage = ref('')
-
-function formatDateForApi(d: Date): string {
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 async function handleSubmit() {
   if (!name.value.trim()) {

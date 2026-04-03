@@ -8,17 +8,13 @@ import Tag from 'primevue/tag'
 import type { DataTablePageEvent } from 'primevue/datatable'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import type { Vaccination } from '@/types'
+import { formatDate } from '@/utils/dateUtils'
 
 const router = useRouter()
 const vaccinationsStore = useVaccinationsStore()
 
 const currentPage = ref(1)
 const pageSize = ref(20)
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 function statusLabel(status: string): string {
   switch (status) {

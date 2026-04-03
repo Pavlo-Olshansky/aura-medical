@@ -11,6 +11,7 @@ import Button from 'primevue/button'
 import { apiClient } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
 import type { ProfileData } from '@/types'
+import { formatDateForApi } from '@/utils/dateUtils'
 
 const toast = useToast()
 const auth = useAuthStore()
@@ -80,13 +81,6 @@ async function loadProfile() {
   }
 }
 
-function formatDate(d: Date): string {
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 async function saveProfile() {
   if (!dateOfBirth.value) {
     toast.add({ severity: 'warn', summary: 'Увага', detail: 'Дата народження обов\'язкова', life: 3000 })
@@ -96,7 +90,7 @@ async function saveProfile() {
   try {
     const payload = {
       sex: sex.value,
-      date_of_birth: formatDate(dateOfBirth.value),
+      date_of_birth: formatDateForApi(dateOfBirth.value),
       height_cm: heightCm.value,
       weight_kg: weightKg.value,
       blood_type: bloodType.value,

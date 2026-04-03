@@ -9,6 +9,7 @@ import Tag from 'primevue/tag'
 import type { DataTablePageEvent } from 'primevue/datatable'
 import { useLabResultsStore } from '@/stores/labResults'
 import type { LabResult } from '@/types'
+import { formatDate } from '@/utils/dateUtils'
 
 const router = useRouter()
 const labResultsStore = useLabResultsStore()
@@ -18,11 +19,6 @@ const pageSize = ref(20)
 
 const dateFrom = ref<Date | null>(null)
 const dateTo = ref<Date | null>(null)
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 function formatDateParam(date: Date): string {
   const year = date.getFullYear()

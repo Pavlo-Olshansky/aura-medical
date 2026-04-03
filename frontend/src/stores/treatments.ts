@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Treatment, PaginatedResponse } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listTreatments as apiListTreatments,
   getTreatment as apiGetTreatment,
@@ -31,8 +32,8 @@ export const useTreatmentsStore = defineStore('treatments', () => {
       page.value = data.page
       size.value = data.size
       pages.value = data.pages
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження лікувань'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження лікувань')
       throw e
     } finally {
       loading.value = false
@@ -44,8 +45,8 @@ export const useTreatmentsStore = defineStore('treatments', () => {
     error.value = null
     try {
       currentTreatment.value = await apiGetTreatment(id)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження лікування'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження лікування')
       throw e
     } finally {
       loading.value = false
@@ -58,8 +59,8 @@ export const useTreatmentsStore = defineStore('treatments', () => {
     try {
       const treatment = await apiCreateTreatment(data)
       return treatment
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка створення лікування'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка створення лікування')
       throw e
     } finally {
       loading.value = false
@@ -73,8 +74,8 @@ export const useTreatmentsStore = defineStore('treatments', () => {
       const treatment = await apiUpdateTreatment(id, data)
       currentTreatment.value = treatment
       return treatment
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка оновлення лікування'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка оновлення лікування')
       throw e
     } finally {
       loading.value = false
@@ -87,8 +88,8 @@ export const useTreatmentsStore = defineStore('treatments', () => {
     try {
       await apiDeleteTreatment(id)
       currentTreatment.value = null
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка видалення лікування'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка видалення лікування')
       throw e
     } finally {
       loading.value = false

@@ -14,6 +14,7 @@ import {
 import annotationPlugin from 'chartjs-plugin-annotation'
 import Chart from 'primevue/chart'
 import type { MetricType } from '@/types'
+import { formatDate } from '@/utils/dateUtils'
 
 ChartJS.register(
   CategoryScale,
@@ -37,11 +38,6 @@ const props = defineProps<{
   metricType: MetricType
   dataPoints: DataPoint[]
 }>()
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 const chartData = computed(() => {
   const sorted = [...props.dataPoints].sort(

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Reference } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listResource,
   createResource,
@@ -58,8 +59,8 @@ export const useReferencesStore = defineStore('references', () => {
       procedures.value = proc
       clinics.value = clin
       cities.value = cit
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження довідників'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження довідників')
       throw e
     } finally {
       loading.value = false
@@ -72,8 +73,8 @@ export const useReferencesStore = defineStore('references', () => {
     try {
       const data = await listResource(resource, search)
       setList(resource, data)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження довідника'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження довідника')
       throw e
     } finally {
       loading.value = false
@@ -88,8 +89,8 @@ export const useReferencesStore = defineStore('references', () => {
       const list = getList(resource)
       setList(resource, [...list, item])
       return item
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка створення запису'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка створення запису')
       throw e
     } finally {
       loading.value = false
@@ -107,8 +108,8 @@ export const useReferencesStore = defineStore('references', () => {
         list.map((item) => (item.id === id ? updated : item)),
       )
       return updated
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка оновлення запису'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка оновлення запису')
       throw e
     } finally {
       loading.value = false
@@ -125,8 +126,8 @@ export const useReferencesStore = defineStore('references', () => {
         resource,
         list.filter((item) => item.id !== id),
       )
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка видалення запису'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка видалення запису')
       throw e
     } finally {
       loading.value = false

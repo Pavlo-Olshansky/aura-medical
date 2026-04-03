@@ -12,6 +12,7 @@ import type { MetricType, HealthMetric } from '@/types'
 import type { MetricTrendPoint } from '@/api/healthMetrics'
 import MetricChart from '@/components/MetricChart.vue'
 import HealthMetricModal from '@/components/HealthMetricModal.vue'
+import { formatDate } from '@/utils/dateUtils'
 
 const healthMetricsStore = useHealthMetricsStore()
 const confirm = useConfirm()
@@ -25,11 +26,6 @@ const currentPage = ref(1)
 const pageSize = ref(20)
 
 const modalVisible = ref(false)
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 function formatDateTime(dateStr: string): string {
   const d = new Date(dateStr)

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { TimelineEvent, PaginatedResponse } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listTimeline as apiListTimeline,
   type TimelineListParams,
@@ -25,8 +26,8 @@ export const useTimelineStore = defineStore('timeline', () => {
       page.value = data.page
       size.value = data.size
       pages.value = data.pages
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження хронології'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження хронології')
       throw e
     } finally {
       loading.value = false

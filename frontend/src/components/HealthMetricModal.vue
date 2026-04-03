@@ -9,6 +9,7 @@ import Button from 'primevue/button'
 import { useToast } from 'primevue/usetoast'
 import { useHealthMetricsStore } from '@/stores/healthMetrics'
 import type { MetricType } from '@/types'
+import { formatDateTimeForApi } from '@/utils/dateUtils'
 
 const props = defineProps<{
   visible: boolean
@@ -55,15 +56,6 @@ function resetForm() {
   notes.value = ''
 }
 
-function formatDateForApi(d: Date): string {
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  const hours = String(d.getHours()).padStart(2, '0')
-  const minutes = String(d.getMinutes()).padStart(2, '0')
-  return `${year}-${month}-${day}T${hours}:${minutes}:00`
-}
-
 async function handleSave() {
   if (!selectedMetricType.value || value.value == null) return
 
@@ -72,7 +64,7 @@ async function handleSave() {
     const payload: Record<string, unknown> = {
       metric_type_id: selectedMetricType.value.id,
       value: value.value,
-      date: formatDateForApi(date.value),
+      date: formatDateTimeForApi(date.value),
       notes: notes.value || null,
     }
     if (showSecondary.value && secondaryValue.value != null) {

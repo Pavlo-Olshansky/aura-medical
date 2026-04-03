@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Visit, PaginatedResponse } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listVisits as apiListVisits,
   getVisit as apiGetVisit,
@@ -30,8 +31,8 @@ export const useVisitsStore = defineStore('visits', () => {
       page.value = data.page
       size.value = data.size
       pages.value = data.pages
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження візитів'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження візитів')
       throw e
     } finally {
       loading.value = false
@@ -43,8 +44,8 @@ export const useVisitsStore = defineStore('visits', () => {
     error.value = null
     try {
       currentVisit.value = await apiGetVisit(id)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження візиту'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження візиту')
       throw e
     } finally {
       loading.value = false
@@ -57,8 +58,8 @@ export const useVisitsStore = defineStore('visits', () => {
     try {
       const visit = await apiCreateVisit(formData)
       return visit
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка створення візиту'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка створення візиту')
       throw e
     } finally {
       loading.value = false
@@ -72,8 +73,8 @@ export const useVisitsStore = defineStore('visits', () => {
       const visit = await apiUpdateVisit(id, formData)
       currentVisit.value = visit
       return visit
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка оновлення візиту'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка оновлення візиту')
       throw e
     } finally {
       loading.value = false
@@ -86,8 +87,8 @@ export const useVisitsStore = defineStore('visits', () => {
     try {
       await apiDeleteVisit(id)
       currentVisit.value = null
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка видалення візиту'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка видалення візиту')
       throw e
     } finally {
       loading.value = false

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { LabResult, BiomarkerReference, PaginatedResponse } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listLabResults as apiListLabResults,
   getLabResult as apiGetLabResult,
@@ -34,8 +35,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
       page.value = data.page
       size.value = data.size
       pages.value = data.pages
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження результатів аналізів'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження результатів аналізів')
       throw e
     } finally {
       loading.value = false
@@ -47,8 +48,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
     error.value = null
     try {
       currentLabResult.value = await apiGetLabResult(id)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження результату аналізу'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження результату аналізу')
       throw e
     } finally {
       loading.value = false
@@ -61,8 +62,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
     try {
       const labResult = await apiCreateLabResult(data)
       return labResult
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка створення результату аналізу'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка створення результату аналізу')
       throw e
     } finally {
       loading.value = false
@@ -76,8 +77,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
       const labResult = await apiUpdateLabResult(id, data)
       currentLabResult.value = labResult
       return labResult
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка оновлення результату аналізу'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка оновлення результату аналізу')
       throw e
     } finally {
       loading.value = false
@@ -90,8 +91,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
     try {
       await apiDeleteLabResult(id)
       currentLabResult.value = null
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка видалення результату аналізу'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка видалення результату аналізу')
       throw e
     } finally {
       loading.value = false
@@ -103,8 +104,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
     error.value = null
     try {
       return await apiGetBiomarkerTrend(biomarkerName)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження тренду біомаркера'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження тренду біомаркера')
       throw e
     } finally {
       loading.value = false
@@ -116,8 +117,8 @@ export const useLabResultsStore = defineStore('labResults', () => {
     error.value = null
     try {
       biomarkerReferences.value = await apiListBiomarkerReferences(search)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження довідника біомаркерів'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження довідника біомаркерів')
       throw e
     } finally {
       loading.value = false

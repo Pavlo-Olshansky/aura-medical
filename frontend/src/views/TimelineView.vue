@@ -7,6 +7,7 @@ import Dropdown from 'primevue/dropdown'
 import Tag from 'primevue/tag'
 import { useTimelineStore } from '@/stores/timeline'
 import type { TimelineEvent } from '@/types'
+import { formatDate } from '@/utils/dateUtils'
 
 const router = useRouter()
 const timelineStore = useTimelineStore()
@@ -30,11 +31,6 @@ const eventTypeConfig: Record<string, { label: string; severity: string; icon: s
   treatment: { label: 'Лікування', severity: 'success', icon: 'pi pi-heart' },
   lab_result: { label: 'Аналіз', severity: 'help', icon: 'pi pi-chart-bar' },
   vaccination: { label: 'Вакцинація', severity: 'warn', icon: 'pi pi-shield' },
-}
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 function formatDateParam(date: Date): string {

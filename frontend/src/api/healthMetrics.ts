@@ -1,5 +1,6 @@
 import { apiClient } from '@/api/client'
 import type { HealthMetric, MetricType, PaginatedResponse } from '@/types'
+import type { HealthMetricPayload, MetricTypePayload } from '@/types/payloads'
 
 export interface HealthMetricListParams {
   page?: number
@@ -33,12 +34,12 @@ export async function getHealthMetric(id: number): Promise<HealthMetric> {
   return response.data
 }
 
-export async function createHealthMetric(data: any): Promise<HealthMetric> {
+export async function createHealthMetric(data: HealthMetricPayload): Promise<HealthMetric> {
   const response = await apiClient.post('/api/health-metrics/', data)
   return response.data
 }
 
-export async function updateHealthMetric(id: number, data: any): Promise<HealthMetric> {
+export async function updateHealthMetric(id: number, data: HealthMetricPayload): Promise<HealthMetric> {
   const response = await apiClient.put(`/api/health-metrics/${id}`, data)
   return response.data
 }
@@ -70,12 +71,12 @@ export async function listMetricTypes(search?: string): Promise<MetricType[]> {
   return response.data
 }
 
-export async function createMetricType(data: any): Promise<MetricType> {
+export async function createMetricType(data: MetricTypePayload): Promise<MetricType> {
   const response = await apiClient.post('/api/metric-types/', data)
   return response.data
 }
 
-export async function updateMetricType(id: number, data: any): Promise<MetricType> {
+export async function updateMetricType(id: number, data: MetricTypePayload): Promise<MetricType> {
   const response = await apiClient.put(`/api/metric-types/${id}`, data)
   return response.data
 }
