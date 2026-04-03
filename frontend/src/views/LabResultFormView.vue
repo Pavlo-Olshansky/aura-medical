@@ -127,10 +127,10 @@ async function handleSubmit() {
   try {
     if (isEdit.value && editId.value) {
       await labResultsStore.updateLabResult(editId.value, payload)
-      router.push({ name: 'lab-result-detail', params: { id: editId.value } })
+      router.push({ name: 'lab-results' })
     } else {
-      const result = await labResultsStore.createLabResult(payload)
-      router.push({ name: 'lab-result-detail', params: { id: result.id } })
+      await labResultsStore.createLabResult(payload)
+      router.push({ name: 'lab-results' })
     }
   } catch (e: any) {
     errorMessage.value = e.response?.data?.detail || 'Помилка збереження аналізу'
