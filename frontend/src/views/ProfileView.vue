@@ -72,7 +72,7 @@ function populateForm(data: ProfileData) {
 async function loadProfile() {
   loading.value = true
   try {
-    const response = await apiClient.get<ProfileData>('/api/profile/')
+    const response = await apiClient.get<ProfileData>('/api/v1/profile/')
     populateForm(response.data)
   } catch {
     toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося завантажити профіль', life: 3000 })
@@ -99,7 +99,7 @@ async function saveProfile() {
       emergency_contact_name: emergencyContactName.value || null,
       emergency_contact_phone: emergencyContactPhone.value || null,
     }
-    const response = await apiClient.put<ProfileData>('/api/profile/', payload)
+    const response = await apiClient.put<ProfileData>('/api/v1/profile/', payload)
     populateForm(response.data)
     await auth.fetchUser()
     toast.add({ severity: 'success', summary: 'Збережено', detail: 'Профіль оновлено', life: 3000 })
