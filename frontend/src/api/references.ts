@@ -3,11 +3,10 @@ import type { Reference } from '@/types'
 
 export type ReferenceResource = 'positions' | 'procedures' | 'clinics' | 'cities'
 
-export async function listResource(resource: ReferenceResource, search?: string): Promise<Reference[]> {
+export async function listResource(resource: ReferenceResource, search?: string, sort?: string): Promise<Reference[]> {
   const params: Record<string, string> = {}
-  if (search) {
-    params.search = search
-  }
+  if (search) params.search = search
+  if (sort) params.sort = sort
   const response = await apiClient.get(`/api/v1/${resource}/`, { params })
   return response.data
 }
