@@ -12,6 +12,7 @@ import Dialog from 'primevue/dialog'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
+import ReferenceTable from '@/components/references/ReferenceTable.vue'
 import { useReferencesStore } from '@/stores/references'
 import type { ReferenceResource } from '@/api/references'
 import type { Reference, MetricType, BiomarkerReference } from '@/types'
@@ -38,89 +39,38 @@ const toast = useToast()
 interface TabConfig {
   label: string
   resource: ReferenceResource
+  placeholder: string
 }
 
 const tabs: TabConfig[] = [
-  { label: 'Позиції', resource: 'positions' },
-  { label: 'Процедури', resource: 'procedures' },
-  { label: 'Клініки', resource: 'clinics' },
-  { label: 'Міста', resource: 'cities' },
+  { label: 'Позиції', resource: 'positions', placeholder: 'Нова назва...' },
+  { label: 'Процедури', resource: 'procedures', placeholder: 'Нова назва...' },
+  { label: 'Клініки', resource: 'clinics', placeholder: 'Нова назва...' },
+  { label: 'Міста', resource: 'cities', placeholder: 'Нова назва...' },
 ]
-
-const editingRows = ref<Record<string, Record<number, { name: string }>>>({
-  positions: {},
-  procedures: {},
-  clinics: {},
-  cities: {},
-})
-
-const newItemName = ref<Record<string, string>>({
-  positions: '',
-  procedures: '',
-  clinics: '',
-  cities: '',
-})
 
 function getItems(resource: ReferenceResource): Reference[] {
   return referencesStore.getList(resource)
 }
 
-function startEdit(resource: ReferenceResource, item: Reference) {
-  const rows = editingRows.value[resource]
-  if (rows) rows[item.id] = { name: item.name }
-}
-
-function cancelEdit(resource: ReferenceResource, id: number) {
-  const rows = editingRows.value[resource]
-  if (rows) delete rows[id]
-}
-
-function isEditing(resource: ReferenceResource, id: number): boolean {
-  const rows = editingRows.value[resource]
-  return rows ? id in rows : false
-}
-
-function getEditName(resource: ReferenceResource, id: number): { name: string } {
-  return editingRows.value[resource]?.[id] ?? { name: '' }
-}
-
-async function saveEdit(resource: ReferenceResource, id: number) {
-  const editData = editingRows.value[resource]?.[id]
-  if (!editData || !editData.name.trim()) return
-
-  try {
-    await referencesStore.editResource(resource, id, editData.name.trim())
-    const rows = editingRows.value[resource]
-    if (rows) delete rows[id]
-  } catch {
-    // error is handled in the store
-  }
-}
-
-async function addItem(resource: ReferenceResource) {
-  const name = newItemName.value[resource]?.trim()
-  if (!name) return
-
+async function handleCreate(resource: ReferenceResource, name: string) {
   try {
     await referencesStore.addResource(resource, name)
-    newItemName.value[resource] = ''
   } catch {
     // error is handled in the store
   }
 }
 
-function confirmDelete(resource: ReferenceResource, item: Reference) {
-  confirm.require({
-    message: `Ви впевнені, що хочете видалити "${item.name}"?`,
-    header: 'Підтвердження видалення',
-    icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Видалити',
-    rejectLabel: 'Скасувати',
-    acceptClass: 'p-button-danger',
-    accept: async () => {
-      await referencesStore.removeResource(resource, item.id)
-    },
-  })
+async function handleUpdate(resource: ReferenceResource, id: number, name: string) {
+  try {
+    await referencesStore.editResource(resource, id, name)
+  } catch {
+    // error is handled in the store
+  }
+}
+
+async function handleDelete(resource: ReferenceResource, id: number) {
+  await referencesStore.removeResource(resource, id)
 }
 
 // ─── Metric Types tab ───
@@ -353,51 +303,17 @@ onMounted(async () => {
     <h1>Довідники</h1>
 
     <TabView>
-      <!-- Existing simple reference tabs -->
+      <!-- Simple reference tabs -->
       <TabPanel v-for="tab in tabs" :key="tab.resource" :value="tab.resource" :header="tab.label">
-        <div class="add-row">
-          <InputText
-            v-model="newItemName[tab.resource]"
-            :placeholder="`Нова назва...`"
-            @keyup.enter="addItem(tab.resource)"
-          />
-          <Button
-            label="Додати"
-            icon="pi pi-plus"
-            :disabled="!newItemName[tab.resource]?.trim()"
-            @click="addItem(tab.resource)"
-          />
-        </div>
-
-        <DataTable
-          :value="getItems(tab.resource)"
+        <ReferenceTable
+          :items="getItems(tab.resource)"
+          :title="tab.label"
+          :placeholder="tab.placeholder"
           :loading="referencesStore.loading"
-          stripedRows
-        >
-          <template #empty>Записів не знайдено</template>
-          <Column field="name" header="Назва" style="min-width: 300px">
-            <template #body="{ data }">
-              <div v-if="isEditing(tab.resource, data.id)" class="edit-cell">
-                <InputText
-                  v-model="getEditName(tab.resource, data.id).name"
-                  @keyup.enter="saveEdit(tab.resource, data.id)"
-                  @keyup.escape="cancelEdit(tab.resource, data.id)"
-                />
-                <Button icon="pi pi-check" text severity="success" @click="saveEdit(tab.resource, data.id)" />
-                <Button icon="pi pi-times" text severity="secondary" @click="cancelEdit(tab.resource, data.id)" />
-              </div>
-              <span v-else>{{ data.name }}</span>
-            </template>
-          </Column>
-          <Column header="Дії" style="width: 150px; text-align: center">
-            <template #body="{ data }">
-              <div v-if="!isEditing(tab.resource, data.id)" class="action-buttons">
-                <Button icon="pi pi-pencil" text severity="info" @click="startEdit(tab.resource, data)" />
-                <Button icon="pi pi-trash" text severity="danger" @click="confirmDelete(tab.resource, data)" />
-              </div>
-            </template>
-          </Column>
-        </DataTable>
+          @create="(name) => handleCreate(tab.resource, name)"
+          @update="(id, name) => handleUpdate(tab.resource, id, name)"
+          @delete="(id) => handleDelete(tab.resource, id)"
+        />
       </TabPanel>
 
       <!-- Metric Types tab -->

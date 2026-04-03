@@ -86,10 +86,10 @@ async function handleSubmit() {
   try {
     if (isEdit.value && editId.value) {
       await visitsStore.updateVisit(editId.value, formData)
-      router.push({ name: 'visit-detail', params: { id: editId.value } })
+      router.push({ name: 'visits' })
     } else {
-      const visit = await visitsStore.createVisit(formData)
-      router.push({ name: 'visit-detail', params: { id: visit.id } })
+      await visitsStore.createVisit(formData)
+      router.push({ name: 'visits' })
     }
   } catch (e: any) {
     errorMessage.value = e.response?.data?.detail || 'Помилка збереження візиту'
