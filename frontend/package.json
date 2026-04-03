@@ -11,7 +11,8 @@
     "type-check": "vue-tsc --build",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
-    "lint:eslint": "eslint . --fix --cache"
+    "lint:eslint": "eslint . --fix --cache",
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
     "@primevue/themes": "^4.5.4",
@@ -33,7 +34,9 @@
     "eslint": "^10.0.3",
     "eslint-plugin-oxlint": "~1.51.0",
     "eslint-plugin-vue": "~10.8.0",
+    "husky": "^9.1.7",
     "jiti": "^2.6.1",
+    "lint-staged": "^16.4.0",
     "npm-run-all2": "^8.0.4",
     "oxlint": "~1.51.0",
     "typescript": "~5.9.3",
