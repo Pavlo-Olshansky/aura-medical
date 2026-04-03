@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
 import DataTable from 'primevue/datatable'
@@ -32,6 +32,13 @@ import {
 type ApiError = { response?: { data?: { detail?: string } } }
 
 const referencesStore = useReferencesStore()
+const activeTab = ref<string>()
+
+onMounted(() => {
+  nextTick(() => {
+    activeTab.value = 'positions'
+  })
+})
 const confirm = useConfirm()
 const toast = useToast()
 
@@ -302,7 +309,7 @@ onMounted(async () => {
     <ConfirmDialog />
     <h1>Довідники</h1>
 
-    <TabView value="positions">
+    <TabView v-model:value="activeTab">
       <!-- Simple reference tabs -->
       <TabPanel v-for="tab in tabs" :key="tab.resource" :value="tab.resource" :header="tab.label">
         <ReferenceTable
