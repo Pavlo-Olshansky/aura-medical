@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
@@ -13,17 +13,17 @@ router = APIRouter()
 class DashboardVisit(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
-    date: str = None
-    doctor: str = None
-    procedure_name: str = None
-    clinic_name: str = None
+    date: Optional[str] = None
+    doctor: Optional[str] = None
+    procedure_name: Optional[str] = None
+    clinic_name: Optional[str] = None
 
 
 class DashboardTreatment(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
-    date_start: str = None
+    date_start: Optional[str] = None
     days: int
     status: str
 
@@ -31,7 +31,7 @@ class DashboardTreatment(BaseModel):
 class VaccinationAlert(BaseModel):
     id: int
     vaccine_name: str
-    next_due_date: str = None
+    next_due_date: Optional[str] = None
     status: str
 
 
