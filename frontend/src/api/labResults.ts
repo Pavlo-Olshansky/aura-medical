@@ -34,7 +34,7 @@ export async function createLabResult(data: LabResultPayload): Promise<LabResult
   return response.data
 }
 
-export async function updateLabResult(id: number, data: LabResultPayload): Promise<LabResult> {
+export async function updateLabResult(id: number, data: Partial<LabResultPayload>): Promise<LabResult> {
   const response = await apiClient.put(`/api/lab-results/${id}`, data)
   return response.data
 }
@@ -63,7 +63,7 @@ export async function createBiomarkerReference(data: BiomarkerReferencePayload):
   return response.data
 }
 
-export async function updateBiomarkerReference(id: number, data: BiomarkerReferencePayload): Promise<BiomarkerReference> {
+export async function updateBiomarkerReference(id: number, data: Partial<BiomarkerReferencePayload>): Promise<BiomarkerReference> {
   const response = await apiClient.put(`/api/biomarker-references/${id}`, data)
   return response.data
 }
