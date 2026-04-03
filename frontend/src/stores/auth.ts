@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!accessToken.value)
 
   async function login(username: string, password: string) {
-    const response = await apiClient.post('/api/auth/login', { username, password })
+    const response = await apiClient.post('/api/v1/auth/login', { username, password })
     accessToken.value = response.data.access_token
     refreshToken.value = response.data.refresh_token
     localStorage.setItem('access_token', response.data.access_token)
@@ -20,13 +20,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function fetchUser() {
-    const response = await apiClient.get('/api/auth/me')
+    const response = await apiClient.get('/api/v1/auth/me')
     user.value = response.data
   }
 
   async function refresh() {
     if (!refreshToken.value) throw new Error('No refresh token')
-    const response = await apiClient.post('/api/auth/refresh', null, {
+    const response = await apiClient.post('/api/v1/auth/refresh', null, {
       params: { token: refreshToken.value },
     })
     accessToken.value = response.data.access_token

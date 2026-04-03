@@ -125,7 +125,7 @@ function applyDashboardData(data: DashboardData) {
 
 async function onMetricSaved() {
   try {
-    const dashResponse = await apiClient.get<DashboardData>('/api/dashboard/')
+    const dashResponse = await apiClient.get<DashboardData>('/api/v1/dashboard/')
     applyDashboardData(dashResponse.data)
   } catch {
     // silent
@@ -137,7 +137,7 @@ onMounted(async () => {
     if (!auth.user) {
       await auth.fetchUser()
     }
-    const dashResponse = await apiClient.get<DashboardData>('/api/dashboard/')
+    const dashResponse = await apiClient.get<DashboardData>('/api/v1/dashboard/')
     applyDashboardData(dashResponse.data)
 
     // Load vaccinations from dashboard or fallback to store
