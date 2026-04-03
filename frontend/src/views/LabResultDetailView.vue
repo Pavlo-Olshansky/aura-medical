@@ -10,6 +10,7 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import { useLabResultsStore } from '@/stores/labResults'
 import type { BiomarkerTrendPoint } from '@/api/labResults'
 import BiomarkerChart from '@/components/BiomarkerChart.vue'
+import { formatDate } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,11 +22,6 @@ const labResultId = Number(route.params.id)
 const selectedBiomarker = ref<string | null>(null)
 const trendData = ref<BiomarkerTrendPoint[]>([])
 const trendLoading = ref(false)
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 async function handleDelete() {
   confirm.require({

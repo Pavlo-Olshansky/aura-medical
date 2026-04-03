@@ -17,6 +17,7 @@ import StatusBadge from '@/components/StatusBadge.vue'
 import { useAuthStore } from '@/stores/auth'
 import BodyMap from '@/components/body-map/BodyMap.vue'
 import HealthMetricModal from '@/components/HealthMetricModal.vue'
+import { formatDate } from '@/utils/dateUtils'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -120,11 +121,6 @@ function onModalClose() {
 function addVisitFromModal() {
   modalVisible.value = false
   router.push({ name: 'visit-create', query: { body_region: selectedRegion.value || undefined } })
-}
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 function onVisitRowClick(event: { data: Visit }) {

@@ -12,6 +12,7 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
 import { BODY_REGION_OPTIONS, SPECIALTY_REGION_MAP } from '@/components/body-map/body-regions'
+import { formatDateForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -57,13 +58,6 @@ function onFileSelect(event: FileUploadSelectEvent) {
 
 function onFileClear() {
   selectedFile.value = null
-}
-
-function formatDateForApi(d: Date): string {
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
 }
 
 async function handleSubmit() {

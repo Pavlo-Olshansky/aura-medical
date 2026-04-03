@@ -12,6 +12,7 @@ import { useLabResultsStore } from '@/stores/labResults'
 import { useVisitsStore } from '@/stores/visits'
 import { useAuthStore } from '@/stores/auth'
 import type { BiomarkerReference } from '@/types'
+import { formatDateForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -41,13 +42,6 @@ const filteredBiomarkers = ref<BiomarkerReference[]>([])
 
 const saving = ref(false)
 const errorMessage = ref('')
-
-function formatDateForApi(d: Date): string {
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 function formatVisitLabel(visit: { id: number; date: string; procedure?: { name: string } | null }): string {
   const d = new Date(visit.date)

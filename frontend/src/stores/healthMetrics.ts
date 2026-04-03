@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { HealthMetric, MetricType, PaginatedResponse } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listHealthMetrics as apiListHealthMetrics,
   getHealthMetric as apiGetHealthMetric,
@@ -35,8 +36,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
       page.value = data.page
       size.value = data.size
       pages.value = data.pages
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження показників здоров\'я'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження показників здоров\'я')
       throw e
     } finally {
       loading.value = false
@@ -48,8 +49,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
     error.value = null
     try {
       currentMetric.value = await apiGetHealthMetric(id)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження показника здоров\'я'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження показника здоров\'я')
       throw e
     } finally {
       loading.value = false
@@ -62,8 +63,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
     try {
       const metric = await apiCreateHealthMetric(data)
       return metric
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка створення показника здоров\'я'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка створення показника здоров\'я')
       throw e
     } finally {
       loading.value = false
@@ -77,8 +78,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
       const metric = await apiUpdateHealthMetric(id, data)
       currentMetric.value = metric
       return metric
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка оновлення показника здоров\'я'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка оновлення показника здоров\'я')
       throw e
     } finally {
       loading.value = false
@@ -91,8 +92,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
     try {
       await apiDeleteHealthMetric(id)
       currentMetric.value = null
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка видалення показника здоров\'я'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка видалення показника здоров\'я')
       throw e
     } finally {
       loading.value = false
@@ -104,8 +105,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
     error.value = null
     try {
       return await apiGetMetricTrend(params)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження тренду показника'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження тренду показника')
       throw e
     } finally {
       loading.value = false
@@ -117,8 +118,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
     error.value = null
     try {
       metricTypes.value = await apiListMetricTypes(search)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження типів показників'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження типів показників')
       throw e
     } finally {
       loading.value = false

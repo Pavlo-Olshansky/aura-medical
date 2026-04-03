@@ -6,6 +6,7 @@ import { useVisitsStore } from '@/stores/visits'
 import DocumentPreview from '@/components/DocumentPreview.vue'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog'
+import { formatDate } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,11 +14,6 @@ const visitsStore = useVisitsStore()
 const confirm = useConfirm()
 
 const visitId = Number(route.params.id)
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 async function handleDelete() {
   confirm.require({

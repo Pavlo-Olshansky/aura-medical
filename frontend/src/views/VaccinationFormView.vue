@@ -11,6 +11,7 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog'
+import { formatDateForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -41,13 +42,6 @@ function onFileSelect(event: FileUploadSelectEvent) {
 
 function onFileClear() {
   selectedFile.value = null
-}
-
-function formatDateForApi(d: Date): string {
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
 }
 
 async function handleSubmit() {

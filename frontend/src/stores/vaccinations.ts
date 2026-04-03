@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Vaccination, PaginatedResponse } from '@/types'
+import { getErrorMessage } from '@/types/errors'
 import {
   listVaccinations as apiListVaccinations,
   getVaccination as apiGetVaccination,
@@ -30,8 +31,8 @@ export const useVaccinationsStore = defineStore('vaccinations', () => {
       page.value = data.page
       size.value = data.size
       pages.value = data.pages
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження вакцинацій'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження вакцинацій')
       throw e
     } finally {
       loading.value = false
@@ -43,8 +44,8 @@ export const useVaccinationsStore = defineStore('vaccinations', () => {
     error.value = null
     try {
       currentVaccination.value = await apiGetVaccination(id)
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка завантаження вакцинації'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка завантаження вакцинації')
       throw e
     } finally {
       loading.value = false
@@ -57,8 +58,8 @@ export const useVaccinationsStore = defineStore('vaccinations', () => {
     try {
       const vaccination = await apiCreateVaccination(formData)
       return vaccination
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка створення вакцинації'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка створення вакцинації')
       throw e
     } finally {
       loading.value = false
@@ -72,8 +73,8 @@ export const useVaccinationsStore = defineStore('vaccinations', () => {
       const vaccination = await apiUpdateVaccination(id, formData)
       currentVaccination.value = vaccination
       return vaccination
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка оновлення вакцинації'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка оновлення вакцинації')
       throw e
     } finally {
       loading.value = false
@@ -86,8 +87,8 @@ export const useVaccinationsStore = defineStore('vaccinations', () => {
     try {
       await apiDeleteVaccination(id)
       currentVaccination.value = null
-    } catch (e: any) {
-      error.value = e.response?.data?.detail || 'Помилка видалення вакцинації'
+    } catch (e: unknown) {
+      error.value = getErrorMessage(e, 'Помилка видалення вакцинації')
       throw e
     } finally {
       loading.value = false

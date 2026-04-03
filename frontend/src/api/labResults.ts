@@ -1,5 +1,6 @@
 import { apiClient } from '@/api/client'
 import type { LabResult, BiomarkerReference, PaginatedResponse } from '@/types'
+import type { LabResultPayload, BiomarkerReferencePayload } from '@/types/payloads'
 
 export interface LabResultListParams {
   page?: number
@@ -28,12 +29,12 @@ export async function getLabResult(id: number): Promise<LabResult> {
   return response.data
 }
 
-export async function createLabResult(data: any): Promise<LabResult> {
+export async function createLabResult(data: LabResultPayload): Promise<LabResult> {
   const response = await apiClient.post('/api/lab-results/', data)
   return response.data
 }
 
-export async function updateLabResult(id: number, data: any): Promise<LabResult> {
+export async function updateLabResult(id: number, data: LabResultPayload): Promise<LabResult> {
   const response = await apiClient.put(`/api/lab-results/${id}`, data)
   return response.data
 }
@@ -57,12 +58,12 @@ export async function listBiomarkerReferences(search?: string): Promise<Biomarke
   return response.data
 }
 
-export async function createBiomarkerReference(data: any): Promise<BiomarkerReference> {
+export async function createBiomarkerReference(data: BiomarkerReferencePayload): Promise<BiomarkerReference> {
   const response = await apiClient.post('/api/biomarker-references/', data)
   return response.data
 }
 
-export async function updateBiomarkerReference(id: number, data: any): Promise<BiomarkerReference> {
+export async function updateBiomarkerReference(id: number, data: BiomarkerReferencePayload): Promise<BiomarkerReference> {
   const response = await apiClient.put(`/api/biomarker-references/${id}`, data)
   return response.data
 }

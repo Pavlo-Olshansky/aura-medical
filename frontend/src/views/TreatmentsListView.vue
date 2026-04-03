@@ -8,6 +8,7 @@ import Dropdown from 'primevue/dropdown'
 import type { DataTablePageEvent } from 'primevue/datatable'
 import { useTreatmentsStore } from '@/stores/treatments'
 import StatusBadge from '@/components/StatusBadge.vue'
+import { formatDate } from '@/utils/dateUtils'
 
 const router = useRouter()
 const treatmentsStore = useTreatmentsStore()
@@ -20,11 +21,6 @@ const statusOptions = [
   { label: 'В процесі', value: 'active' },
   { label: 'Готово', value: 'completed' },
 ]
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 async function loadTreatments() {
   const params: Record<string, any> = {

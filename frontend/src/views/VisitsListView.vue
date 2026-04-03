@@ -10,6 +10,7 @@ import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
 import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
 import type { Visit } from '@/types'
+import { formatDate } from '@/utils/dateUtils'
 
 const router = useRouter()
 const visitsStore = useVisitsStore()
@@ -25,11 +26,6 @@ const selectedClinic = ref<number | null>(null)
 const selectedCity = ref<number | null>(null)
 const selectedProcedure = ref<number | null>(null)
 const selectedPosition = ref<number | null>(null)
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' })
-}
 
 function formatDateParam(date: Date): string {
   const year = date.getFullYear()
