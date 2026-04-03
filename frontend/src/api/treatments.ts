@@ -16,25 +16,25 @@ export interface TreatmentPayload {
 }
 
 export async function listTreatments(params?: TreatmentListParams): Promise<PaginatedResponse<Treatment>> {
-  const response = await apiClient.get('/api/treatments/', { params })
+  const response = await apiClient.get('/api/v1/treatments/', { params })
   return response.data
 }
 
 export async function getTreatment(id: number): Promise<Treatment> {
-  const response = await apiClient.get(`/api/treatments/${id}`)
+  const response = await apiClient.get(`/api/v1/treatments/${id}`)
   return response.data
 }
 
 export async function createTreatment(data: TreatmentPayload): Promise<Treatment> {
-  const response = await apiClient.post('/api/treatments/', data)
+  const response = await apiClient.post('/api/v1/treatments/', data)
   return response.data
 }
 
 export async function updateTreatment(id: number, data: TreatmentPayload): Promise<Treatment> {
-  const response = await apiClient.put(`/api/treatments/${id}`, data)
+  const response = await apiClient.put(`/api/v1/treatments/${id}`, data)
   return response.data
 }
 
 export async function deleteTreatment(id: number): Promise<void> {
-  await apiClient.delete(`/api/treatments/${id}`)
+  await apiClient.delete(`/api/v1/treatments/${id}`)
 }

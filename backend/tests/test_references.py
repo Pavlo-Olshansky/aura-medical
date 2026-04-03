@@ -11,7 +11,7 @@ from app.models import City, Clinic, Position, Procedure, User, Visit
 @pytest.mark.asyncio
 async def test_create_position(client: AsyncClient, auth_headers: dict):
     response = await client.post(
-        "/api/positions/",
+        "/api/v1/positions/",
         json={"name": "Терапевт"},
         headers=auth_headers,
     )
@@ -32,14 +32,14 @@ async def test_list_positions_with_search(client: AsyncClient, auth_headers: dic
     await session.commit()
 
     # List all
-    response = await client.get("/api/positions/", headers=auth_headers)
+    response = await client.get("/api/v1/positions/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 3
 
     # Search
     response = await client.get(
-        "/api/positions/", params={"search": "Терап"}, headers=auth_headers
+        "/api/v1/positions/", params={"search": "Терап"}, headers=auth_headers
     )
     assert response.status_code == 200
     data = response.json()
@@ -55,7 +55,7 @@ async def test_update_position(client: AsyncClient, auth_headers: dict, session:
     await session.refresh(pos)
 
     response = await client.put(
-        f"/api/positions/{pos.id}",
+        f"/api/v1/positions/{pos.id}",
         json={"name": "Лікар-терапевт"},
         headers=auth_headers,
     )
@@ -73,12 +73,12 @@ async def test_delete_position(client: AsyncClient, auth_headers: dict, session:
     await session.refresh(pos)
 
     response = await client.delete(
-        f"/api/positions/{pos.id}", headers=auth_headers
+        f"/api/v1/positions/{pos.id}", headers=auth_headers
     )
     assert response.status_code == 204
 
     # Verify deleted
-    response = await client.get("/api/positions/", headers=auth_headers)
+    response = await client.get("/api/v1/positions/", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()) == 0
 
@@ -101,7 +101,7 @@ async def test_delete_position_referenced_by_visit(
     await session.commit()
 
     response = await client.delete(
-        f"/api/positions/{pos.id}", headers=auth_headers
+        f"/api/v1/positions/{pos.id}", headers=auth_headers
     )
     assert response.status_code == 409
     assert "referenced by 1 visit(s)" in response.json()["detail"]
@@ -110,14 +110,14 @@ async def test_delete_position_referenced_by_visit(
 @pytest.mark.asyncio
 async def test_duplicate_name_returns_409(client: AsyncClient, auth_headers: dict):
     response = await client.post(
-        "/api/positions/",
+        "/api/v1/positions/",
         json={"name": "Терапевт"},
         headers=auth_headers,
     )
     assert response.status_code == 201
 
     response = await client.post(
-        "/api/positions/",
+        "/api/v1/positions/",
         json={"name": "Терапевт"},
         headers=auth_headers,
     )
@@ -129,7 +129,7 @@ async def test_duplicate_name_returns_409(client: AsyncClient, auth_headers: dic
 async def test_crud_clinics(client: AsyncClient, auth_headers: dict, session: AsyncSession):
     # Create
     response = await client.post(
-        "/api/clinics/",
+        "/api/v1/clinics/",
         json={"name": "Клініка Борис"},
         headers=auth_headers,
     )
@@ -137,13 +137,13 @@ async def test_crud_clinics(client: AsyncClient, auth_headers: dict, session: As
     clinic_id = response.json()["id"]
 
     # List
-    response = await client.get("/api/clinics/", headers=auth_headers)
+    response = await client.get("/api/v1/clinics/", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()) == 1
 
     # Update
     response = await client.put(
-        f"/api/clinics/{clinic_id}",
+        f"/api/v1/clinics/{clinic_id}",
         json={"name": "Клініка Добробут"},
         headers=auth_headers,
     )
@@ -152,11 +152,11 @@ async def test_crud_clinics(client: AsyncClient, auth_headers: dict, session: As
 
     # Delete
     response = await client.delete(
-        f"/api/clinics/{clinic_id}", headers=auth_headers
+        f"/api/v1/clinics/{clinic_id}", headers=auth_headers
     )
     assert response.status_code == 204
 
     # Verify deleted
-    response = await client.get("/api/clinics/", headers=auth_headers)
+    response = await client.get("/api/v1/clinics/", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()) == 0

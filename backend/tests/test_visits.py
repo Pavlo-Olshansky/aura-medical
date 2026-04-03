@@ -55,7 +55,7 @@ async def test_create_visit(
     city: City,
 ):
     response = await client.post(
-        "/api/visits/",
+        "/api/v1/visits/",
         headers=auth_headers,
         data={
             "date": "2026-03-15T10:00:00",
@@ -97,7 +97,7 @@ async def test_list_visits_paginated(
     await session.commit()
 
     response = await client.get(
-        "/api/visits/",
+        "/api/v1/visits/",
         headers=auth_headers,
         params={"page": 1, "size": 2},
     )
@@ -135,7 +135,7 @@ async def test_get_visit_detail(
     await session.refresh(visit)
 
     response = await client.get(
-        f"/api/visits/{visit.id}",
+        f"/api/v1/visits/{visit.id}",
         headers=auth_headers,
     )
     assert response.status_code == 200
@@ -165,7 +165,7 @@ async def test_update_visit(
     await session.refresh(visit)
 
     response = await client.put(
-        f"/api/visits/{visit.id}",
+        f"/api/v1/visits/{visit.id}",
         headers=auth_headers,
         data={
             "doctor": "Петров П.П.",
@@ -194,13 +194,13 @@ async def test_soft_delete_visit(
     await session.refresh(visit)
 
     response = await client.delete(
-        f"/api/visits/{visit.id}",
+        f"/api/v1/visits/{visit.id}",
         headers=auth_headers,
     )
     assert response.status_code == 204
 
     response = await client.get(
-        f"/api/visits/{visit.id}",
+        f"/api/v1/visits/{visit.id}",
         headers=auth_headers,
     )
     assert response.status_code == 404
@@ -220,7 +220,7 @@ async def test_filter_visits_by_date(
     await session.commit()
 
     response = await client.get(
-        "/api/visits/",
+        "/api/v1/visits/",
         headers=auth_headers,
         params={"date_from": "2026-03-01", "date_to": "2026-04-01"},
     )
@@ -237,7 +237,7 @@ async def test_visit_not_found(
     test_user,
 ):
     response = await client.get(
-        "/api/visits/99999",
+        "/api/v1/visits/99999",
         headers=auth_headers,
     )
     assert response.status_code == 404
@@ -251,7 +251,7 @@ async def test_create_visit_with_price(
     test_user,
 ):
     response = await client.post(
-        "/api/visits/",
+        "/api/v1/visits/",
         headers=auth_headers,
         data={
             "date": "2026-03-15T10:00:00",
@@ -282,7 +282,7 @@ async def test_update_visit_price(
     await session.refresh(visit)
 
     response = await client.put(
-        f"/api/visits/{visit.id}",
+        f"/api/v1/visits/{visit.id}",
         headers=auth_headers,
         data={
             "price": "2500.50",
@@ -301,7 +301,7 @@ async def test_visit_price_null(
     test_user,
 ):
     response = await client.post(
-        "/api/visits/",
+        "/api/v1/visits/",
         headers=auth_headers,
         data={
             "date": "2026-03-15T10:00:00",

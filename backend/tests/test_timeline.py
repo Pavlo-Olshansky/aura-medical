@@ -82,7 +82,7 @@ async def timeline_data(session: AsyncSession, test_user):
 async def test_timeline_returns_mixed_events(
     client: AsyncClient, auth_headers: dict, test_user, timeline_data,
 ):
-    response = await client.get("/api/timeline/", headers=auth_headers)
+    response = await client.get("/api/v1/timeline/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 4
@@ -106,7 +106,7 @@ async def test_timeline_filter_by_event_type(
     client: AsyncClient, auth_headers: dict, test_user, timeline_data,
 ):
     response = await client.get(
-        "/api/timeline/",
+        "/api/v1/timeline/",
         params={"event_type": "visit"},
         headers=auth_headers,
     )
@@ -116,7 +116,7 @@ async def test_timeline_filter_by_event_type(
     assert data["items"][0]["event_type"] == "visit"
 
     response = await client.get(
-        "/api/timeline/",
+        "/api/v1/timeline/",
         params={"event_type": "treatment"},
         headers=auth_headers,
     )
@@ -131,7 +131,7 @@ async def test_timeline_pagination(
     client: AsyncClient, auth_headers: dict, test_user, timeline_data,
 ):
     response = await client.get(
-        "/api/timeline/",
+        "/api/v1/timeline/",
         params={"page": 1, "size": 2},
         headers=auth_headers,
     )
@@ -145,7 +145,7 @@ async def test_timeline_pagination(
 
     # Page 2
     response = await client.get(
-        "/api/timeline/",
+        "/api/v1/timeline/",
         params={"page": 2, "size": 2},
         headers=auth_headers,
     )
@@ -189,7 +189,7 @@ async def test_timeline_excludes_deleted(
 
     await session.commit()
 
-    response = await client.get("/api/timeline/", headers=auth_headers)
+    response = await client.get("/api/v1/timeline/", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()
 

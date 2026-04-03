@@ -8,20 +8,20 @@ export async function listResource(resource: ReferenceResource, search?: string)
   if (search) {
     params.search = search
   }
-  const response = await apiClient.get(`/api/${resource}/`, { params })
+  const response = await apiClient.get(`/api/v1/${resource}/`, { params })
   return response.data
 }
 
 export async function createResource(resource: ReferenceResource, name: string): Promise<Reference> {
-  const response = await apiClient.post(`/api/${resource}/`, { name })
+  const response = await apiClient.post(`/api/v1/${resource}/`, { name })
   return response.data
 }
 
 export async function updateResource(resource: ReferenceResource, id: number, name: string): Promise<Reference> {
-  const response = await apiClient.put(`/api/${resource}/${id}`, { name })
+  const response = await apiClient.put(`/api/v1/${resource}/${id}`, { name })
   return response.data
 }
 
 export async function deleteResource(resource: ReferenceResource, id: number): Promise<void> {
-  await apiClient.delete(`/api/${resource}/${id}`)
+  await apiClient.delete(`/api/v1/${resource}/${id}`)
 }

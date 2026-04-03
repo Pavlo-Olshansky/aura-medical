@@ -15,29 +15,29 @@ export interface VisitListParams {
 }
 
 export async function listVisits(params?: VisitListParams): Promise<PaginatedResponse<Visit>> {
-  const response = await apiClient.get('/api/visits/', { params })
+  const response = await apiClient.get('/api/v1/visits/', { params })
   return response.data
 }
 
 export async function getVisit(id: number): Promise<Visit> {
-  const response = await apiClient.get(`/api/visits/${id}`)
+  const response = await apiClient.get(`/api/v1/visits/${id}`)
   return response.data
 }
 
 export async function createVisit(formData: FormData): Promise<Visit> {
-  const response = await apiClient.post('/api/visits/', formData, {
+  const response = await apiClient.post('/api/v1/visits/', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
   return response.data
 }
 
 export async function updateVisit(id: number, formData: FormData): Promise<Visit> {
-  const response = await apiClient.put(`/api/visits/${id}`, formData, {
+  const response = await apiClient.put(`/api/v1/visits/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
   return response.data
 }
 
 export async function deleteVisit(id: number): Promise<void> {
-  await apiClient.delete(`/api/visits/${id}`)
+  await apiClient.delete(`/api/v1/visits/${id}`)
 }

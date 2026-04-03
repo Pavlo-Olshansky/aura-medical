@@ -10,6 +10,6 @@ export interface TimelineListParams {
 }
 
 export async function listTimeline(params?: TimelineListParams): Promise<PaginatedResponse<TimelineEvent>> {
-  const response = await apiClient.get('/api/timeline/', { params })
+  const response = await apiClient.get('/api/v1/timeline/', { params })
   return response.data
 }
