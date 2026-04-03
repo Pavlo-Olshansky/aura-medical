@@ -302,7 +302,7 @@ onMounted(async () => {
     <ConfirmDialog />
     <h1>Довідники</h1>
 
-    <TabView>
+    <TabView value="positions">
       <!-- Simple reference tabs -->
       <TabPanel v-for="tab in tabs" :key="tab.resource" :value="tab.resource" :header="tab.label">
         <ReferenceTable
