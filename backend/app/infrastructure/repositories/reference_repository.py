@@ -23,7 +23,22 @@ class SqlAlchemyReferenceRepository:
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
 
-    async def list_all(self) -> list[Reference]:
+    async def list_all(self, sort_by_recent: bool = False, user_id: int | None = None) -> list[Reference]:
+        if sort_by_recent and user_id is not None:
+            fk_column = getattr(VisitModel, self._visit_fk_name)
+            stmt = (
+                select(self._model_class, func.max(VisitModel.date).label("last_used"))
+                .outerjoin(
+                    VisitModel,
+                    (fk_column == self._model_class.id)
+                    & (VisitModel.user_id == user_id)
+                    & (VisitModel.deleted_at.is_(None)),
+                )
+                .group_by(self._model_class.id)
+                .order_by(func.max(VisitModel.date).desc().nulls_last(), self._model_class.name)
+            )
+            result = await self._session.execute(stmt)
+            return [self._to_entity(row[0]) for row in result.all()]
         result = await self._session.execute(
             select(self._model_class).order_by(self._model_class.name)
         )

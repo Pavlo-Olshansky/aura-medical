@@ -50,10 +50,10 @@ export const useReferencesStore = defineStore('references', () => {
     error.value = null
     try {
       const [pos, proc, clin, cit] = await Promise.all([
-        listResource('positions'),
-        listResource('procedures'),
-        listResource('clinics'),
-        listResource('cities'),
+        listResource('positions', undefined, 'recent'),
+        listResource('procedures', undefined, 'recent'),
+        listResource('clinics', undefined, 'recent'),
+        listResource('cities', undefined, 'recent'),
       ])
       positions.value = pos
       procedures.value = proc

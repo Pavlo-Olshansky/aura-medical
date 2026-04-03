@@ -19,10 +19,15 @@ def _create_reference_router(get_service) -> APIRouter:
     @router.get("/", response_model=List[ReferenceResponse])
     async def list_items(
         search: Optional[str] = None,
+        sort: Optional[str] = None,
         current_user: User = Depends(get_current_user),
         service: ReferenceAppService = Depends(get_service),
     ):
-        items = await service.list_all()
+        sort_by_recent = sort == "recent"
+        items = await service.list_all(
+            sort_by_recent=sort_by_recent,
+            user_id=current_user.id if sort_by_recent else None,
+        )
         if search:
             items = [r for r in items if search.lower() in r.name.lower()]
         return [ReferenceResponse.model_validate(r) for r in items]
