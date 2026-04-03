@@ -39,7 +39,7 @@ export async function createHealthMetric(data: HealthMetricPayload): Promise<Hea
   return response.data
 }
 
-export async function updateHealthMetric(id: number, data: HealthMetricPayload): Promise<HealthMetric> {
+export async function updateHealthMetric(id: number, data: Partial<HealthMetricPayload>): Promise<HealthMetric> {
   const response = await apiClient.put(`/api/health-metrics/${id}`, data)
   return response.data
 }
@@ -76,7 +76,7 @@ export async function createMetricType(data: MetricTypePayload): Promise<MetricT
   return response.data
 }
 
-export async function updateMetricType(id: number, data: MetricTypePayload): Promise<MetricType> {
+export async function updateMetricType(id: number, data: Partial<MetricTypePayload>): Promise<MetricType> {
   const response = await apiClient.put(`/api/metric-types/${id}`, data)
   return response.data
 }

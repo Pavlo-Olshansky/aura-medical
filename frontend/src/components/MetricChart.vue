@@ -1,32 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from 'chart.js'
-import annotationPlugin from 'chartjs-plugin-annotation'
+import '@/utils/chartSetup'
 import Chart from 'primevue/chart'
 import type { MetricType } from '@/types'
 import { formatDate } from '@/utils/dateUtils'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  annotationPlugin,
-)
 
 interface DataPoint {
   date: string
