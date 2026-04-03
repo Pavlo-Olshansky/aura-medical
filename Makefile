@@ -1,4 +1,4 @@
-.PHONY: help backend frontend dev test test-backend lint build db-create db-migrate db-revision backup install
+.PHONY: help backend frontend dev test test-backend lint build db-create db-migrate db-revision seed docker-up docker-down docker-seed docker-logs backup install
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -41,6 +41,23 @@ db-migrate: ## Run Alembic migrations
 
 db-revision: ## Generate new Alembic migration (usage: make db-revision msg="add column")
 	cd backend && source venv/bin/activate && alembic revision --autogenerate -m "$(msg)"
+
+seed: ## Create default admin/admin user
+	cd backend && python -m scripts.create_user admin admin
+
+# --- Docker ---
+
+docker-up: ## Start dev environment with Docker Compose
+	docker compose up --build -d
+
+docker-down: ## Stop Docker Compose services
+	docker compose down
+
+docker-seed: ## Create admin user in Docker backend
+	docker compose exec backend python -m scripts.create_user admin admin
+
+docker-logs: ## Tail Docker Compose logs
+	docker compose logs -f
 
 backup: ## Backup PostgreSQL database to backups/
 	@mkdir -p backups
