@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
+    RATE_LIMIT: str = "10/minute"
+    LOG_LEVEL: str = "DEBUG"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
