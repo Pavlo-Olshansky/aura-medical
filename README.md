@@ -4,7 +4,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 
 ## Demo
 
-<video src="medical.mp4" autoplay loop muted playsinline width="100%"></video>
+https://github.com/user-attachments/assets/35c7350c-872b-4c25-beb1-305e48e2c4a8
 
 
 ## Features
