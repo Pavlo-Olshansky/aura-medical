@@ -33,7 +33,7 @@ async function fetchDocument() {
 
   loading.value = true
   try {
-    const response = await apiClient.get(`/api/visits/${props.visitId}/document`, {
+    const response = await apiClient.get(`/api/v1/visits/${props.visitId}/document`, {
       responseType: 'blob',
     })
     blobUrl.value = URL.createObjectURL(response.data)
