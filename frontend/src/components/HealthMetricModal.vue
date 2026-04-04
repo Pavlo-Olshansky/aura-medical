@@ -13,6 +13,7 @@ import { formatDateTimeForApi } from '@/utils/dateUtils'
 
 const props = defineProps<{
   visible: boolean
+  preselectedType?: MetricType | null
 }>()
 
 const emit = defineEmits<{
@@ -49,7 +50,7 @@ watch(() => props.visible, async (val) => {
 })
 
 function resetForm() {
-  selectedMetricType.value = null
+  selectedMetricType.value = props.preselectedType ?? null
   value.value = null
   secondaryValue.value = null
   date.value = new Date()
