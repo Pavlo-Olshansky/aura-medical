@@ -64,7 +64,6 @@ const FACE_HOTSPOTS_FEMALE: HotspotData[] = [
 const props = defineProps<{
   selectedRegion: BodyRegionKey | null
   sex?: string
-  treatmentRegions?: string[]
 }>()
 
 const panels = computed(() => {
@@ -116,7 +115,6 @@ function hotspotClasses(region: BodyRegionKey) {
     hotspot: true,
     hovered: hoveredRegion.value === region,
     selected: props.selectedRegion === region,
-    'has-treatment': props.treatmentRegions?.includes(region) ?? false,
   }
 }
 
@@ -327,16 +325,6 @@ const tooltipLabel = computed(() => {
 
 .hotspot.selected {
   background: rgba(0, 240, 255, 0.12);
-  border-color: rgba(0, 240, 255, 0.7);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-}
-
-.hotspot.has-treatment {
-  border-color: #F59E0B;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
-}
-
-.hotspot.selected.has-treatment {
   border-color: rgba(0, 240, 255, 0.7);
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
 }
