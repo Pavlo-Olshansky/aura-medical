@@ -23,7 +23,6 @@ const activeTreatmentsCount = ref(0)
 const totalTreatments = ref(0)
 const recentVisits = ref<Visit[]>([])
 const activeTreatments = ref<any[]>([])
-const treatmentRegions = ref<string[]>([])
 
 // Vaccination data
 const upcomingVaccinations = ref<Vaccination[]>([])
@@ -51,7 +50,7 @@ async function fetchModalVisits() {
   if (!selectedRegion.value) return
   modalLoading.value = true
   try {
-    const response = await apiClient.get<PaginatedResponse<Visit>>('/api/visits/', {
+    const response = await apiClient.get<PaginatedResponse<Visit>>('/api/v1/visits/', {
       params: {
         body_region: selectedRegion.value,
         page: modalPage.value,
@@ -116,7 +115,6 @@ function applyDashboardData(data: DashboardData) {
   activeTreatmentsCount.value = data.active_treatments_count
   recentVisits.value = data.recent_visits
   activeTreatments.value = data.active_treatments
-  treatmentRegions.value = data.treatment_regions
   expensesYear.value = data.expenses_year ?? null
   expensesTotal.value = data.expenses_total ?? null
   if (data.upcoming_vaccinations) upcomingVaccinations.value = data.upcoming_vaccinations
@@ -176,7 +174,6 @@ onMounted(async () => {
     <DashboardBodyMap
       :selected-region="selectedRegion"
       :sex="auth.user?.sex"
-      :treatment-regions="treatmentRegions"
       v-model:modal-visible="modalVisible"
       :modal-visits="modalVisits"
       :modal-total="modalTotal"

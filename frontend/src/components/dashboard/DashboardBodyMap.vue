@@ -14,7 +14,6 @@ import { formatDate } from '@/utils/dateUtils'
 const props = defineProps<{
   selectedRegion: BodyRegionKey | null
   sex: string | undefined
-  treatmentRegions: string[]
   modalVisible: boolean
   modalVisits: Visit[]
   modalTotal: number
@@ -45,7 +44,6 @@ const modalHeader = computed(() => {
       <BodyMap
         :selected-region="selectedRegion"
         :sex="sex"
-        :treatment-regions="treatmentRegions"
         @select="(region: BodyRegionKey | null) => emit('region-select', region)"
       />
     </div>

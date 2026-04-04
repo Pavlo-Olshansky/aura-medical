@@ -41,7 +41,6 @@ class DashboardResponse(BaseModel):
     total_visits: int
     total_treatments: int
     active_treatments_count: int
-    treatment_regions: List[str]
     upcoming_vaccinations: List[VaccinationAlert] = []
     overdue_vaccinations: List[VaccinationAlert] = []
     expenses_year: float = 0
@@ -76,7 +75,6 @@ async def get_dashboard(
         total_visits=data["total_visits"],
         total_treatments=len(data["all_treatments"]),
         active_treatments_count=len(data["active_treatments"]),
-        treatment_regions=data["treatment_regions"],
         upcoming_vaccinations=[VaccinationAlert(**v) for v in data.get("upcoming_vaccinations", [])],
         overdue_vaccinations=[VaccinationAlert(**v) for v in data.get("overdue_vaccinations", [])],
         expenses_year=data.get("expenses_year", 0),

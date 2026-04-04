@@ -168,7 +168,6 @@ export interface DashboardData {
   total_visits: number
   total_treatments: number
   active_treatments_count: number
-  treatment_regions: string[]
   upcoming_vaccinations?: Vaccination[]
   overdue_vaccinations?: Vaccination[]
   expenses_year?: number

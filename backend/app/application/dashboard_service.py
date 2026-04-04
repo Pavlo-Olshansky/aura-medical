@@ -34,17 +34,11 @@ class DashboardAppService:
         all_treatments = await self._treatment_repo.list_all(user_id)
         active = [t for t in all_treatments if t.status == "active"]
 
-        treatment_regions = list({
-            t.body_region for t in active
-            if t.body_region and t.body_region != "whole_body"
-        })
-
         result = {
             "recent_visits": recent_visits,
             "total_visits": total_visits,
             "all_treatments": all_treatments,
             "active_treatments": active,
-            "treatment_regions": treatment_regions,
         }
 
         if self._session:
