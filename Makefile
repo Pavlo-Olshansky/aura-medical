@@ -6,7 +6,7 @@ help: ## Show this help
 # --- Development ---
 
 backend: ## Start backend dev server (port 8000)
-	cd backend && source venv/bin/activate && uvicorn app.main:app --reload --port 8000
+	cd backend && source venv3.14/bin/activate && uvicorn app.main:app --reload --port 8000
 
 frontend: ## Start frontend dev server (port 5173)
 	cd frontend && npm run dev
@@ -21,7 +21,7 @@ dev: ## Start both backend and frontend
 test: test-backend ## Run all tests
 
 test-backend: ## Run backend tests
-	cd backend && source venv/bin/activate && pytest tests/ -v
+	cd backend && source venv3.14/bin/activate && pytest tests/ -v
 
 # --- Build & Lint ---
 
@@ -37,10 +37,10 @@ db-create: ## Create PostgreSQL database
 	createdb medtracker
 
 db-migrate: ## Run Alembic migrations
-	cd backend && source venv/bin/activate && alembic upgrade head
+	cd backend && source venv3.14/bin/activate && alembic upgrade head
 
 db-revision: ## Generate new Alembic migration (usage: make db-revision msg="add column")
-	cd backend && source venv/bin/activate && alembic revision --autogenerate -m "$(msg)"
+	cd backend && source venv3.14/bin/activate && alembic revision --autogenerate -m "$(msg)"
 
 seed: ## Create default admin/admin user
 	cd backend && python -m scripts.create_user admin admin
@@ -70,7 +70,7 @@ backup: ## Backup PostgreSQL database to backups/
 install: install-backend install-frontend ## Install all dependencies
 
 install-backend: ## Install backend dependencies
-	cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+	cd backend && python3.14 -m venv venv3.14 && source venv3.14/bin/activate && pip install -r requirements.txt
 
 install-frontend: ## Install frontend dependencies
 	cd frontend && npm install
