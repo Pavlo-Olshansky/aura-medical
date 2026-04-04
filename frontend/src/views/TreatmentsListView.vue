@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -9,13 +9,18 @@ import type { DataTablePageEvent } from 'primevue/datatable'
 import { useTreatmentsStore } from '@/stores/treatments'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { formatDate } from '@/utils/dateUtils'
+import { useUrlFilters } from '@/composables/useUrlFilters'
 
 const router = useRouter()
 const treatmentsStore = useTreatmentsStore()
 
-const currentPage = ref(1)
-const pageSize = ref(20)
-const statusFilter = ref<'active' | 'completed' | null>(null)
+const filterDefs = [
+  { name: 'status', type: 'string', default: null },
+  { name: 'page', type: 'number', default: 1 },
+  { name: 'size', type: 'number', default: 20 },
+] as const
+
+const filters = useUrlFilters(filterDefs)
 
 const statusOptions = [
   { label: 'В процесі', value: 'active' },
@@ -24,17 +29,18 @@ const statusOptions = [
 
 async function loadTreatments() {
   const params: Record<string, any> = {
-    page: currentPage.value,
-    size: pageSize.value,
+    page: filters.page.value,
+    size: filters.size.value,
   }
-  if (statusFilter.value) params.status = statusFilter.value
+  if (filters.status.value) params.status = filters.status.value
 
   await treatmentsStore.fetchTreatments(params)
 }
 
 function onPage(event: DataTablePageEvent) {
-  currentPage.value = event.page + 1
-  pageSize.value = event.rows
+  filters.page.value = event.page + 1
+  filters.size.value = event.rows
+  filters.syncToUrl()
   loadTreatments()
 }
 
@@ -42,8 +48,9 @@ function onRowClick(event: { data: { id: number } }) {
   router.push({ name: 'treatment-edit', params: { id: event.data.id } })
 }
 
-watch(statusFilter, () => {
-  currentPage.value = 1
+watch(filters.status, () => {
+  filters.page.value = 1
+  filters.syncToUrl()
   loadTreatments()
 })
 
@@ -63,7 +70,7 @@ onMounted(() => {
       <div class="filter-item">
         <label>Статус</label>
         <Dropdown
-          v-model="statusFilter"
+          v-model="filters.status.value"
           :options="statusOptions"
           optionLabel="label"
           optionValue="value"
@@ -78,7 +85,7 @@ onMounted(() => {
       :loading="treatmentsStore.loading"
       :lazy="true"
       :paginator="true"
-      :rows="pageSize"
+      :rows="filters.size.value ?? 20"
       :totalRecords="treatmentsStore.total"
       :rowsPerPageOptions="[10, 20, 50]"
       @page="onPage"

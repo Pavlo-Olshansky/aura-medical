@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
@@ -14,6 +15,8 @@ import MetricChart from '@/components/MetricChart.vue'
 import HealthMetricModal from '@/components/HealthMetricModal.vue'
 import { formatDate } from '@/utils/dateUtils'
 
+const route = useRoute()
+const router = useRouter()
 const healthMetricsStore = useHealthMetricsStore()
 const confirm = useConfirm()
 const toast = useToast()
@@ -49,9 +52,18 @@ const showSecondaryColumn = computed(() => {
   return selectedType.value?.has_secondary_value ?? false
 })
 
+function updateUrl() {
+  const query: Record<string, string> = {}
+  if (selectedType.value) query.metric_type_id = String(selectedType.value.id)
+  if (currentPage.value !== 1) query.page = String(currentPage.value)
+  if (pageSize.value !== 20) query.size = String(pageSize.value)
+  router.replace({ query })
+}
+
 async function selectType(type: MetricType) {
   selectedType.value = type
   currentPage.value = 1
+  updateUrl()
   await Promise.all([loadMetrics(), loadTrend()])
 }
 
@@ -83,6 +95,7 @@ async function loadTrend() {
 function onPage(event: DataTablePageEvent) {
   currentPage.value = event.page + 1
   pageSize.value = event.rows
+  updateUrl()
   loadMetrics()
 }
 
@@ -125,9 +138,27 @@ async function onModalSaved() {
 
 onMounted(async () => {
   await healthMetricsStore.fetchMetricTypes()
-  const first = healthMetricsStore.metricTypes[0]
-  if (first) {
-    await selectType(first)
+
+  // Restore type from URL or default to first
+  const urlTypeId = route.query.metric_type_id ? parseInt(route.query.metric_type_id as string, 10) : null
+  const urlPage = route.query.page ? parseInt(route.query.page as string, 10) : 1
+  const urlSize = route.query.size ? parseInt(route.query.size as string, 10) : 20
+
+  if (urlPage > 0) currentPage.value = urlPage
+  if (urlSize > 0) pageSize.value = urlSize
+
+  let typeToSelect: MetricType | undefined
+  if (urlTypeId) {
+    typeToSelect = healthMetricsStore.metricTypes.find((t) => t.id === urlTypeId)
+  }
+  if (!typeToSelect) {
+    typeToSelect = healthMetricsStore.metricTypes[0]
+  }
+
+  if (typeToSelect) {
+    selectedType.value = typeToSelect
+    updateUrl()
+    await Promise.all([loadMetrics(), loadTrend()])
   }
 })
 </script>
@@ -209,6 +240,7 @@ onMounted(async () => {
 
     <HealthMetricModal
       v-model:visible="modalVisible"
+      :preselectedType="selectedType"
       @saved="onModalSaved"
     />
   </div>
