@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -10,15 +10,19 @@ import type { DataTablePageEvent } from 'primevue/datatable'
 import { useLabResultsStore } from '@/stores/labResults'
 import type { LabResult } from '@/types'
 import { formatDate } from '@/utils/dateUtils'
+import { useUrlFilters } from '@/composables/useUrlFilters'
 
 const router = useRouter()
 const labResultsStore = useLabResultsStore()
 
-const currentPage = ref(1)
-const pageSize = ref(20)
+const filterDefs = [
+  { name: 'date_from', type: 'date', default: null },
+  { name: 'date_to', type: 'date', default: null },
+  { name: 'page', type: 'number', default: 1 },
+  { name: 'size', type: 'number', default: 20 },
+] as const
 
-const dateFrom = ref<Date | null>(null)
-const dateTo = ref<Date | null>(null)
+const filters = useUrlFilters(filterDefs)
 
 function formatDateParam(date: Date): string {
   const year = date.getFullYear()
@@ -29,20 +33,21 @@ function formatDateParam(date: Date): string {
 
 async function loadLabResults() {
   const params: Record<string, any> = {
-    page: currentPage.value,
-    size: pageSize.value,
+    page: filters.page.value,
+    size: filters.size.value,
     sort_by: 'date',
     sort_order: 'desc',
   }
-  if (dateFrom.value) params.date_from = formatDateParam(dateFrom.value)
-  if (dateTo.value) params.date_to = formatDateParam(dateTo.value)
+  if (filters.date_from.value) params.date_from = formatDateParam(filters.date_from.value)
+  if (filters.date_to.value) params.date_to = formatDateParam(filters.date_to.value)
 
   await labResultsStore.fetchLabResults(params)
 }
 
 function onPage(event: DataTablePageEvent) {
-  currentPage.value = event.page + 1
-  pageSize.value = event.rows
+  filters.page.value = event.page + 1
+  filters.size.value = event.rows
+  filters.syncToUrl()
   loadLabResults()
 }
 
@@ -51,14 +56,13 @@ function onRowClick(event: { data: LabResult }) {
 }
 
 function clearFilters() {
-  dateFrom.value = null
-  dateTo.value = null
-  currentPage.value = 1
+  filters.clearAll()
   loadLabResults()
 }
 
-watch([dateFrom, dateTo], () => {
-  currentPage.value = 1
+watch([filters.date_from, filters.date_to], () => {
+  filters.page.value = 1
+  filters.syncToUrl()
   loadLabResults()
 })
 
@@ -78,11 +82,11 @@ onMounted(() => {
       <div class="filter-row">
         <div class="filter-item">
           <label>Дата від</label>
-          <Calendar v-model="dateFrom" dateFormat="dd.mm.yy" placeholder="Дата від" showIcon />
+          <Calendar v-model="filters.date_from.value" dateFormat="dd.mm.yy" placeholder="Дата від" showIcon />
         </div>
         <div class="filter-item">
           <label>Дата до</label>
-          <Calendar v-model="dateTo" dateFormat="dd.mm.yy" placeholder="Дата до" showIcon />
+          <Calendar v-model="filters.date_to.value" dateFormat="dd.mm.yy" placeholder="Дата до" showIcon />
         </div>
         <div class="filter-item filter-actions">
           <Button label="Очистити" icon="pi pi-filter-slash" severity="secondary" text @click="clearFilters" />
@@ -95,7 +99,7 @@ onMounted(() => {
       :loading="labResultsStore.loading"
       :lazy="true"
       :paginator="true"
-      :rows="pageSize"
+      :rows="filters.size.value ?? 20"
       :totalRecords="labResultsStore.total"
       :rowsPerPageOptions="[10, 20, 50]"
       @page="onPage"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -11,21 +11,25 @@ import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
 import type { Visit } from '@/types'
 import { formatDate } from '@/utils/dateUtils'
+import { useUrlFilters } from '@/composables/useUrlFilters'
 
 const router = useRouter()
 const visitsStore = useVisitsStore()
 const referencesStore = useReferencesStore()
 
-const currentPage = ref(1)
-const pageSize = ref(20)
-const sortOrder = ref<'asc' | 'desc'>('desc')
+const filterDefs = [
+  { name: 'date_from', type: 'date', default: null },
+  { name: 'date_to', type: 'date', default: null },
+  { name: 'clinic_id', type: 'number', default: null },
+  { name: 'city_id', type: 'number', default: null },
+  { name: 'procedure_id', type: 'number', default: null },
+  { name: 'position_id', type: 'number', default: null },
+  { name: 'page', type: 'number', default: 1 },
+  { name: 'size', type: 'number', default: 20 },
+  { name: 'sort_order', type: 'string', default: 'desc' },
+] as const
 
-const dateFrom = ref<Date | null>(null)
-const dateTo = ref<Date | null>(null)
-const selectedClinic = ref<number | null>(null)
-const selectedCity = ref<number | null>(null)
-const selectedProcedure = ref<number | null>(null)
-const selectedPosition = ref<number | null>(null)
+const filters = useUrlFilters(filterDefs)
 
 function formatDateParam(date: Date): string {
   const year = date.getFullYear()
@@ -36,29 +40,31 @@ function formatDateParam(date: Date): string {
 
 async function loadVisits() {
   const params: Record<string, any> = {
-    page: currentPage.value,
-    size: pageSize.value,
+    page: filters.page.value,
+    size: filters.size.value,
     sort_by: 'date',
-    sort_order: sortOrder.value,
+    sort_order: filters.sort_order.value,
   }
-  if (dateFrom.value) params.date_from = formatDateParam(dateFrom.value)
-  if (dateTo.value) params.date_to = formatDateParam(dateTo.value)
-  if (selectedClinic.value) params.clinic_id = selectedClinic.value
-  if (selectedCity.value) params.city_id = selectedCity.value
-  if (selectedProcedure.value) params.procedure_id = selectedProcedure.value
-  if (selectedPosition.value) params.position_id = selectedPosition.value
+  if (filters.date_from.value) params.date_from = formatDateParam(filters.date_from.value)
+  if (filters.date_to.value) params.date_to = formatDateParam(filters.date_to.value)
+  if (filters.clinic_id.value) params.clinic_id = filters.clinic_id.value
+  if (filters.city_id.value) params.city_id = filters.city_id.value
+  if (filters.procedure_id.value) params.procedure_id = filters.procedure_id.value
+  if (filters.position_id.value) params.position_id = filters.position_id.value
 
   await visitsStore.fetchVisits(params)
 }
 
 function onPage(event: DataTablePageEvent) {
-  currentPage.value = event.page + 1
-  pageSize.value = event.rows
+  filters.page.value = event.page + 1
+  filters.size.value = event.rows
+  filters.syncToUrl()
   loadVisits()
 }
 
 function onSort(event: DataTableSortEvent) {
-  sortOrder.value = event.sortOrder === 1 ? 'asc' : 'desc'
+  filters.sort_order.value = event.sortOrder === 1 ? 'asc' : 'desc'
+  filters.syncToUrl()
   loadVisits()
 }
 
@@ -67,20 +73,18 @@ function onRowClick(event: { data: Visit }) {
 }
 
 function clearFilters() {
-  dateFrom.value = null
-  dateTo.value = null
-  selectedClinic.value = null
-  selectedCity.value = null
-  selectedProcedure.value = null
-  selectedPosition.value = null
-  currentPage.value = 1
+  filters.clearAll()
   loadVisits()
 }
 
-watch([dateFrom, dateTo, selectedClinic, selectedCity, selectedProcedure, selectedPosition], () => {
-  currentPage.value = 1
-  loadVisits()
-})
+watch(
+  [filters.date_from, filters.date_to, filters.clinic_id, filters.city_id, filters.procedure_id, filters.position_id],
+  () => {
+    filters.page.value = 1
+    filters.syncToUrl()
+    loadVisits()
+  },
+)
 
 onMounted(async () => {
   await referencesStore.fetchAll()
@@ -99,16 +103,16 @@ onMounted(async () => {
       <div class="filter-row">
         <div class="filter-item">
           <label>Дата від</label>
-          <Calendar v-model="dateFrom" dateFormat="dd.mm.yy" placeholder="Дата від" showIcon />
+          <Calendar v-model="filters.date_from.value" dateFormat="dd.mm.yy" placeholder="Дата від" showIcon />
         </div>
         <div class="filter-item">
           <label>Дата до</label>
-          <Calendar v-model="dateTo" dateFormat="dd.mm.yy" placeholder="Дата до" showIcon />
+          <Calendar v-model="filters.date_to.value" dateFormat="dd.mm.yy" placeholder="Дата до" showIcon />
         </div>
         <div class="filter-item">
           <label>Клініка</label>
           <Dropdown
-            v-model="selectedClinic"
+            v-model="filters.clinic_id.value"
             :options="referencesStore.clinics"
             optionLabel="name"
             optionValue="id"
@@ -119,7 +123,7 @@ onMounted(async () => {
         <div class="filter-item">
           <label>Місто</label>
           <Dropdown
-            v-model="selectedCity"
+            v-model="filters.city_id.value"
             :options="referencesStore.cities"
             optionLabel="name"
             optionValue="id"
@@ -130,7 +134,7 @@ onMounted(async () => {
         <div class="filter-item">
           <label>Процедура</label>
           <Dropdown
-            v-model="selectedProcedure"
+            v-model="filters.procedure_id.value"
             :options="referencesStore.procedures"
             optionLabel="name"
             optionValue="id"
@@ -141,7 +145,7 @@ onMounted(async () => {
         <div class="filter-item">
           <label>Позиція</label>
           <Dropdown
-            v-model="selectedPosition"
+            v-model="filters.position_id.value"
             :options="referencesStore.positions"
             optionLabel="name"
             optionValue="id"
@@ -160,11 +164,11 @@ onMounted(async () => {
       :loading="visitsStore.loading"
       :lazy="true"
       :paginator="true"
-      :rows="pageSize"
+      :rows="filters.size.value ?? 20"
       :totalRecords="visitsStore.total"
       :rowsPerPageOptions="[10, 20, 50]"
       :sortField="'date'"
-      :sortOrder="sortOrder === 'asc' ? 1 : -1"
+      :sortOrder="filters.sort_order.value === 'asc' ? 1 : -1"
       @page="onPage"
       @sort="onSort"
       @row-click="onRowClick"
