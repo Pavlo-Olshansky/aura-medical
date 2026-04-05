@@ -33,30 +33,30 @@ const dayPercent = computed(() => {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title">Циркадне світло</h3>
+    <h3 class="section-title" title="Циркадне світло — оцінка природного освітлення, що впливає на біоритми, вироблення мелатоніну та якість сну">Циркадне світло <i class="pi pi-info-circle hint-icon" /></h3>
 
     <div class="circadian-grid">
-      <div class="circadian-item">
+      <div class="circadian-item" title="Час сходу сонця за місцевим часом">
         <span class="item-label">Схід</span>
         <span class="item-value">{{ formatTime(data.sunrise) }}</span>
       </div>
-      <div class="circadian-item">
+      <div class="circadian-item" title="Час заходу сонця за місцевим часом">
         <span class="item-label">Захід</span>
         <span class="item-value">{{ formatTime(data.sunset) }}</span>
       </div>
-      <div class="circadian-item">
+      <div class="circadian-item" title="Загальна тривалість світлового дня від сходу до заходу">
         <span class="item-label">Тривалість дня</span>
         <span class="item-value">{{ formatHours(data.day_length_hours) }}</span>
       </div>
-      <div class="circadian-item">
+      <div class="circadian-item" title="Скільки годин реального яскравого світла з урахуванням хмарності. Хмари зменшують ефективне освітлення на 10–65%">
         <span class="item-label">Ефективне світло</span>
         <span class="item-value">{{ formatHours(data.effective_light_hours) }}</span>
       </div>
-      <div class="circadian-item">
+      <div class="circadian-item" title="Відсоток неба, закритого хмарами. Впливає на ефективне світло та настрій">
         <span class="item-label">Хмарність</span>
         <span class="item-value">{{ data.cloud_cover_percent }}%</span>
       </div>
-      <div class="circadian-item">
+      <div class="circadian-item" title="Загальна оцінка якості природного освітлення: excellent — ідеально для біоритмів, good — достатньо, moderate — помірно, poor — недостатньо, може впливати на сон та настрій">
         <span class="item-label">Якість</span>
         <span class="quality-badge" :style="{ color: qualityColor, background: qualityColor + '15' }">
           {{ data.quality_label }}
@@ -65,7 +65,7 @@ const dayPercent = computed(() => {
     </div>
 
     <div class="day-bar-wrap">
-      <div class="day-bar-label">День / Ніч</div>
+      <div class="day-bar-label" title="Візуальне співвідношення денного та нічного часу за поточну добу">День / Ніч</div>
       <div class="day-bar">
         <div class="day-bar-fill" :style="{ width: dayPercent + '%' }"></div>
       </div>
@@ -134,6 +134,12 @@ const dayPercent = computed(() => {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
   overflow: hidden;
+}
+.hint-icon {
+  font-size: 0.7rem;
+  color: #3f3f46;
+  vertical-align: middle;
+  cursor: help;
 }
 .day-bar-fill {
   height: 100%;

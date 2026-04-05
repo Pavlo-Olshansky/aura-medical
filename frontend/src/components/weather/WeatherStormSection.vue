@@ -90,7 +90,7 @@ const chartOptions = {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title">Магнітні бурі</h3>
+    <h3 class="section-title" title="Геомагнітна активність — збурення магнітного поля Землі, спричинені сонячним вітром. Може впливати на самопочуття, особливо серцево-судинну та нервову системи">Магнітні бурі <i class="pi pi-info-circle hint-icon" /></h3>
 
     <div v-if="data.is_storm" class="storm-alert">
       <i class="pi pi-exclamation-triangle" />
@@ -98,15 +98,15 @@ const chartOptions = {
     </div>
 
     <div class="storm-current">
-      <div class="kp-display">
+      <div class="kp-display" title="Kp індекс (0–9) — планетарний показник геомагнітних збурень. 0–3: спокійно, 4: неспокійно, 5+: магнітна буря. Чим вищий — тим сильніший вплив на чутливих людей">
         <span class="kp-value" :style="{ color: severityColor }">{{ data.kp_index }}</span>
         <span class="kp-label">Kp індекс</span>
       </div>
       <div class="storm-badges">
-        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }">
+        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }" title="G-шкала NOAA: G0 — немає бурі, G1 — слабка, G2 — помірна, G3 — сильна, G4 — дуже сильна, G5 — екстремальна">
           {{ data.g_scale }}
         </span>
-        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }">
+        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }" title="Текстова оцінка інтенсивності поточної геомагнітної активності">
           {{ data.severity }}
         </span>
       </div>
@@ -258,6 +258,12 @@ const chartOptions = {
 }
 .chart-wrap {
   margin-top: 0.5rem;
+}
+.hint-icon {
+  font-size: 0.7rem;
+  color: #3f3f46;
+  vertical-align: middle;
+  cursor: help;
 }
 .disclaimer {
   font-size: 0.625rem;
