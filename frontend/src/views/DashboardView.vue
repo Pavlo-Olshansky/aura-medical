@@ -3,7 +3,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { DataTablePageEvent } from 'primevue/datatable'
 import { apiClient } from '@/api/client'
+import { getWeatherSummary } from '@/api/weather'
 import type { DashboardData, Visit, Vaccination, PaginatedResponse } from '@/types'
+import type { WeatherSummary } from '@/types/weather'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import type { BodyRegionKey } from '@/components/body-map/types'
 import { useAuthStore } from '@/stores/auth'
@@ -31,6 +33,9 @@ const overdueVaccinations = ref<Vaccination[]>([])
 // Expense data
 const expensesYear = ref<number | null>(null)
 const expensesTotal = ref<number | null>(null)
+
+// Weather data
+const weatherSummary = ref<WeatherSummary | null>(null)
 
 // Health metric modal
 const metricModalVisible = ref(false)
@@ -150,6 +155,11 @@ onMounted(async () => {
         // silent
       }
     }
+    try {
+      weatherSummary.value = await getWeatherSummary()
+    } catch {
+      // Weather unavailable — card will be hidden
+    }
   } catch {
     // silent fail — dashboard is informational
   } finally {
@@ -168,6 +178,7 @@ onMounted(async () => {
       :total-treatments="totalTreatments"
       :expenses-year="expensesYear"
       :expenses-total="expensesTotal"
+      :weather="weatherSummary"
       @add-metric="metricModalVisible = true"
     />
 
