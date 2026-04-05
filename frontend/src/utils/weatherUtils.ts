@@ -28,6 +28,18 @@ export function getCircadianColor(quality: string): string {
   return '#a855f7'
 }
 
+const WEEKDAYS: Record<string, string[]> = {
+  uk: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+}
+
+const LOCALE = 'uk'
+
+function weekday(d: Date): string {
+  const days = WEEKDAYS[LOCALE] ?? WEEKDAYS['uk']!
+  return days![d.getDay()] ?? ''
+}
+
 export function formatWeatherHour(iso: string): string {
   const d = new Date(iso)
   return `${d.getHours().toString().padStart(2, '0')}:00`
@@ -35,11 +47,17 @@ export function formatWeatherHour(iso: string): string {
 
 export function formatWeatherDay(iso: string): string {
   const d = new Date(iso)
-  return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`
+  const dd = d.getDate().toString().padStart(2, '0')
+  const mm = (d.getMonth() + 1).toString().padStart(2, '0')
+  return `${weekday(d)} ${dd}.${mm}`
 }
 
 export function formatWeatherDateTime(iso: string): string {
-  return `${formatWeatherDay(iso)} ${formatWeatherHour(iso)}`
+  const d = new Date(iso)
+  const dd = d.getDate().toString().padStart(2, '0')
+  const mm = (d.getMonth() + 1).toString().padStart(2, '0')
+  const hh = d.getHours().toString().padStart(2, '0')
+  return `${weekday(d)} ${dd}.${mm} ${hh}:00`
 }
 
 const CHART_TOOLTIP = {
