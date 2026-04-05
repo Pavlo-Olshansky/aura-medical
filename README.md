@@ -9,19 +9,19 @@ Personal medical records tracker with an interactive body map, visit history, tr
 
 ## Features
 
-- **Dashboard** — summary cards, recent visits, active treatments, expenses, weather at a glance, and interactive body map overview
+- **Interactive Body Map** — sex-aware anatomical visualization (front, back, face) with 50+ clickable hotspots mapped to body regions. Highlights areas with active treatments, supports click-to-filter visits by region
 - **Visit Records** — track doctor visits with date, specialty, procedure, clinic, city, body region, comments, and attached documents
 - **Treatment Tracking** — medication courses with automatic status calculation (active/completed) based on start date and duration
 - **Lab Results & Biomarker Trends** — blood tests with reference ranges, out-of-range highlighting, and trend charts per biomarker over time
 - **Health Metrics / Vitals Journal** — track heart rate, blood pressure, temperature, weight and other metrics with trend charts and reference range annotations
 - **Vaccination Records** — immunization history with dose tracking, next-due-date alerts, and document attachments
-- **Interactive Body Map** — sex-aware anatomical visualization (front, back, face) with 50+ clickable hotspots. Highlights areas with active treatments, click-to-filter visits by region
 - **Medical Timeline** — unified chronological view of all events (visits, treatments, lab results, vaccinations) across the full health history
-- **Weather & Environment** — real-time weather, UV index, air quality (AQI with 8 pollutants), geomagnetic storms (Kp index with health impact), and circadian light — powered by [SkyPulse](https://pypi.org/project/skypulse-weather/). Dashboard card opens a detail page with forecast charts, color-coded risk levels, and tooltips explaining every indicator
+- **Weather & Environment** — real-time weather, UV index, air quality (AQI with 8 pollutants), geomagnetic storms (Kp index with health impact), and circadian light assessment — powered by [SkyPulse](https://pypi.org/project/skypulse-weather/) by Pavlo Olshansky. Dashboard card opens a detail page with forecast charts, color-coded risk levels, and tooltips explaining every indicator
+- **Dashboard** — summary cards, recent visits, active treatments, expenses, weather at a glance, and body map overview
 - **Health Profile** — demographics, blood type, allergies, chronic conditions, emergency contact, weather city with IP auto-detection
 - **Document Management** — upload and preview medical documents (images, PDFs) attached to visits and vaccinations
-- **Filtering & Search** — visits filterable by date range, clinic, city, procedure, doctor specialty; treatments by status
 - **Reference Data** — manage doctor specialties, procedures, clinics, cities, biomarker references, and metric types with inline CRUD
+- **Filtering & Search** — visits filterable by date range, clinic, city, procedure, doctor specialty; treatments by status
 
 ## Tech Stack
 
