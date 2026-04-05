@@ -40,6 +40,9 @@ async function handleLogout() {
         <RouterLink to="/references" class="nav-link">
           <i class="pi pi-book" /> Довідники
         </RouterLink>
+        <RouterLink to="/weather" class="nav-link">
+          <i class="pi pi-cloud" /> Погода
+        </RouterLink>
       </nav>
       <div class="sidebar-footer">
         <RouterLink to="/profile" class="nav-link profile-link">
