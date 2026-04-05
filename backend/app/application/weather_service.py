@@ -2,25 +2,37 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import TYPE_CHECKING
 
-from skypulse import AsyncSkyPulseClient, SkyPulseError
+if TYPE_CHECKING:
+    from skypulse import AsyncSkyPulseClient
 
 logger = logging.getLogger(__name__)
 
 
 class WeatherAppService:
-    def __init__(self, client: AsyncSkyPulseClient, city: str):
+    def __init__(self, client: AsyncSkyPulseClient | None, city: str):
         self._client = client
         self._city = city
 
+    async def _resolve_coords(self) -> tuple[float, float]:
+        locations = await self._client.geocode(self._city, limit=1)
+        if not locations:
+            raise ValueError(f"City not found: {self._city}")
+        return locations[0].latitude, locations[0].longitude
+
     async def get_summary(self) -> dict | None:
+        if not self._client:
+            return None
         try:
+            from skypulse import SkyPulseError
+            lat, lon = await self._resolve_coords()
             weather, aq, storm = await asyncio.gather(
-                self._client.get_current_weather(city=self._city),
-                self._safe(self._client.get_air_quality(city=self._city)),
+                self._safe(self._client.get_current_weather(lat=lat, lon=lon)),
+                self._safe(self._client.get_air_quality(lat=lat, lon=lon)),
                 self._safe(self._client.get_magnetic_storm()),
             )
-        except SkyPulseError:
+        except Exception:
             logger.warning("Weather summary unavailable", exc_info=True)
             return None
 
@@ -44,16 +56,26 @@ class WeatherAppService:
         }
 
     async def get_detail(self) -> dict:
-        weather_result, aq_result, storm_result, uv_result, uv_fc_result, circadian_result, aq_fc_result, storm_fc_result, health_result = await asyncio.gather(
-            self._safe(self._client.get_current_weather(city=self._city)),
-            self._safe(self._client.get_air_quality(city=self._city)),
+        if not self._client:
+            return {"weather": None, "uv": None, "circadian": None, "air_quality": None, "magnetic_storm": None, "city": self._city}
+
+        try:
+            lat, lon = await self._resolve_coords()
+        except Exception:
+            logger.warning("Failed to resolve city coordinates", exc_info=True)
+            return {"weather": None, "uv": None, "circadian": None, "air_quality": None, "magnetic_storm": None, "city": self._city}
+
+        # All calls use lat/lon so SkyPulse cache keys match across methods.
+        # Storm + forecast are separate from location-based calls.
+        weather_result, aq_result, storm_result, uv_result, uv_fc_result, circadian_result, aq_fc_result, storm_fc_result = await asyncio.gather(
+            self._safe(self._client.get_current_weather(lat=lat, lon=lon)),
+            self._safe(self._client.get_air_quality(lat=lat, lon=lon)),
             self._safe(self._client.get_magnetic_storm()),
-            self._safe(self._client.get_uv_index(city=self._city)),
-            self._safe(self._client.get_uv_forecast(city=self._city)),
-            self._safe(self._client.get_circadian_light(city=self._city)),
-            self._safe(self._client.get_air_quality_forecast(city=self._city)),
+            self._safe(self._client.get_uv_index(lat=lat, lon=lon)),
+            self._safe(self._client.get_uv_forecast(lat=lat, lon=lon)),
+            self._safe(self._client.get_circadian_light(lat=lat, lon=lon)),
+            self._safe(self._client.get_air_quality_forecast(lat=lat, lon=lon)),
             self._safe(self._client.get_magnetic_forecast()),
-            self._safe(self._client.get_storm_health_impact()),
         )
 
         weather_data = None
@@ -118,15 +140,20 @@ class WeatherAppService:
 
         storm_data = None
         if storm_result:
+            # Compute health impact locally from the storm result we already have,
+            # instead of calling get_storm_health_impact() which fetches storm data again.
+            from skypulse._storm_mapping import get_health_impact
+            health_result = get_health_impact(storm_result.kp_index, storm_result.g_scale)
+
             storm_data = {
                 "kp_index": storm_result.kp_index,
                 "g_scale": storm_result.g_scale,
                 "severity": storm_result.severity,
                 "is_storm": storm_result.is_storm,
-                "health_impact_level": health_result.level if health_result else None,
-                "affected_systems": health_result.affected_systems if health_result else [],
-                "recommendations": health_result.recommendations if health_result else [],
-                "disclaimer": health_result.disclaimer if health_result else None,
+                "health_impact_level": health_result.level,
+                "affected_systems": health_result.affected_systems,
+                "recommendations": health_result.recommendations,
+                "disclaimer": health_result.disclaimer,
                 "forecast": [
                     {
                         "predicted_kp": e.predicted_kp,
@@ -153,6 +180,6 @@ class WeatherAppService:
     async def _safe(coro):
         try:
             return await coro
-        except SkyPulseError:
+        except Exception:
             logger.warning("Weather data fetch failed", exc_info=True)
             return None
