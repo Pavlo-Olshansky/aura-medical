@@ -8,6 +8,7 @@ import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
+import ToggleSwitch from 'primevue/toggleswitch'
 import { apiClient } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
 import type { ProfileData } from '@/types'
@@ -28,6 +29,9 @@ const allergies = ref<string | null>(null)
 const chronicConditions = ref<string | null>(null)
 const emergencyContactName = ref<string | null>(null)
 const emergencyContactPhone = ref<string | null>(null)
+const weatherCity = ref<string | null>(null)
+const weatherCityAuto = ref(true)
+const detecting = ref(false)
 
 const sexOptions = [
   { label: 'Чоловіча', value: 'male' },
@@ -67,6 +71,8 @@ function populateForm(data: ProfileData) {
   chronicConditions.value = data.chronic_conditions
   emergencyContactName.value = data.emergency_contact_name
   emergencyContactPhone.value = data.emergency_contact_phone
+  weatherCity.value = data.weather_city
+  weatherCityAuto.value = data.weather_city_auto
 }
 
 async function loadProfile() {
@@ -98,6 +104,8 @@ async function saveProfile() {
       chronic_conditions: chronicConditions.value || null,
       emergency_contact_name: emergencyContactName.value || null,
       emergency_contact_phone: emergencyContactPhone.value || null,
+      weather_city: weatherCity.value || null,
+      weather_city_auto: weatherCityAuto.value,
     }
     const response = await apiClient.put<ProfileData>('/api/v1/profile/', payload)
     populateForm(response.data)
@@ -107,6 +115,23 @@ async function saveProfile() {
     toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося зберегти профіль', life: 3000 })
   } finally {
     saving.value = false
+  }
+}
+
+async function detectCity() {
+  detecting.value = true
+  try {
+    const response = await apiClient.post<{ city: string | null; saved: boolean }>('/api/v1/weather/detect-city')
+    if (response.data.city) {
+      weatherCity.value = response.data.city
+      toast.add({ severity: 'success', summary: 'Визначено', detail: `Місто: ${response.data.city}`, life: 3000 })
+    } else {
+      toast.add({ severity: 'warn', summary: 'Увага', detail: 'Не вдалося визначити місто', life: 3000 })
+    }
+  } catch {
+    toast.add({ severity: 'error', summary: 'Помилка', detail: 'Не вдалося визначити місто', life: 3000 })
+  } finally {
+    detecting.value = false
   }
 }
 
@@ -192,6 +217,35 @@ onMounted(loadProfile)
         </template>
       </Card>
 
+      <Card class="section-card">
+        <template #title>Погода</template>
+        <template #content>
+          <div class="form-grid">
+            <div class="field">
+              <label>Місто для прогнозу</label>
+              <div class="city-input-row">
+                <InputText v-model="weatherCity" class="w-full" placeholder="напр. Kyiv" />
+                <Button
+                  icon="pi pi-map-marker"
+                  severity="secondary"
+                  outlined
+                  :loading="detecting"
+                  @click="detectCity"
+                  v-tooltip.top="'Визначити місто за IP-адресою'"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label>Автовизначення</label>
+              <div class="toggle-row">
+                <ToggleSwitch v-model="weatherCityAuto" />
+                <span class="toggle-hint">{{ weatherCityAuto ? 'Місто визначається автоматично при першому вході' : 'Місто встановлено вручну' }}</span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+
       <div class="actions">
         <Button label="Зберегти" icon="pi pi-check" :loading="saving" @click="saveProfile" />
       </div>
@@ -264,6 +318,21 @@ onMounted(loadProfile)
   font-weight: 300;
   color: #e4e4e7;
   padding: 0.5rem 0;
+}
+.city-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+.toggle-hint {
+  font-size: 0.75rem;
+  color: #52525b;
 }
 .actions {
   display: flex;
