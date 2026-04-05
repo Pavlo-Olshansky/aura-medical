@@ -110,6 +110,10 @@ const hourlyOptions = {
   responsive: true,
   maintainAspectRatio: true,
   aspectRatio: 2.5,
+  interaction: {
+    mode: 'index' as const,
+    intersect: false,
+  },
   plugins: {
     legend: { labels: { color: '#a1a1aa', boxWidth: 12, font: { size: 11 } } },
     tooltip: {
@@ -140,6 +144,10 @@ const dailyOptions = {
   responsive: true,
   maintainAspectRatio: true,
   aspectRatio: 2.5,
+  interaction: {
+    mode: 'index' as const,
+    intersect: false,
+  },
   plugins: {
     legend: { labels: { color: '#a1a1aa', boxWidth: 12, font: { size: 11 } } },
     tooltip: {

@@ -67,7 +67,10 @@ const dayPercent = computed(() => {
     </div>
 
     <div class="day-bar-wrap">
-      <div class="day-bar-label" v-tooltip.top="'Візуальне співвідношення денного та нічного часу за поточну добу'">День / Ніч</div>
+      <div class="day-bar-header">
+        <span class="day-bar-label" v-tooltip.top="'Візуальне співвідношення денного та нічного часу за поточну добу'">День / Ніч</span>
+        <span class="day-bar-percent">{{ Math.round(dayPercent) }}% день · {{ Math.round(100 - dayPercent) }}% ніч</span>
+      </div>
       <div class="day-bar">
         <div class="day-bar-fill" :style="{ width: dayPercent + '%' }"></div>
       </div>
@@ -131,14 +134,23 @@ const dayPercent = computed(() => {
 .day-bar-wrap {
   margin-top: 0.5rem;
 }
+.day-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
 .day-bar-label {
   font-size: 0.7rem;
   color: #52525b;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 0.5rem;
   cursor: help;
-  width: fit-content;
+}
+.day-bar-percent {
+  font-size: 0.7rem;
+  color: #71717a;
+  font-variant-numeric: tabular-nums;
 }
 .day-bar {
   height: 8px;
