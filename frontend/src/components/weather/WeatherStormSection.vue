@@ -90,7 +90,9 @@ const chartOptions = {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title" title="Геомагнітна активність — збурення магнітного поля Землі, спричинені сонячним вітром. Може впливати на самопочуття, особливо серцево-судинну та нервову системи">Магнітні бурі <i class="pi pi-info-circle hint-icon" /></h3>
+    <h3 class="section-title" v-tooltip.top="'Геомагнітна активність — збурення магнітного поля Землі, спричинені сонячним вітром. Може впливати на самопочуття, особливо серцево-судинну та нервову системи'">
+      Магнітні бурі <i class="pi pi-info-circle hint-icon" />
+    </h3>
 
     <div v-if="data.is_storm" class="storm-alert">
       <i class="pi pi-exclamation-triangle" />
@@ -98,15 +100,15 @@ const chartOptions = {
     </div>
 
     <div class="storm-current">
-      <div class="kp-display" title="Kp індекс (0–9) — планетарний показник геомагнітних збурень. 0–3: спокійно, 4: неспокійно, 5+: магнітна буря. Чим вищий — тим сильніший вплив на чутливих людей">
+      <div class="kp-display" v-tooltip.top="'Kp індекс (0–9) — планетарний показник геомагнітних збурень. 0–3: спокійно, 4: неспокійно, 5+: магнітна буря'">
         <span class="kp-value" :style="{ color: severityColor }">{{ data.kp_index }}</span>
         <span class="kp-label">Kp індекс</span>
       </div>
       <div class="storm-badges">
-        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }" title="G-шкала NOAA: G0 — немає бурі, G1 — слабка, G2 — помірна, G3 — сильна, G4 — дуже сильна, G5 — екстремальна">
+        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }" v-tooltip.top="'G-шкала NOAA: G0 — немає бурі, G1 — слабка, G2 — помірна, G3 — сильна, G4 — дуже сильна, G5 — екстремальна'">
           {{ data.g_scale }}
         </span>
-        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }" title="Текстова оцінка інтенсивності поточної геомагнітної активності">
+        <span class="storm-badge" :style="{ color: severityColor, background: severityColor + '15' }" v-tooltip.top="'Текстова оцінка інтенсивності поточної геомагнітної активності'">
           {{ data.severity }}
         </span>
       </div>
@@ -151,6 +153,12 @@ const chartOptions = {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
+  cursor: help;
+}
+.hint-icon {
+  font-size: 0.7rem;
+  color: #3f3f46;
+  vertical-align: middle;
 }
 .storm-alert {
   background: rgba(239, 68, 68, 0.1);
@@ -175,6 +183,7 @@ const chartOptions = {
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: help;
 }
 .kp-value {
   font-size: 2.5rem;
@@ -200,6 +209,7 @@ const chartOptions = {
   border-radius: 2px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  cursor: help;
 }
 .health-impact {
   background: rgba(255, 255, 255, 0.02);
@@ -258,12 +268,6 @@ const chartOptions = {
 }
 .chart-wrap {
   margin-top: 0.5rem;
-}
-.hint-icon {
-  font-size: 0.7rem;
-  color: #3f3f46;
-  vertical-align: middle;
-  cursor: help;
 }
 .disclaimer {
   font-size: 0.625rem;

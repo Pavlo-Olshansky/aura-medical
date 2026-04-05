@@ -79,17 +79,19 @@ const chartOptions = {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title" title="Індекс якості повітря (AQI) — загальна оцінка забрудненості. 1: добре, 2: прийнятно, 3: помірно, 4: погано, 5: дуже погано">Якість повітря <i class="pi pi-info-circle hint-icon" /></h3>
+    <h3 class="section-title" v-tooltip.top="'Індекс якості повітря (AQI) — загальна оцінка забрудненості. 1: добре, 2: прийнятно, 3: помірно, 4: погано, 5: дуже погано'">
+      Якість повітря <i class="pi pi-info-circle hint-icon" />
+    </h3>
 
     <div class="aqi-current">
-      <span class="aqi-value" :style="{ color: aqiColor }" title="AQI за шкалою 1–5. 1 — чисте повітря, 5 — небезпечне для здоров'я">{{ data.aqi }}</span>
+      <span class="aqi-value" :style="{ color: aqiColor }" v-tooltip.top="'AQI за шкалою 1–5. 1 — чисте повітря, 5 — небезпечне для здоров\'я'">{{ data.aqi }}</span>
       <span class="aqi-label" :style="{ color: aqiColor, background: aqiColor + '15' }">
         {{ data.label }}
       </span>
     </div>
 
     <div class="pollutant-grid">
-      <div v-for="p in pollutants" :key="p.key" class="pollutant-item" :title="p.hint">
+      <div v-for="p in pollutants" :key="p.key" class="pollutant-item" v-tooltip.top="p.hint">
         <span class="pollutant-name">{{ p.key }}</span>
         <span class="pollutant-value">{{ p.value.toFixed(1) }}</span>
         <span class="pollutant-unit">{{ p.unit }}</span>
@@ -116,6 +118,7 @@ const chartOptions = {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
+  cursor: help;
 }
 .aqi-current {
   display: flex;
@@ -127,6 +130,7 @@ const chartOptions = {
   font-size: 2.5rem;
   font-weight: 300;
   line-height: 1;
+  cursor: help;
 }
 .aqi-label {
   font-size: 0.75rem;
@@ -136,17 +140,16 @@ const chartOptions = {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+.hint-icon {
+  font-size: 0.7rem;
+  color: #3f3f46;
+  vertical-align: middle;
+}
 .pollutant-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
   margin-bottom: 1.25rem;
-}
-.hint-icon {
-  font-size: 0.7rem;
-  color: #3f3f46;
-  vertical-align: middle;
-  cursor: help;
 }
 .pollutant-item {
   display: flex;

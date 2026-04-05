@@ -33,30 +33,32 @@ const dayPercent = computed(() => {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title" title="Циркадне світло — оцінка природного освітлення, що впливає на біоритми, вироблення мелатоніну та якість сну">Циркадне світло <i class="pi pi-info-circle hint-icon" /></h3>
+    <h3 class="section-title" v-tooltip.top="'Циркадне світло — оцінка природного освітлення, що впливає на біоритми, вироблення мелатоніну та якість сну'">
+      Циркадне світло <i class="pi pi-info-circle hint-icon" />
+    </h3>
 
     <div class="circadian-grid">
-      <div class="circadian-item" title="Час сходу сонця за місцевим часом">
+      <div class="circadian-item" v-tooltip.top="'Час сходу сонця за місцевим часом'">
         <span class="item-label">Схід</span>
         <span class="item-value">{{ formatTime(data.sunrise) }}</span>
       </div>
-      <div class="circadian-item" title="Час заходу сонця за місцевим часом">
+      <div class="circadian-item" v-tooltip.top="'Час заходу сонця за місцевим часом'">
         <span class="item-label">Захід</span>
         <span class="item-value">{{ formatTime(data.sunset) }}</span>
       </div>
-      <div class="circadian-item" title="Загальна тривалість світлового дня від сходу до заходу">
+      <div class="circadian-item" v-tooltip.top="'Загальна тривалість світлового дня від сходу до заходу'">
         <span class="item-label">Тривалість дня</span>
         <span class="item-value">{{ formatHours(data.day_length_hours) }}</span>
       </div>
-      <div class="circadian-item" title="Скільки годин реального яскравого світла з урахуванням хмарності. Хмари зменшують ефективне освітлення на 10–65%">
+      <div class="circadian-item" v-tooltip.top="'Скільки годин реального яскравого світла з урахуванням хмарності. Хмари зменшують ефективне освітлення на 10–65%'">
         <span class="item-label">Ефективне світло</span>
         <span class="item-value">{{ formatHours(data.effective_light_hours) }}</span>
       </div>
-      <div class="circadian-item" title="Відсоток неба, закритого хмарами. Впливає на ефективне світло та настрій">
+      <div class="circadian-item" v-tooltip.top="'Відсоток неба, закритого хмарами. Впливає на ефективне світло та настрій'">
         <span class="item-label">Хмарність</span>
         <span class="item-value">{{ data.cloud_cover_percent }}%</span>
       </div>
-      <div class="circadian-item" title="Загальна оцінка якості природного освітлення: excellent — ідеально для біоритмів, good — достатньо, moderate — помірно, poor — недостатньо, може впливати на сон та настрій">
+      <div class="circadian-item" v-tooltip.top="'Загальна оцінка природного освітлення:\nexcellent — ідеально для біоритмів\ngood — достатньо\nmoderate — помірно, можливий вплив на настрій\npoor — недостатньо, може впливати на сон'">
         <span class="item-label">Якість</span>
         <span class="quality-badge" :style="{ color: qualityColor, background: qualityColor + '15' }">
           {{ data.quality_label }}
@@ -65,7 +67,7 @@ const dayPercent = computed(() => {
     </div>
 
     <div class="day-bar-wrap">
-      <div class="day-bar-label" title="Візуальне співвідношення денного та нічного часу за поточну добу">День / Ніч</div>
+      <div class="day-bar-label" v-tooltip.top="'Візуальне співвідношення денного та нічного часу за поточну добу'">День / Ніч</div>
       <div class="day-bar">
         <div class="day-bar-fill" :style="{ width: dayPercent + '%' }"></div>
       </div>
@@ -87,6 +89,7 @@ const dayPercent = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
+  cursor: help;
 }
 .circadian-grid {
   display: grid;
@@ -98,6 +101,7 @@ const dayPercent = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  cursor: help;
 }
 .item-label {
   font-size: 0.7rem;
@@ -119,6 +123,11 @@ const dayPercent = computed(() => {
   letter-spacing: 0.05em;
   width: fit-content;
 }
+.hint-icon {
+  font-size: 0.7rem;
+  color: #3f3f46;
+  vertical-align: middle;
+}
 .day-bar-wrap {
   margin-top: 0.5rem;
 }
@@ -128,18 +137,14 @@ const dayPercent = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 0.5rem;
+  cursor: help;
+  width: fit-content;
 }
 .day-bar {
   height: 8px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
   overflow: hidden;
-}
-.hint-icon {
-  font-size: 0.7rem;
-  color: #3f3f46;
-  vertical-align: middle;
-  cursor: help;
 }
 .day-bar-fill {
   height: 100%;
