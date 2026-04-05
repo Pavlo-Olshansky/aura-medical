@@ -121,9 +121,13 @@ def get_dashboard_service(session: AsyncSession = Depends(get_session)) -> Dashb
     )
 
 
-def get_weather_service(request: Request):
+async def get_weather_service(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+):
     from app.application.weather_service import WeatherAppService
+    city = current_user.weather_city or settings.WEATHER_CITY
     return WeatherAppService(
         client=request.app.state.skypulse,
-        city=settings.WEATHER_CITY,
+        city=city,
     )
