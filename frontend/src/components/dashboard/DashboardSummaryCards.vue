@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import type { WeatherSummary } from '@/types/weather'
+import { getStormColor } from '@/utils/weatherUtils'
 
 const router = useRouter()
 
-defineProps<{
+const props = defineProps<{
   totalVisits: number
   activeTreatmentsCount: number
   totalTreatments: number
@@ -18,6 +20,18 @@ defineProps<{
 defineEmits<{
   (e: 'add-metric'): void
 }>()
+
+const showStormWarning = computed(() =>
+  props.weather?.kp_index != null && props.weather.kp_index >= 4,
+)
+
+const stormTooltip = computed(() => {
+  if (!props.weather?.kp_index) return ''
+  const severity = props.weather.storm_severity
+  const kp = props.weather.kp_index
+  const advisory = `Kp ${kp} — може впливати на самопочуття`
+  return severity ? `Магнітна буря: ${severity}\n${advisory}` : advisory
+})
 </script>
 
 <template>
@@ -76,7 +90,15 @@ defineEmits<{
           <div class="card-content">
             <i class="pi pi-cloud card-icon weather-icon" />
             <div>
-              <div class="card-value">{{ Math.round(weather.temperature) }}°</div>
+              <div class="card-value">
+                {{ Math.round(weather.temperature) }}°
+                <i
+                  v-if="showStormWarning"
+                  v-tooltip.top="stormTooltip"
+                  class="pi pi-exclamation-triangle storm-warn"
+                  :style="{ color: getStormColor(weather.kp_index!) }"
+                />
+              </div>
               <div class="card-label">{{ weather.condition_description }}</div>
             </div>
           </div>
@@ -176,6 +198,12 @@ defineEmits<{
 .weather-icon {
   color: #22d3ee;
   background: rgba(34, 211, 238, 0.1);
+}
+.storm-warn {
+  font-size: 0.85rem;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  cursor: help;
 }
 @media (max-width: 768px) {
   .summary-cards {
