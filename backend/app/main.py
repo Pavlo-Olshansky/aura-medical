@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     try:
         from skypulse import AsyncSkyPulseClient, CacheConfig, Units
         skypulse_client = AsyncSkyPulseClient(
-            api_key=settings.OPENWEATHER_API_KEY or None,
+            api_key=settings.SKYPULSE_API_KEY or None,
             units=Units.METRIC,
             language="uk",
             cache=CacheConfig(enabled=True, ttl=300, max_entries=64),
