@@ -7,6 +7,7 @@ import WeatherUVSection from '@/components/weather/WeatherUVSection.vue'
 import WeatherCircadianSection from '@/components/weather/WeatherCircadianSection.vue'
 import WeatherAirQualitySection from '@/components/weather/WeatherAirQualitySection.vue'
 import WeatherStormSection from '@/components/weather/WeatherStormSection.vue'
+import WeatherForecastSection from '@/components/weather/WeatherForecastSection.vue'
 
 const loading = ref(true)
 const data = ref<WeatherDetail | null>(null)
@@ -40,6 +41,7 @@ onMounted(async () => {
       <WeatherCurrentBanner v-if="data.weather" :weather="data.weather" />
 
       <div class="sections-grid">
+        <WeatherForecastSection v-if="data.forecast.length" :forecast="data.forecast" />
         <WeatherUVSection v-if="data.uv" :data="data.uv" />
         <WeatherCircadianSection v-if="data.circadian" :data="data.circadian" />
         <WeatherAirQualitySection v-if="data.air_quality" :data="data.air_quality" />

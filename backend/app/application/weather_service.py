@@ -63,12 +63,13 @@ class WeatherAppService:
             lat, lon = await self._resolve_coords()
         except Exception:
             logger.warning("Failed to resolve city coordinates", exc_info=True)
-            return {"weather": None, "uv": None, "circadian": None, "air_quality": None, "magnetic_storm": None, "city": self._city}
+            return {"weather": None, "forecast": [], "uv": None, "circadian": None, "air_quality": None, "magnetic_storm": None, "city": self._city}
 
         # All calls use lat/lon so SkyPulse cache keys match across methods.
         # Storm + forecast are separate from location-based calls.
-        weather_result, aq_result, storm_result, uv_result, uv_fc_result, circadian_result, aq_fc_result, storm_fc_result = await asyncio.gather(
+        weather_result, forecast_result, aq_result, storm_result, uv_result, uv_fc_result, circadian_result, aq_fc_result, storm_fc_result = await asyncio.gather(
             self._safe(self._client.get_current_weather(lat=lat, lon=lon)),
+            self._safe(self._client.get_forecast(lat=lat, lon=lon)),
             self._safe(self._client.get_air_quality(lat=lat, lon=lon)),
             self._safe(self._client.get_magnetic_storm()),
             self._safe(self._client.get_uv_index(lat=lat, lon=lon)),
@@ -167,8 +168,26 @@ class WeatherAppService:
                 ],
             }
 
+        forecast_data = []
+        if forecast_result:
+            forecast_data = [
+                {
+                    "temperature": e.temperature,
+                    "feels_like": e.feels_like,
+                    "humidity": e.humidity,
+                    "pressure": e.pressure,
+                    "wind_speed": e.wind.speed,
+                    "clouds": e.clouds,
+                    "condition_description": e.condition.description,
+                    "condition_icon": e.condition.icon,
+                    "forecast_at": e.forecast_at.isoformat(),
+                }
+                for e in forecast_result.entries
+            ]
+
         return {
             "weather": weather_data,
+            "forecast": forecast_data,
             "uv": uv_data,
             "circadian": circadian_data,
             "air_quality": aq_data,

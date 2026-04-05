@@ -77,8 +77,21 @@ export interface MagneticStormData {
   forecast: StormForecastPoint[]
 }
 
+export interface ForecastPoint {
+  temperature: number
+  feels_like: number
+  humidity: number
+  pressure: number
+  wind_speed: number
+  clouds: number
+  condition_description: string
+  condition_icon: string
+  forecast_at: string
+}
+
 export interface WeatherDetail {
   weather: WeatherSummary | null
+  forecast: ForecastPoint[]
   uv: UVData | null
   circadian: CircadianData | null
   air_quality: AirQualityData | null

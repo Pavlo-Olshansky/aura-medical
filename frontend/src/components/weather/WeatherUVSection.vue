@@ -67,10 +67,12 @@ const chartOptions = {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title" title="Ультрафіолетовий індекс — інтенсивність сонячного UV-випромінювання. Чим вищий, тим швидше можна отримати опік шкіри">UV індекс <i class="pi pi-info-circle hint-icon" /></h3>
+    <h3 class="section-title" v-tooltip.top="'Ультрафіолетовий індекс — інтенсивність сонячного UV-випромінювання. Чим вищий, тим швидше можна отримати опік шкіри'">
+      UV індекс <i class="pi pi-info-circle hint-icon" />
+    </h3>
     <div class="uv-current">
-      <span class="uv-value" :style="{ color: riskColor }" title="Поточне значення UV-індексу (0–11+). 0–2: низький, 3–5: помірний, 6–7: високий, 8–10: дуже високий, 11+: екстремальний">{{ data.value }}</span>
-      <span class="uv-risk" :style="{ color: riskColor, background: riskColor + '15' }" title="Рівень ризику для шкіри та очей при поточному UV-випромінюванні">
+      <span class="uv-value" :style="{ color: riskColor }" v-tooltip.top="'Поточне значення UV-індексу (0–11+). 0–2: низький, 3–5: помірний, 6–7: високий, 8–10: дуже високий, 11+: екстремальний'">{{ data.value }}</span>
+      <span class="uv-risk" :style="{ color: riskColor, background: riskColor + '15' }" v-tooltip.top="'Рівень ризику для шкіри та очей при поточному UV-випромінюванні'">
         {{ data.risk_label }}
       </span>
     </div>
@@ -94,6 +96,7 @@ const chartOptions = {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
+  cursor: help;
 }
 .uv-current {
   display: flex;
@@ -105,6 +108,7 @@ const chartOptions = {
   font-size: 2.5rem;
   font-weight: 300;
   line-height: 1;
+  cursor: help;
 }
 .uv-risk {
   font-size: 0.75rem;
@@ -113,12 +117,12 @@ const chartOptions = {
   border-radius: 2px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  cursor: help;
 }
 .hint-icon {
   font-size: 0.7rem;
   color: #3f3f46;
   vertical-align: middle;
-  cursor: help;
 }
 .chart-wrap {
   margin-top: 0.5rem;

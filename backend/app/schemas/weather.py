@@ -82,8 +82,21 @@ class MagneticStormData(BaseModel):
     forecast: list[StormForecastPoint] = []
 
 
+class ForecastPoint(BaseModel):
+    temperature: float
+    feels_like: float
+    humidity: int
+    pressure: int
+    wind_speed: float
+    clouds: int
+    condition_description: str
+    condition_icon: str
+    forecast_at: str
+
+
 class WeatherDetailResponse(BaseModel):
     weather: Optional[WeatherSummaryResponse] = None
+    forecast: list[ForecastPoint] = []
     uv: Optional[UVData] = None
     circadian: Optional[CircadianData] = None
     air_quality: Optional[AirQualityData] = None
