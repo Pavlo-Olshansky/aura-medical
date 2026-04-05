@@ -2,6 +2,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from fastapi import Request
+
 from app.application.auth_service import AuthAppService
 from app.application.biomarker_reference_service import BiomarkerReferenceAppService
 from app.application.dashboard_service import DashboardAppService
@@ -11,6 +13,7 @@ from app.application.metric_type_service import MetricTypeAppService
 from app.application.reference_service import ReferenceAppService
 from app.application.timeline_service import TimelineAppService
 from app.application.treatment_service import TreatmentAppService
+from app.application.weather_service import WeatherAppService
 from app.application.vaccination_service import VaccinationAppService
 from app.application.visit_service import VisitAppService
 from app.config import settings
@@ -116,4 +119,11 @@ def get_dashboard_service(session: AsyncSession = Depends(get_session)) -> Dashb
         SqlAlchemyVisitRepository(session),
         SqlAlchemyTreatmentRepository(session),
         session=session,
+    )
+
+
+def get_weather_service(request: Request) -> WeatherAppService:
+    return WeatherAppService(
+        client=request.app.state.skypulse,
+        city=settings.WEATHER_CITY,
     )
