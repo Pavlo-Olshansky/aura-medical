@@ -17,7 +17,19 @@ from app.rate_limit import limiter
 async def lifespan(app: FastAPI):
     from app.logging import setup_logging
     setup_logging()
+
+    from skypulse import AsyncSkyPulseClient, CacheConfig, Units
+    skypulse_client = AsyncSkyPulseClient(
+        api_key=settings.OPENWEATHER_API_KEY or None,
+        units=Units.METRIC,
+        language="uk",
+        cache=CacheConfig(enabled=True, ttl=300, max_entries=64),
+    )
+    app.state.skypulse = skypulse_client
+
     yield
+
+    await skypulse_client.close()
     await engine.dispose()
 
 
