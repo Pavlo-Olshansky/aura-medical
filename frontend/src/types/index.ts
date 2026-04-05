@@ -15,6 +15,8 @@ export interface ProfileData {
   chronic_conditions: string | null
   emergency_contact_name: string | null
   emergency_contact_phone: string | null
+  weather_city: string | null
+  weather_city_auto: boolean
 }
 
 export interface TokenResponse {

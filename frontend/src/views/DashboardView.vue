@@ -155,6 +155,15 @@ onMounted(async () => {
         // silent
       }
     }
+    // Auto-detect city on first load if user has no city set and auto is on
+    try {
+      const profile = await apiClient.get<{ weather_city: string | null; weather_city_auto: boolean }>('/api/v1/profile/')
+      if (!profile.data.weather_city && profile.data.weather_city_auto) {
+        await apiClient.post('/api/v1/weather/detect-city')
+      }
+    } catch {
+      // silent
+    }
     try {
       weatherSummary.value = await getWeatherSummary()
     } catch {
