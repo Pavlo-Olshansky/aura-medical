@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { CircadianData } from '@/types/weather'
+import { getCircadianColor } from '@/utils/weatherUtils'
 
 const props = defineProps<{
   data: CircadianData
 }>()
 
-const qualityColor = computed(() => {
-  const q = props.data.quality
-  if (q === 'excellent' || q === 'good') return '#22c55e'
-  if (q === 'moderate') return '#eab308'
-  if (q === 'poor') return '#ef4444'
-  return '#a855f7' // extreme
-})
+const qualityColor = computed(() => getCircadianColor(props.data.quality))
 
 function formatTime(iso: string | null): string {
   if (!iso) return '—'
