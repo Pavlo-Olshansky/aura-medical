@@ -52,6 +52,10 @@ const chartOptions = {
   responsive: true,
   maintainAspectRatio: true,
   aspectRatio: 2.5,
+  interaction: {
+    mode: 'index' as const,
+    intersect: false,
+  },
   plugins: {
     legend: { display: false },
     tooltip: {
