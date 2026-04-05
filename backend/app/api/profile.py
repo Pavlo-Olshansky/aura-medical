@@ -24,6 +24,8 @@ def _user_to_profile(user: User) -> ProfileResponse:
         chronic_conditions=user.chronic_conditions,
         emergency_contact_name=user.emergency_contact_name,
         emergency_contact_phone=user.emergency_contact_phone,
+        weather_city=user.weather_city,
+        weather_city_auto=user.weather_city_auto,
     )
 
 
@@ -48,6 +50,8 @@ async def update_profile(
         "chronic_conditions": body.chronic_conditions,
         "emergency_contact_name": body.emergency_contact_name,
         "emergency_contact_phone": body.emergency_contact_phone,
+        "weather_city": body.weather_city,
+        "weather_city_auto": body.weather_city_auto,
     }
     try:
         await session.execute(

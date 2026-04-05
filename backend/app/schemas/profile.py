@@ -31,6 +31,8 @@ class ProfileResponse(BaseModel):
     chronic_conditions: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
+    weather_city: Optional[str] = None
+    weather_city_auto: bool = True
 
 
 class ProfileUpdateRequest(BaseModel):
@@ -43,6 +45,8 @@ class ProfileUpdateRequest(BaseModel):
     chronic_conditions: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
+    weather_city: Optional[str] = None
+    weather_city_auto: bool = True
 
     @field_validator("date_of_birth")
     @classmethod

@@ -43,6 +43,8 @@ class User:
     chronic_conditions: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_phone: Optional[str] = None
+    weather_city: Optional[str] = None
+    weather_city_auto: bool = True
 
     def ensure_active(self) -> None:
         if not self.is_active:
