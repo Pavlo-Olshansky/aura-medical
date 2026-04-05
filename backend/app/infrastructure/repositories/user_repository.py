@@ -41,4 +41,6 @@ class SqlAlchemyUserRepository:
             chronic_conditions=model.chronic_conditions,
             emergency_contact_name=model.emergency_contact_name,
             emergency_contact_phone=model.emergency_contact_phone,
+            weather_city=model.weather_city,
+            weather_city_auto=model.weather_city_auto,
         )
