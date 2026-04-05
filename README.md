@@ -16,8 +16,9 @@ Personal medical records tracker with an interactive body map, visit history, tr
 - **Health Metrics / Vitals Journal** — track heart rate, blood pressure, temperature, weight and other metrics with trend charts and reference range annotations
 - **Vaccination Records** — immunization history with dose tracking, next-due-date alerts, and document attachments
 - **Medical Timeline** — unified chronological view of all events (visits, treatments, lab results, vaccinations) across the full health history
-- **Dashboard** — summary cards, recent visits, active treatments, expenses, and body map overview at a glance
-- **Health Profile** — demographics, blood type, allergies, chronic conditions, emergency contact
+- **Weather & Environment** — real-time weather, UV index, air quality (AQI with 8 pollutants), geomagnetic storms (Kp index with health impact), and circadian light assessment — powered by [SkyPulse](https://pypi.org/project/skypulse-weather/). Clickable dashboard card opens a detail page with forecast charts, color-coded risk levels, and tooltips explaining every indicator
+- **Dashboard** — summary cards, recent visits, active treatments, expenses, weather at a glance, and body map overview
+- **Health Profile** — demographics, blood type, allergies, chronic conditions, emergency contact, weather city with IP auto-detection
 - **Document Management** — upload and preview medical documents (images, PDFs) attached to visits and vaccinations
 - **Reference Data** — manage doctor specialties, procedures, clinics, cities, biomarker references, and metric types with inline CRUD
 - **Filtering & Search** — visits filterable by date range, clinic, city, procedure, doctor specialty; treatments by status
@@ -31,6 +32,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 | **Database** | PostgreSQL 15+ |
 | **Auth** | JWT tokens (PyJWT), bcrypt password hashing |
 | **DB Driver** | psycopg v3 (async) |
+| **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
 
 ## Architecture
 
