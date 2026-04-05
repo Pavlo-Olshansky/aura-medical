@@ -58,7 +58,7 @@ const dayPercent = computed(() => {
         <span class="item-label">Хмарність</span>
         <span class="item-value">{{ data.cloud_cover_percent }}%</span>
       </div>
-      <div class="circadian-item" v-tooltip.top="'Загальна оцінка природного освітлення:\nexcellent — ідеально для біоритмів\ngood — достатньо\nmoderate — помірно, можливий вплив на настрій\npoor — недостатньо, може впливати на сон'">
+      <div class="circadian-item" v-tooltip.top="'Загальна оцінка природного освітлення:\nВідмінно — ідеально для біоритмів\nДобре — достатньо природного світла\nПомірно — можливий вплив на настрій\nПогано — недостатньо, може впливати на сон'">
         <span class="item-label">Якість</span>
         <span class="quality-badge" :style="{ color: qualityColor, background: qualityColor + '15' }">
           {{ data.quality_label }}
