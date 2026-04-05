@@ -144,7 +144,7 @@ class WeatherAppService:
             # Compute health impact locally from the storm result we already have,
             # instead of calling get_storm_health_impact() which fetches storm data again.
             from skypulse._storm_mapping import get_health_impact
-            health_result = get_health_impact(storm_result.kp_index, storm_result.g_scale)
+            health_result = get_health_impact(storm_result.kp_index, storm_result.g_scale, "uk")
 
             storm_data = {
                 "kp_index": storm_result.kp_index,
