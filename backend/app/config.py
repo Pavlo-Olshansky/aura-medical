@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
     RATE_LIMIT: str = "10/minute"
     LOG_LEVEL: str = "DEBUG"
-    OPENWEATHER_API_KEY: str = ""
+    SKYPULSE_API_KEY: str = ""
     WEATHER_CITY: str = "Kyiv"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
