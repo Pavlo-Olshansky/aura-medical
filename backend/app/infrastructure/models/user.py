@@ -34,3 +34,5 @@ class UserModel(BaseModel):
     chronic_conditions: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     emergency_contact_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     emergency_contact_phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    weather_city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    weather_city_auto: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
