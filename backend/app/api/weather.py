@@ -1,10 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies import get_current_user, get_weather_service
-from app.application.weather_service import WeatherAppService
 from app.domain.entities import User
 from app.schemas.weather import WeatherDetailResponse, WeatherSummaryResponse
+
+if TYPE_CHECKING:
+    from app.application.weather_service import WeatherAppService
 
 router = APIRouter()
 
