@@ -71,18 +71,6 @@ defineEmits<{
         </template>
       </Card>
 
-      <Card v-if="expensesTotal != null" class="summary-card">
-        <template #content>
-          <div class="card-content">
-            <i class="pi pi-wallet card-icon expenses-icon" />
-            <div>
-              <div class="card-value">{{ expensesTotal }} <span class="card-currency">грн</span></div>
-              <div class="card-label">Витрати всього</div>
-            </div>
-          </div>
-        </template>
-      </Card>
-
       <Card v-if="weather" class="summary-card weather-card" @click="router.push('/weather')">
         <template #content>
           <div class="card-content">
@@ -90,14 +78,6 @@ defineEmits<{
             <div>
               <div class="card-value">{{ Math.round(weather.temperature) }}°</div>
               <div class="card-label">{{ weather.condition_description }}</div>
-              <div class="weather-indicators">
-                <span v-if="weather.aqi != null" class="weather-indicator" :class="'aqi-' + weather.aqi">
-                  AQI {{ weather.aqi }}
-                </span>
-                <span v-if="weather.kp_index != null" class="weather-indicator" :class="weather.kp_index >= 5 ? 'kp-storm' : 'kp-quiet'">
-                  Kp {{ weather.kp_index }}
-                </span>
-              </div>
             </div>
           </div>
         </template>
@@ -197,27 +177,6 @@ defineEmits<{
   color: #22d3ee;
   background: rgba(34, 211, 238, 0.1);
 }
-.weather-indicators {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.35rem;
-}
-.weather-indicator {
-  font-size: 0.625rem;
-  font-weight: 600;
-  padding: 0.1rem 0.4rem;
-  border-radius: 2px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.aqi-1 { color: #22c55e; background: rgba(34, 197, 94, 0.1); }
-.aqi-2 { color: #eab308; background: rgba(234, 179, 8, 0.1); }
-.aqi-3 { color: #f97316; background: rgba(249, 115, 22, 0.1); }
-.aqi-4 { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-.aqi-5 { color: #a855f7; background: rgba(168, 85, 247, 0.1); }
-.kp-quiet { color: #22c55e; background: rgba(34, 197, 94, 0.1); }
-.kp-storm { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-
 @media (max-width: 768px) {
   .summary-cards {
     grid-template-columns: 1fr;
