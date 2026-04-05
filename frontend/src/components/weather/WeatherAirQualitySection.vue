@@ -18,14 +18,14 @@ const aqiColor = computed(() => {
 })
 
 const pollutants = computed(() => [
-  { key: 'PM2.5', value: props.data.pm2_5, unit: 'мкг/м³' },
-  { key: 'PM10', value: props.data.pm10, unit: 'мкг/м³' },
-  { key: 'O₃', value: props.data.o3, unit: 'мкг/м³' },
-  { key: 'NO₂', value: props.data.no2, unit: 'мкг/м³' },
-  { key: 'SO₂', value: props.data.so2, unit: 'мкг/м³' },
-  { key: 'CO', value: props.data.co, unit: 'мкг/м³' },
-  { key: 'NO', value: props.data.no, unit: 'мкг/м³' },
-  { key: 'NH₃', value: props.data.nh3, unit: 'мкг/м³' },
+  { key: 'PM2.5', value: props.data.pm2_5, unit: 'мкг/м³', hint: 'Дрібні частинки (<2.5 мкм) — проникають у легені та кров. Основна причина респіраторних захворювань. Норма: <25' },
+  { key: 'PM10', value: props.data.pm10, unit: 'мкг/м³', hint: 'Великі частинки (<10 мкм) — пил, пилок, сажа. Подразнюють дихальні шляхи. Норма: <50' },
+  { key: 'O₃', value: props.data.o3, unit: 'мкг/м³', hint: 'Озон — на рівні землі є забруднювачем. Викликає подразнення очей та легенів. Норма: <120' },
+  { key: 'NO₂', value: props.data.no2, unit: 'мкг/м³', hint: 'Діоксид азоту — від транспорту та промисловості. Погіршує астму та знижує імунітет. Норма: <40' },
+  { key: 'SO₂', value: props.data.so2, unit: 'мкг/м³', hint: 'Діоксид сірки — від згоряння палива. Подразнює дихальні шляхи, загострює астму. Норма: <20' },
+  { key: 'CO', value: props.data.co, unit: 'мкг/м³', hint: 'Чадний газ — від вихлопних газів. У великих дозах витісняє кисень з крові. Норма: <4000' },
+  { key: 'NO', value: props.data.no, unit: 'мкг/м³', hint: 'Оксид азоту — від двигунів та промисловості. Перетворюється на NO₂ в атмосфері' },
+  { key: 'NH₃', value: props.data.nh3, unit: 'мкг/м³', hint: 'Аміак — від сільського господарства та промисловості. Подразнює слизові оболонки' },
 ])
 
 const chartData = computed(() => {
@@ -79,17 +79,17 @@ const chartOptions = {
 
 <template>
   <div class="section-card">
-    <h3 class="section-title">Якість повітря</h3>
+    <h3 class="section-title" title="Індекс якості повітря (AQI) — загальна оцінка забрудненості. 1: добре, 2: прийнятно, 3: помірно, 4: погано, 5: дуже погано">Якість повітря <i class="pi pi-info-circle hint-icon" /></h3>
 
     <div class="aqi-current">
-      <span class="aqi-value" :style="{ color: aqiColor }">{{ data.aqi }}</span>
+      <span class="aqi-value" :style="{ color: aqiColor }" title="AQI за шкалою 1–5. 1 — чисте повітря, 5 — небезпечне для здоров'я">{{ data.aqi }}</span>
       <span class="aqi-label" :style="{ color: aqiColor, background: aqiColor + '15' }">
         {{ data.label }}
       </span>
     </div>
 
     <div class="pollutant-grid">
-      <div v-for="p in pollutants" :key="p.key" class="pollutant-item">
+      <div v-for="p in pollutants" :key="p.key" class="pollutant-item" :title="p.hint">
         <span class="pollutant-name">{{ p.key }}</span>
         <span class="pollutant-value">{{ p.value.toFixed(1) }}</span>
         <span class="pollutant-unit">{{ p.unit }}</span>
@@ -142,6 +142,12 @@ const chartOptions = {
   gap: 0.75rem;
   margin-bottom: 1.25rem;
 }
+.hint-icon {
+  font-size: 0.7rem;
+  color: #3f3f46;
+  vertical-align: middle;
+  cursor: help;
+}
 .pollutant-item {
   display: flex;
   flex-direction: column;
@@ -151,6 +157,7 @@ const chartOptions = {
   background: rgba(255, 255, 255, 0.02);
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: help;
 }
 .pollutant-name {
   font-size: 0.625rem;
