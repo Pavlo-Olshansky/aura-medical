@@ -36,15 +36,15 @@ const nowLabel = computed(() => {
   const forecast = props.data.forecast
   if (!forecast.length) return null
   let closest = 0
-  let minDiff = Math.abs(new Date(forecast[0].period_start).getTime() - now)
+  let minDiff = Math.abs(new Date(forecast[0]!.period_start).getTime() - now)
   for (let i = 1; i < forecast.length; i++) {
-    const diff = Math.abs(new Date(forecast[i].period_start).getTime() - now)
+    const diff = Math.abs(new Date(forecast[i]!.period_start).getTime() - now)
     if (diff < minDiff) {
       minDiff = diff
       closest = i
     }
   }
-  return formatWeatherDateTime(forecast[closest].period_start)
+  return formatWeatherDateTime(forecast[closest]!.period_start)
 })
 
 const chartOptions = computed(() => createWeatherChartOptions({
