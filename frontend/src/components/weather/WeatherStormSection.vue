@@ -31,7 +31,23 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = createWeatherChartOptions({
+const nowLabel = computed(() => {
+  const now = Date.now()
+  const forecast = props.data.forecast
+  if (!forecast.length) return null
+  let closest = 0
+  let minDiff = Math.abs(new Date(forecast[0].period_start).getTime() - now)
+  for (let i = 1; i < forecast.length; i++) {
+    const diff = Math.abs(new Date(forecast[i].period_start).getTime() - now)
+    if (diff < minDiff) {
+      minDiff = diff
+      closest = i
+    }
+  }
+  return formatWeatherDateTime(forecast[closest].period_start)
+})
+
+const chartOptions = computed(() => createWeatherChartOptions({
   yMin: 0, yMax: 9, yStepSize: 1, maxXTicks: 8,
   annotations: {
     stormThreshold: {
@@ -49,8 +65,26 @@ const chartOptions = createWeatherChartOptions({
         backgroundColor: 'transparent',
       },
     },
+    ...(nowLabel.value ? {
+      nowLine: {
+        type: 'line',
+        xMin: nowLabel.value,
+        xMax: nowLabel.value,
+        borderColor: 'rgba(161, 161, 170, 0.5)',
+        borderWidth: 1,
+        borderDash: [4, 4],
+        label: {
+          display: true,
+          content: 'Зараз',
+          position: 'start',
+          color: '#a1a1aa',
+          font: { size: 10 },
+          backgroundColor: 'transparent',
+        },
+      },
+    } : {}),
   },
-})
+}))
 </script>
 
 <template>
