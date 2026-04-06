@@ -3,11 +3,11 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import User
+from app.infrastructure.models.user import UserModel
 
 
 @pytest.mark.asyncio
-async def test_login_success(client: AsyncClient, test_user: User):
+async def test_login_success(client: AsyncClient, test_user: UserModel):
     response = await client.post(
         "/api/v1/auth/login",
         json={"username": "testuser", "password": "testpass"},
@@ -20,7 +20,7 @@ async def test_login_success(client: AsyncClient, test_user: User):
 
 
 @pytest.mark.asyncio
-async def test_login_invalid_password(client: AsyncClient, test_user: User):
+async def test_login_invalid_password(client: AsyncClient, test_user: UserModel):
     response = await client.post(
         "/api/v1/auth/login",
         json={"username": "testuser", "password": "wrongpass"},
@@ -30,7 +30,7 @@ async def test_login_invalid_password(client: AsyncClient, test_user: User):
 
 
 @pytest.mark.asyncio
-async def test_login_invalid_username(client: AsyncClient, test_user: User):
+async def test_login_invalid_username(client: AsyncClient, test_user: UserModel):
     response = await client.post(
         "/api/v1/auth/login",
         json={"username": "nonexistent", "password": "testpass"},
@@ -40,7 +40,7 @@ async def test_login_invalid_username(client: AsyncClient, test_user: User):
 
 
 @pytest.mark.asyncio
-async def test_refresh_token(client: AsyncClient, test_user: User):
+async def test_refresh_token(client: AsyncClient, test_user: UserModel):
     login_response = await client.post(
         "/api/v1/auth/login",
         json={"username": "testuser", "password": "testpass"},
@@ -60,7 +60,7 @@ async def test_refresh_token(client: AsyncClient, test_user: User):
 
 
 @pytest.mark.asyncio
-async def test_me_endpoint(client: AsyncClient, test_user: User, auth_headers: dict):
+async def test_me_endpoint(client: AsyncClient, test_user: UserModel, auth_headers: dict):
     response = await client.get("/api/v1/auth/me", headers=auth_headers)
     assert response.status_code == 200
     data = response.json()

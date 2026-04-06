@@ -5,12 +5,13 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import City, Clinic, Position, Procedure, Visit
+from app.infrastructure.models.reference import CityModel, ClinicModel, PositionModel, ProcedureModel
+from app.infrastructure.models.visit import VisitModel
 
 
 @pytest_asyncio.fixture
-async def position(session: AsyncSession) -> Position:
-    obj = Position(name="Терапевт")
+async def position(session: AsyncSession) -> PositionModel:
+    obj = PositionModel(name="Терапевт")
     session.add(obj)
     await session.commit()
     await session.refresh(obj)
@@ -18,8 +19,8 @@ async def position(session: AsyncSession) -> Position:
 
 
 @pytest_asyncio.fixture
-async def procedure(session: AsyncSession) -> Procedure:
-    obj = Procedure(name="Огляд")
+async def procedure(session: AsyncSession) -> ProcedureModel:
+    obj = ProcedureModel(name="Огляд")
     session.add(obj)
     await session.commit()
     await session.refresh(obj)
@@ -27,8 +28,8 @@ async def procedure(session: AsyncSession) -> Procedure:
 
 
 @pytest_asyncio.fixture
-async def clinic(session: AsyncSession) -> Clinic:
-    obj = Clinic(name="Клініка Здоров'я")
+async def clinic(session: AsyncSession) -> ClinicModel:
+    obj = ClinicModel(name="Клініка Здоров'я")
     session.add(obj)
     await session.commit()
     await session.refresh(obj)
@@ -36,8 +37,8 @@ async def clinic(session: AsyncSession) -> Clinic:
 
 
 @pytest_asyncio.fixture
-async def city(session: AsyncSession) -> City:
-    obj = City(name="Київ")
+async def city(session: AsyncSession) -> CityModel:
+    obj = CityModel(name="Київ")
     session.add(obj)
     await session.commit()
     await session.refresh(obj)
@@ -49,10 +50,10 @@ async def test_create_visit(
     client: AsyncClient,
     auth_headers: dict,
     test_user,
-    position: Position,
-    procedure: Procedure,
-    clinic: Clinic,
-    city: City,
+    position: PositionModel,
+    procedure: ProcedureModel,
+    clinic: ClinicModel,
+    city: CityModel,
 ):
     response = await client.post(
         "/api/v1/visits/",
@@ -89,7 +90,7 @@ async def test_list_visits_paginated(
     session: AsyncSession,
 ):
     for i in range(5):
-        visit = Visit(
+        visit = VisitModel(
             user_id=test_user.id,
             date=datetime(2026, 3, 10 + i, 10, 0, 0),
         )
@@ -115,13 +116,13 @@ async def test_get_visit_detail(
     client: AsyncClient,
     auth_headers: dict,
     test_user,
-    position: Position,
-    procedure: Procedure,
-    clinic: Clinic,
-    city: City,
+    position: PositionModel,
+    procedure: ProcedureModel,
+    clinic: ClinicModel,
+    city: CityModel,
     session: AsyncSession,
 ):
-    visit = Visit(
+    visit = VisitModel(
         user_id=test_user.id,
         date=datetime(2026, 3, 15, 10, 0, 0),
         position_id=position.id,
@@ -155,7 +156,7 @@ async def test_update_visit(
     test_user,
     session: AsyncSession,
 ):
-    visit = Visit(
+    visit = VisitModel(
         user_id=test_user.id,
         date=datetime(2026, 3, 15, 10, 0, 0),
         doctor="Іванов І.І.",
@@ -185,7 +186,7 @@ async def test_soft_delete_visit(
     test_user,
     session: AsyncSession,
 ):
-    visit = Visit(
+    visit = VisitModel(
         user_id=test_user.id,
         date=datetime(2026, 3, 15, 10, 0, 0),
     )
@@ -213,9 +214,9 @@ async def test_filter_visits_by_date(
     test_user,
     session: AsyncSession,
 ):
-    visit1 = Visit(user_id=test_user.id, date=datetime(2026, 1, 10, 10, 0, 0))
-    visit2 = Visit(user_id=test_user.id, date=datetime(2026, 3, 15, 10, 0, 0))
-    visit3 = Visit(user_id=test_user.id, date=datetime(2026, 6, 20, 10, 0, 0))
+    visit1 = VisitModel(user_id=test_user.id, date=datetime(2026, 1, 10, 10, 0, 0))
+    visit2 = VisitModel(user_id=test_user.id, date=datetime(2026, 3, 15, 10, 0, 0))
+    visit3 = VisitModel(user_id=test_user.id, date=datetime(2026, 6, 20, 10, 0, 0))
     session.add_all([visit1, visit2, visit3])
     await session.commit()
 
@@ -272,7 +273,7 @@ async def test_update_visit_price(
     test_user,
     session: AsyncSession,
 ):
-    visit = Visit(
+    visit = VisitModel(
         user_id=test_user.id,
         date=datetime(2026, 3, 15, 10, 0, 0),
         doctor="Іванов І.І.",

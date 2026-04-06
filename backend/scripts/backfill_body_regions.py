@@ -23,21 +23,21 @@ sys.path.insert(0, ".")
 
 from app.constants.body_regions import SPECIALTY_REGION_MAP
 from app.database import async_session
-from app.models.visit import Visit
+from app.infrastructure.models.visit import VisitModel
 
 
 async def backfill(dry_run: bool = False) -> None:
     async with async_session() as session:
         result = await session.execute(
-            select(Visit)
-            .where(Visit.body_region.is_(None), Visit.deleted_at.is_(None))
+            select(VisitModel)
+            .where(VisitModel.body_region.is_(None), VisitModel.deleted_at.is_(None))
             .options()
         )
         visits = result.scalars().all()
 
         # Preload positions
-        from app.models.reference import Position
-        pos_result = await session.execute(select(Position))
+        from app.infrastructure.models.reference import PositionModel
+        pos_result = await session.execute(select(PositionModel))
         positions = {p.id: p.name for p in pos_result.scalars().all()}
 
         updated = 0

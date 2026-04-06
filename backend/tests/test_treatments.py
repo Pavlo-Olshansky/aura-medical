@@ -5,7 +5,8 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Treatment, User
+from app.infrastructure.models.treatment import TreatmentModel
+from app.infrastructure.models.user import UserModel
 
 try:
     from zoneinfo import ZoneInfo
@@ -33,7 +34,7 @@ def _make_treatment_payload(
 
 @pytest.mark.asyncio
 async def test_create_treatment(
-    client: AsyncClient, test_user: User, auth_headers: dict
+    client: AsyncClient, test_user: UserModel, auth_headers: dict
 ):
     payload = _make_treatment_payload()
     response = await client.post(
@@ -52,7 +53,7 @@ async def test_create_treatment(
 
 @pytest.mark.asyncio
 async def test_list_treatments(
-    client: AsyncClient, test_user: User, auth_headers: dict
+    client: AsyncClient, test_user: UserModel, auth_headers: dict
 ):
     # Create two treatments
     for i in range(2):
@@ -75,7 +76,7 @@ async def test_list_treatments(
 
 @pytest.mark.asyncio
 async def test_treatment_status_active(
-    client: AsyncClient, test_user: User, auth_headers: dict
+    client: AsyncClient, test_user: UserModel, auth_headers: dict
 ):
     now = datetime.now(KYIV_TZ)
     payload = _make_treatment_payload(date_start=now, days=10)
@@ -89,7 +90,7 @@ async def test_treatment_status_active(
 
 @pytest.mark.asyncio
 async def test_treatment_status_completed(
-    client: AsyncClient, test_user: User, auth_headers: dict
+    client: AsyncClient, test_user: UserModel, auth_headers: dict
 ):
     past = datetime.now(KYIV_TZ) - timedelta(days=30)
     payload = _make_treatment_payload(date_start=past, days=5)
@@ -103,7 +104,7 @@ async def test_treatment_status_completed(
 
 @pytest.mark.asyncio
 async def test_soft_delete_treatment(
-    client: AsyncClient, test_user: User, auth_headers: dict
+    client: AsyncClient, test_user: UserModel, auth_headers: dict
 ):
     payload = _make_treatment_payload()
     create_resp = await client.post(
@@ -127,7 +128,7 @@ async def test_soft_delete_treatment(
 
 @pytest.mark.asyncio
 async def test_filter_by_status(
-    client: AsyncClient, test_user: User, auth_headers: dict
+    client: AsyncClient, test_user: UserModel, auth_headers: dict
 ):
     # Create an active treatment (starting today, 10 days)
     now = datetime.now(KYIV_TZ)

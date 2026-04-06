@@ -10,7 +10,8 @@ from app.auth.jwt import create_access_token
 from app.config import settings
 from app.database import get_session
 from app.main import app
-from app.models import Base, User
+from app.infrastructure.models.base import Base
+from app.infrastructure.models.user import UserModel
 
 TEST_DB_URL = settings.DATABASE_URL.replace("/medtracker", "/medtracker_test")
 
@@ -57,7 +58,7 @@ async def client(session):
 @pytest_asyncio.fixture
 async def test_user(session):
     pw_hash = bcrypt.hashpw(b"testpass", bcrypt.gensalt(rounds=4)).decode()
-    user = User(username="testuser", password_hash=pw_hash, is_active=True)
+    user = UserModel(username="testuser", password_hash=pw_hash, is_active=True)
     session.add(user)
     await session.commit()
     await session.refresh(user)

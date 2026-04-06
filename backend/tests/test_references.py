@@ -5,7 +5,9 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import City, Clinic, Position, Procedure, User, Visit
+from app.infrastructure.models.reference import CityModel, ClinicModel, PositionModel, ProcedureModel
+from app.infrastructure.models.user import UserModel
+from app.infrastructure.models.visit import VisitModel
 
 
 @pytest.mark.asyncio
@@ -25,9 +27,9 @@ async def test_create_position(client: AsyncClient, auth_headers: dict):
 
 @pytest.mark.asyncio
 async def test_list_positions_with_search(client: AsyncClient, auth_headers: dict, session: AsyncSession):
-    pos1 = Position(name="Терапевт")
-    pos2 = Position(name="Хірург")
-    pos3 = Position(name="Кардіолог")
+    pos1 = PositionModel(name="Терапевт")
+    pos2 = PositionModel(name="Хірург")
+    pos3 = PositionModel(name="Кардіолог")
     session.add_all([pos1, pos2, pos3])
     await session.commit()
 
@@ -49,7 +51,7 @@ async def test_list_positions_with_search(client: AsyncClient, auth_headers: dic
 
 @pytest.mark.asyncio
 async def test_update_position(client: AsyncClient, auth_headers: dict, session: AsyncSession):
-    pos = Position(name="Терапевт")
+    pos = PositionModel(name="Терапевт")
     session.add(pos)
     await session.commit()
     await session.refresh(pos)
@@ -67,7 +69,7 @@ async def test_update_position(client: AsyncClient, auth_headers: dict, session:
 
 @pytest.mark.asyncio
 async def test_delete_position(client: AsyncClient, auth_headers: dict, session: AsyncSession):
-    pos = Position(name="Терапевт")
+    pos = PositionModel(name="Терапевт")
     session.add(pos)
     await session.commit()
     await session.refresh(pos)
@@ -85,14 +87,14 @@ async def test_delete_position(client: AsyncClient, auth_headers: dict, session:
 
 @pytest.mark.asyncio
 async def test_delete_position_referenced_by_visit(
-    client: AsyncClient, auth_headers: dict, session: AsyncSession, test_user: User
+    client: AsyncClient, auth_headers: dict, session: AsyncSession, test_user: UserModel
 ):
-    pos = Position(name="Терапевт")
+    pos = PositionModel(name="Терапевт")
     session.add(pos)
     await session.commit()
     await session.refresh(pos)
 
-    visit = Visit(
+    visit = VisitModel(
         user_id=test_user.id,
         date=datetime.now(timezone.utc),
         position_id=pos.id,
