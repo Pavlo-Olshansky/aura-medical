@@ -66,6 +66,8 @@ const CHART_TOOLTIP = {
   bodyColor: '#d4d4d8',
   borderColor: 'rgba(255, 255, 255, 0.1)',
   borderWidth: 1,
+  usePointStyle: true,
+  boxHeight: 2,
 }
 
 const CHART_GRID = { color: 'rgba(255, 255, 255, 0.05)' }
@@ -87,7 +89,7 @@ export function createWeatherChartOptions(opts?: {
     interaction: { mode: 'index' as const, intersect: false },
     plugins: {
       legend: opts?.showLegend
-        ? { labels: { color: '#a1a1aa', boxWidth: 12, font: { size: 11 } } }
+        ? { labels: { color: '#a1a1aa', boxWidth: 12, boxHeight: 2, usePointStyle: true, pointStyle: 'line', font: { size: 11 } } }
         : { display: false },
       tooltip: { ...CHART_TOOLTIP },
       ...(opts?.annotations ? { annotation: { annotations: opts.annotations } } : {}),
