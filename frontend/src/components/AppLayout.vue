@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import NotificationBell from '@/components/NotificationBell.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -59,7 +60,10 @@ async function handleLogout() {
         </RouterLink>
       </nav>
       <div class="sidebar-footer">
-        <ThemeToggle />
+        <div class="sidebar-actions">
+          <NotificationBell />
+          <ThemeToggle />
+        </div>
         <RouterLink to="/profile" class="nav-link profile-link">
           <i class="pi pi-user" /> Профіль
         </RouterLink>
@@ -135,6 +139,11 @@ async function handleLogout() {
   margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid var(--border-subtle);
+}
+.sidebar-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 .profile-link {
   margin-bottom: 0.75rem;
