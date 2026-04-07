@@ -20,6 +20,9 @@ app.use(router)
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
+    options: {
+      darkModeSelector: '.dark',
+    },
   },
   locale: {
     startsWith: 'Починається з',
