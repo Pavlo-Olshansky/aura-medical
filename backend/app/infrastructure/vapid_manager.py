@@ -22,14 +22,20 @@ def get_vapid_keys() -> dict:
         logger.info("VAPID keys loaded", path=_KEYS_FILE)
         return _cached_keys
 
+    import base64
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
     from py_vapid import Vapid
 
     vapid = Vapid()
     vapid.generate_keys()
 
+    private_pem = vapid.private_pem()
+    pub_bytes = vapid.public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint)
+    pub_b64 = base64.urlsafe_b64encode(pub_bytes).rstrip(b"=").decode()
+
     _cached_keys = {
-        "private_key": vapid.private_pem().decode() if isinstance(vapid.private_pem(), bytes) else vapid.private_pem(),
-        "public_key": vapid.public_key,
+        "private_key": private_pem.decode() if isinstance(private_pem, bytes) else private_pem,
+        "public_key": pub_b64,
     }
 
     with open(_KEYS_FILE, "w") as f:
