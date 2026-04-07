@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import NotificationBell from '@/components/NotificationBell.vue'
+import { useOnlineStatus } from '@/composables/useOnlineStatus'
+
+const { isOnline } = useOnlineStatus()
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -74,6 +77,9 @@ async function handleLogout() {
       </div>
     </aside>
     <main class="main-content">
+      <div v-if="!isOnline" class="offline-banner">
+        <i class="pi pi-wifi" /> Немає з'єднання
+      </div>
       <slot />
     </main>
   </div>
@@ -173,6 +179,19 @@ async function handleLogout() {
   flex: 1;
   padding: 2rem;
   background: var(--bg-main);
+}
+
+.offline-banner {
+  background: var(--danger);
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 /* Tablet + Mobile */
