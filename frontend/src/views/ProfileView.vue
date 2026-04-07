@@ -10,6 +10,7 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { apiClient } from '@/api/client'
+import { usePushNotifications } from '@/composables/usePushNotifications'
 import { useAuthStore } from '@/stores/auth'
 import type { ProfileData } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
@@ -18,6 +19,19 @@ const toast = useToast()
 const auth = useAuthStore()
 
 const loading = ref(true)
+const { isSupported: pushSupported, isSubscribed: pushSubscribed, permissionState: pushPermission, checkSubscription, subscribe: pushSubscribe, unsubscribe: pushUnsubscribe } = usePushNotifications()
+const pushToggleLoading = ref(false)
+
+async function togglePush(val: boolean) {
+  pushToggleLoading.value = true
+  if (val) {
+    await pushSubscribe()
+  } else {
+    await pushUnsubscribe()
+  }
+  await checkSubscription()
+  pushToggleLoading.value = false
+}
 const saving = ref(false)
 
 const sex = ref<string>('male')
@@ -135,7 +149,10 @@ async function detectCity() {
   }
 }
 
-onMounted(loadProfile)
+onMounted(() => {
+  loadProfile()
+  checkSubscription()
+})
 </script>
 
 <template>
@@ -241,6 +258,27 @@ onMounted(loadProfile)
                 <ToggleSwitch v-model="weatherCityAuto" />
                 <span class="toggle-hint">{{ weatherCityAuto ? 'Місто визначається автоматично при першому вході' : 'Місто встановлено вручну' }}</span>
               </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <Card v-if="pushSupported" class="section-card">
+        <template #title>Сповіщення</template>
+        <template #content>
+          <div class="field">
+            <div class="toggle-row">
+              <ToggleSwitch
+                :modelValue="pushSubscribed"
+                @update:modelValue="togglePush"
+                :disabled="pushToggleLoading || pushPermission === 'denied'"
+              />
+              <span v-if="pushPermission === 'denied'" class="toggle-hint" style="color: var(--danger)">
+                Заблоковано браузером. Дозвольте сповіщення в налаштуваннях браузера.
+              </span>
+              <span v-else class="toggle-hint">
+                {{ pushSubscribed ? 'Push-нагадування увімкнено' : 'Push-нагадування вимкнено' }}
+              </span>
             </div>
           </div>
         </template>

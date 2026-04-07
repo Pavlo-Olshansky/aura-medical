@@ -14,6 +14,7 @@ import DashboardSummaryCards from '@/components/dashboard/DashboardSummaryCards.
 import DashboardRecentVisits from '@/components/dashboard/DashboardRecentVisits.vue'
 import DashboardActiveTreatments from '@/components/dashboard/DashboardActiveTreatments.vue'
 import DashboardBodyMap from '@/components/dashboard/DashboardBodyMap.vue'
+import NotificationBanner from '@/components/NotificationBanner.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -179,6 +180,7 @@ onMounted(async () => {
 
 <template>
   <div class="dashboard">
+    <NotificationBanner />
     <h1>Головна</h1>
 
     <DashboardSummaryCards
