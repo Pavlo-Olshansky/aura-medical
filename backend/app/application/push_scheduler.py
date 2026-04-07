@@ -60,9 +60,11 @@ async def send_push_reminders() -> None:
                 })
 
                 for sub in subs:
+                    parsed = urlparse(sub.endpoint)
+                    if not parsed.scheme or not parsed.netloc:
+                        continue
+                    aud = f"{parsed.scheme}://{parsed.netloc}"
                     try:
-                        parsed = urlparse(sub.endpoint)
-                        aud = f"{parsed.scheme}://{parsed.netloc}"
                         webpush(
                             subscription_info={
                                 "endpoint": sub.endpoint,

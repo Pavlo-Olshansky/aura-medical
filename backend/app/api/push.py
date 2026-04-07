@@ -88,9 +88,11 @@ async def test_push(
             "url": "/",
         })
         for sub in subs:
+            parsed = urlparse(sub.endpoint)
+            if not parsed.scheme or not parsed.netloc:
+                continue  # skip dev placeholder subscriptions
+            aud = f"{parsed.scheme}://{parsed.netloc}"
             try:
-                parsed = urlparse(sub.endpoint)
-                aud = f"{parsed.scheme}://{parsed.netloc}"
                 webpush(
                     subscription_info={
                         "endpoint": sub.endpoint,
