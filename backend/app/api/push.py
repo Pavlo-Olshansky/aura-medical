@@ -47,6 +47,16 @@ async def unsubscribe(
     await repo.delete_subscription_by_endpoint(body.endpoint)
 
 
+@router.get("/subscriptions")
+async def list_subscriptions(
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    repo = PushRepository(session)
+    subs = await repo.get_subscriptions_for_user(current_user.id)
+    return [{"endpoint": s.endpoint} for s in subs]
+
+
 @router.get("/test-mode")
 async def test_mode(current_user: User = Depends(get_current_user)):
     return {"test_mode": settings.TEST_MODE}

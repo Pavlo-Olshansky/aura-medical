@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { getVapidKey, subscribePush, unsubscribePush } from '@/api/push'
+import { apiClient } from '@/api/client'
 
 const isSubscribed = ref(false)
 const permissionState = ref<NotificationPermission>('default')
@@ -17,6 +18,10 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   return arr
 }
 
+function hasServiceWorker(): boolean {
+  return 'serviceWorker' in navigator && navigator.serviceWorker.controller !== null
+}
+
 export function usePushNotifications() {
   const isSupported = computed(() => 'serviceWorker' in navigator && 'PushManager' in window)
   const isStandalone = computed(() => window.matchMedia('(display-mode: standalone)').matches)
@@ -28,11 +33,24 @@ export function usePushNotifications() {
   async function checkSubscription() {
     if (!isSupported.value) return
     permissionState.value = Notification.permission
+
+    // If SW is active (production build), check browser PushManager
+    if (hasServiceWorker()) {
+      try {
+        const reg = await navigator.serviceWorker.ready
+        const sub = await reg.pushManager.getSubscription()
+        isSubscribed.value = sub !== null
+        currentEndpoint = sub?.endpoint ?? null
+        return
+      } catch {
+        // fall through to backend check
+      }
+    }
+
+    // Fallback: ask backend if user has any push subscriptions
     try {
-      const reg = await navigator.serviceWorker.ready
-      const sub = await reg.pushManager.getSubscription()
-      isSubscribed.value = sub !== null
-      currentEndpoint = sub?.endpoint ?? null
+      const { data } = await apiClient.get<{ endpoint: string }[]>('/api/v1/push/subscriptions')
+      isSubscribed.value = data.length > 0
     } catch {
       isSubscribed.value = false
     }
@@ -44,6 +62,20 @@ export function usePushNotifications() {
       const permission = await Notification.requestPermission()
       permissionState.value = permission
       if (permission !== 'granted') return false
+
+      // If no SW active (dev mode), still save a placeholder subscription to backend
+      if (!hasServiceWorker()) {
+        try {
+          await apiClient.post('/api/v1/push/subscribe', {
+            endpoint: `dev-placeholder-${Date.now()}`,
+            keys: { p256dh: 'dev', auth: 'dev' },
+          })
+        } catch {
+          // ignore
+        }
+        isSubscribed.value = true
+        return true
+      }
 
       const vapidKey = await getVapidKey()
       const reg = await navigator.serviceWorker.ready
@@ -63,11 +95,23 @@ export function usePushNotifications() {
 
   async function unsubscribe(): Promise<void> {
     try {
-      const reg = await navigator.serviceWorker.ready
-      const sub = await reg.pushManager.getSubscription()
-      if (sub) {
-        await unsubscribePush(sub.endpoint)
-        await sub.unsubscribe()
+      if (hasServiceWorker()) {
+        const reg = await navigator.serviceWorker.ready
+        const sub = await reg.pushManager.getSubscription()
+        if (sub) {
+          await unsubscribePush(sub.endpoint)
+          await sub.unsubscribe()
+        }
+      } else {
+        // Dev mode: remove all subscriptions for this user via backend
+        try {
+          const { data } = await apiClient.get<{ endpoint: string }[]>('/api/v1/push/subscriptions')
+          for (const sub of data) {
+            await unsubscribePush(sub.endpoint)
+          }
+        } catch {
+          // ignore
+        }
       }
       isSubscribed.value = false
       currentEndpoint = null
