@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.api import (
     auth, visits, treatments, references, dashboard, profile,
     biomarker_references, metric_types, lab_results, health_metrics,
-    vaccinations, timeline, weather, notifications,
+    vaccinations, timeline, weather, notifications, push,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -25,3 +25,4 @@ api_router.include_router(vaccinations.router, prefix="/vaccinations", tags=["va
 api_router.include_router(timeline.router, prefix="/timeline", tags=["timeline"])
 api_router.include_router(weather.router, prefix="/weather", tags=["weather"])
 api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
+api_router.include_router(push.router, prefix="/push", tags=["push"])
