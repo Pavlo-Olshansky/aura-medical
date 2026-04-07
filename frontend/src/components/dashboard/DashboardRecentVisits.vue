@@ -118,13 +118,13 @@ function vaccinationStatusSeverity(status: string): string {
 .section h2 {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #52525b;
+  color: var(--text-faint);
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
 .overdue-header {
-  color: #ef4444 !important;
+  color: var(--danger) !important;
 }
 .clickable-table :deep(tr) {
   cursor: pointer;

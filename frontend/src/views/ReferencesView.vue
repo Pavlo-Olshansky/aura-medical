@@ -537,7 +537,7 @@ onMounted(async () => {
 .references-view h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 .add-row {
@@ -563,7 +563,7 @@ onMounted(async () => {
 }
 .checkbox-field label {
   font-size: 0.875rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 .edit-cell {
@@ -592,6 +592,6 @@ onMounted(async () => {
 .biomarker-form .form-field label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #a1a1aa;
+  color: var(--text-secondary);
 }
 </style>

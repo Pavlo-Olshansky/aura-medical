@@ -236,7 +236,7 @@ onMounted(async () => {
 .dashboard h1 {
   font-size: 1.5rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   letter-spacing: 0.02em;
 }

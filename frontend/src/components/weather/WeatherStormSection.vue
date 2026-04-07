@@ -135,25 +135,25 @@ const chartOptions = computed(() => createWeatherChartOptions({
 </template>
 
 <style scoped>
-.section-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 4px; padding: 1.25rem; }
-.section-title { font-size: 0.875rem; font-weight: 500; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; cursor: help; }
+.section-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 1.25rem; }
+.section-title { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; cursor: help; }
 .hint-icon { font-size: 0.7rem; color: #3f3f46; vertical-align: middle; }
-.storm-alert { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px; padding: 0.75rem 1rem; color: #ef4444; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+.storm-alert { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 4px; padding: 0.75rem 1rem; color: var(--danger); font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
 .storm-current { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
 .kp-display { display: flex; flex-direction: column; align-items: center; cursor: help; }
 .kp-value { font-size: 2.5rem; font-weight: 300; line-height: 1; }
-.kp-label { font-size: 0.625rem; color: #52525b; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.25rem; }
+.kp-label { font-size: 0.625rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.25rem; }
 .storm-badges { display: flex; flex-direction: column; gap: 0.5rem; }
 .storm-badge { font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.05em; cursor: help; }
 .health-impact { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 4px; padding: 1rem; margin-bottom: 1rem; }
 .impact-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-.impact-label { font-size: 0.75rem; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; }
+.impact-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .impact-level { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; }
 .impact-systems { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; }
-.system-tag { font-size: 0.7rem; padding: 0.2rem 0.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 2px; color: #a1a1aa; }
+.system-tag { font-size: 0.7rem; padding: 0.2rem 0.5rem; background: var(--bg-hover); border-radius: 2px; color: var(--text-secondary); }
 .impact-recommendations { list-style: none; padding: 0; margin: 0; }
-.impact-recommendations li { font-size: 0.8rem; color: #a1a1aa; padding: 0.25rem 0 0.25rem 1rem; position: relative; }
-.impact-recommendations li::before { content: '•'; position: absolute; left: 0; color: #52525b; }
+.impact-recommendations li { font-size: 0.8rem; color: var(--text-secondary); padding: 0.25rem 0 0.25rem 1rem; position: relative; }
+.impact-recommendations li::before { content: '•'; position: absolute; left: 0; color: var(--text-faint); }
 .chart-wrap { margin-top: 0.5rem; }
 .disclaimer { font-size: 0.625rem; color: #3f3f46; font-style: italic; margin-top: 1rem; line-height: 1.4; }
 </style>

@@ -76,14 +76,14 @@ const dayPercent = computed(() => {
 <style scoped>
 .section-card {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
   padding: 1.25rem;
 }
 .section-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
@@ -103,14 +103,14 @@ const dayPercent = computed(() => {
 }
 .item-label {
   font-size: 0.7rem;
-  color: #52525b;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 .item-value {
   font-size: 1.125rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
 }
 .quality-badge {
   font-size: 0.75rem;
@@ -137,19 +137,19 @@ const dayPercent = computed(() => {
 }
 .day-bar-label {
   font-size: 0.7rem;
-  color: #52525b;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: help;
 }
 .day-bar-percent {
   font-size: 0.7rem;
-  color: #71717a;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 .day-bar {
   height: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-hover);
   border-radius: 4px;
   overflow: hidden;
 }

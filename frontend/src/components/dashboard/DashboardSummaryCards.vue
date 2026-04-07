@@ -134,7 +134,7 @@ const stormTooltip = computed(() => {
 .summary-card {
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .summary-card :deep(.p-card-body) {
   background: transparent;
@@ -153,15 +153,15 @@ const stormTooltip = computed(() => {
   border-radius: 4px;
 }
 .visits-icon {
-  color: #22d3ee;
+  color: var(--accent);
   background: rgba(34, 211, 238, 0.1);
 }
 .treatments-icon {
-  color: #22d3ee;
+  color: var(--accent);
   background: rgba(34, 211, 238, 0.1);
 }
 .total-icon {
-  color: #22d3ee;
+  color: var(--accent);
   background: rgba(34, 211, 238, 0.1);
 }
 .expenses-icon {
@@ -171,18 +171,18 @@ const stormTooltip = computed(() => {
 .card-currency {
   font-size: 0.875rem;
   font-weight: 400;
-  color: #71717a;
+  color: var(--text-muted);
 }
 .card-value {
   font-size: 1.75rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .card-label {
   font-size: 0.75rem;
-  color: #52525b;
+  color: var(--text-faint);
   margin-top: 0.25rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -196,7 +196,7 @@ const stormTooltip = computed(() => {
   border-color: rgba(34, 211, 238, 0.3);
 }
 .weather-icon {
-  color: #22d3ee;
+  color: var(--accent);
   background: rgba(34, 211, 238, 0.1);
 }
 .storm-warn {

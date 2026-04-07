@@ -260,12 +260,12 @@ onMounted(loadProfile)
 .profile-page h1 {
   font-size: 1.5rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   letter-spacing: 0.02em;
 }
 .loading {
-  color: #71717a;
+  color: var(--text-muted);
   font-size: 0.875rem;
 }
 .profile-sections {
@@ -276,12 +276,12 @@ onMounted(loadProfile)
 .section-card {
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .section-card :deep(.p-card-title) {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #52525b;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
@@ -303,7 +303,7 @@ onMounted(loadProfile)
 }
 .field label {
   font-size: 0.75rem;
-  color: #71717a;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -316,7 +316,7 @@ onMounted(loadProfile)
 .age-display {
   font-size: 1.25rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
   padding: 0.5rem 0;
 }
 .city-input-row {
@@ -332,7 +332,7 @@ onMounted(loadProfile)
 }
 .toggle-hint {
   font-size: 0.75rem;
-  color: #52525b;
+  color: var(--text-faint);
 }
 .actions {
   display: flex;

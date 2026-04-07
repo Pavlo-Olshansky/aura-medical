@@ -109,7 +109,7 @@ const dailyOptions = createWeatherChartOptions({ showLegend: true, yFormat: temp
 
 <style scoped>
 .forecast-section { display: contents; }
-.section-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 4px; padding: 1.25rem; }
-.section-title { font-size: 0.875rem; font-weight: 500; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; cursor: help; }
+.section-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 1.25rem; }
+.section-title { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; cursor: help; }
 .hint-icon { font-size: 0.7rem; color: #3f3f46; vertical-align: middle; }
 </style>

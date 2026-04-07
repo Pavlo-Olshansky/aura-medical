@@ -44,7 +44,7 @@ defineProps<{
 <style scoped>
 .weather-banner {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -62,18 +62,18 @@ defineProps<{
 .temp-value {
   font-size: 2.5rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
   line-height: 1;
 }
 .temp-feels {
   display: block;
   font-size: 0.75rem;
-  color: #71717a;
+  color: var(--text-muted);
   margin-top: 0.25rem;
 }
 .banner-condition {
   font-size: 1rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   text-transform: capitalize;
 }
 .banner-details {
@@ -86,10 +86,10 @@ defineProps<{
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
 }
 .detail-item i {
-  color: #52525b;
+  color: var(--text-faint);
   font-size: 0.875rem;
 }
 </style>
