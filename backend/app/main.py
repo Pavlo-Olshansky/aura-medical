@@ -1,3 +1,4 @@
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -30,6 +31,7 @@ async def lifespan(app: FastAPI):
     except Exception:
         pass
     app.state.skypulse = skypulse_client
+    app.state.started_at = time.time()
 
     yield
 
@@ -76,4 +78,7 @@ async def domain_error_handler(request, exc):
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
+from app.api.health import router as health_router
+
+app.include_router(health_router)
 app.include_router(api_router)
