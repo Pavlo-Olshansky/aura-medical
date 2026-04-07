@@ -126,7 +126,7 @@ onMounted(async () => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .actions {
@@ -136,13 +136,13 @@ onMounted(async () => {
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #52525b;
+  color: var(--text-faint);
 }
 .detail-card {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 0.75rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .detail-grid {
   display: grid;
@@ -159,14 +159,14 @@ onMounted(async () => {
 }
 .detail-label {
   font-size: 0.8rem;
-  color: #52525b;
+  color: var(--text-faint);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
 .detail-value {
   font-size: 1rem;
-  color: #d4d4d8;
+  color: var(--text-primary);
 }
 .detail-link {
   color: #2563eb;
@@ -179,21 +179,34 @@ onMounted(async () => {
 .document-section {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-subtle);
 }
 .document-section h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin-bottom: 1rem;
 }
 .timestamps {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   gap: 2rem;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-item.full-width {
+    grid-column: auto;
+  }
+  .timestamps {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 </style>

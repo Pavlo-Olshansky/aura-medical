@@ -166,7 +166,7 @@ onMounted(async () => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .header-actions {
@@ -177,7 +177,7 @@ onMounted(async () => {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 0.75rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .form-grid {
   display: grid;
@@ -195,7 +195,7 @@ onMounted(async () => {
 .form-field label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #a1a1aa;
+  color: var(--text-secondary);
 }
 .error-message {
   color: #dc2626;
@@ -207,6 +207,15 @@ onMounted(async () => {
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-field.full-width {
+    grid-column: auto;
+  }
 }
 </style>

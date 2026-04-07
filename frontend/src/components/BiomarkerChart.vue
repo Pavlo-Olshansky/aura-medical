@@ -106,7 +106,9 @@ const chartOptions = computed(() => {
 
 <template>
   <div class="biomarker-chart">
-    <Chart type="line" :data="chartData" :options="chartOptions" />
+    <div class="chart-scroll-wrapper">
+      <Chart type="line" :data="chartData" :options="chartOptions" />
+    </div>
   </div>
 </template>
 
@@ -115,6 +117,6 @@ const chartOptions = computed(() => {
   background: rgba(255, 255, 255, 0.02);
   border-radius: 0.5rem;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 </style>

@@ -78,6 +78,7 @@ onMounted(() => {
       @row-click="onRowClick"
       rowHover
       stripedRows
+      scrollable
       class="vaccinations-table"
     >
       <template #empty>Вакцинацій не знайдено</template>
@@ -85,10 +86,10 @@ onMounted(() => {
         <template #body="{ data }">{{ formatDate(data.date) }}</template>
       </Column>
       <Column field="vaccine_name" header="Назва вакцини" />
-      <Column field="manufacturer" header="Виробник">
+      <Column field="manufacturer" header="Виробник" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
         <template #body="{ data }">{{ data.manufacturer || '-' }}</template>
       </Column>
-      <Column field="dose_number" header="Доза">
+      <Column field="dose_number" header="Доза" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
         <template #body="{ data }">{{ data.dose_number }}</template>
       </Column>
       <Column field="next_due_date" header="Наступна дата">
@@ -116,7 +117,7 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .vaccinations-table :deep(tr) {

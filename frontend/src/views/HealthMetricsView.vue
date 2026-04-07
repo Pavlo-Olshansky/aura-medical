@@ -207,6 +207,7 @@ onMounted(async () => {
         :rowsPerPageOptions="[10, 20, 50]"
         @page="onPage"
         stripedRows
+        scrollable
         class="metrics-table"
       >
         <template #empty>Показників не знайдено</template>
@@ -225,7 +226,7 @@ onMounted(async () => {
         <Column header="Одиниця" style="width: 100px">
           <template #body="{ data }">{{ data.metric_type?.unit || selectedType?.unit || '-' }}</template>
         </Column>
-        <Column field="notes" header="Примітки">
+        <Column field="notes" header="Примітки" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
           <template #body="{ data }">
             <span class="notes-text">{{ data.notes || '-' }}</span>
           </template>
@@ -259,7 +260,7 @@ onMounted(async () => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .type-filters {
@@ -270,10 +271,10 @@ onMounted(async () => {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .empty-hint {
-  color: #71717a;
+  color: var(--text-muted);
   font-size: 0.875rem;
 }
 .chart-section {
@@ -283,12 +284,12 @@ onMounted(async () => {
   background: rgba(255, 255, 255, 0.02);
   border-radius: 0.5rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   text-align: center;
   margin-bottom: 1.5rem;
 }
 .chart-placeholder p {
-  color: #71717a;
+  color: var(--text-muted);
   margin: 0;
 }
 .table-section {

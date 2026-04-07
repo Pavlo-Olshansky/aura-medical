@@ -106,6 +106,7 @@ onMounted(() => {
       @row-click="onRowClick"
       rowHover
       stripedRows
+      scrollable
       class="lab-results-table"
     >
       <template #empty>Аналізів не знайдено</template>
@@ -153,7 +154,7 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .filters {
@@ -161,7 +162,7 @@ onMounted(() => {
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .filter-row {
   display: flex;
@@ -176,7 +177,7 @@ onMounted(() => {
 }
 .filter-item label {
   font-size: 0.8rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 .filter-actions {

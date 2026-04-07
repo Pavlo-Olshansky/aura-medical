@@ -92,6 +92,7 @@ onMounted(() => {
       @row-click="onRowClick"
       rowHover
       stripedRows
+      scrollable
       class="treatments-table"
     >
       <template #empty>Лікувань не знайдено</template>
@@ -102,7 +103,7 @@ onMounted(() => {
       <Column field="days" header="Тривалість">
         <template #body="{ data }">{{ data.days }} дн.</template>
       </Column>
-      <Column field="receipt" header="Рецепт">
+      <Column field="receipt" header="Рецепт" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
         <template #body="{ data }">
           <span class="receipt-text">{{ data.receipt || '-' }}</span>
         </template>
@@ -129,7 +130,7 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .filters {
@@ -137,7 +138,7 @@ onMounted(() => {
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   display: flex;
   gap: 1rem;
   align-items: flex-end;
@@ -149,7 +150,7 @@ onMounted(() => {
 }
 .filter-item label {
   font-size: 0.8rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 .receipt-text {

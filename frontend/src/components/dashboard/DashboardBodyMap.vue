@@ -114,14 +114,14 @@ const modalHeader = computed(() => {
 .body-map-section h2 {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #52525b;
+  color: var(--text-faint);
   margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
 .body-map-layout {
-  background: #050505;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-body);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -132,5 +132,12 @@ const modalHeader = computed(() => {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .body-map-layout {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
 }
 </style>

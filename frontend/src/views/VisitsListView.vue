@@ -174,6 +174,7 @@ onMounted(async () => {
       @row-click="onRowClick"
       rowHover
       stripedRows
+      scrollable
       class="visits-table"
     >
       <template #empty>Візитів не знайдено</template>
@@ -190,13 +191,13 @@ onMounted(async () => {
       <Column header="Процедура">
         <template #body="{ data }">{{ data.procedure?.name || '-' }}</template>
       </Column>
-      <Column header="Клініка">
+      <Column header="Клініка" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
         <template #body="{ data }">{{ data.clinic?.name || '-' }}</template>
       </Column>
-      <Column header="Місто">
+      <Column header="Місто" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
         <template #body="{ data }">{{ data.city?.name || '-' }}</template>
       </Column>
-      <Column header="Документ" style="width: 80px; text-align: center">
+      <Column header="Документ" style="width: 80px; text-align: center" headerClass="hide-on-mobile" bodyClass="hide-on-mobile">
         <template #body="{ data }">
           <i v-if="data.document || data.has_document" class="pi pi-file" style="color: #2563eb" />
           <span v-else>-</span>
@@ -219,7 +220,7 @@ onMounted(async () => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .filters {
@@ -227,7 +228,7 @@ onMounted(async () => {
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .filter-row {
   display: flex;
@@ -242,7 +243,7 @@ onMounted(async () => {
 }
 .filter-item label {
   font-size: 0.8rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 .filter-actions {

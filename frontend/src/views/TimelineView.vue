@@ -150,7 +150,7 @@ onMounted(() => {
             />
           </div>
           <div class="event-title">{{ event.title }}</div>
-          <div v-if="event.subtitle" class="event-subtitle">{{ event.subtitle }}</div>
+          <div v-if="event.subtitle" class="event-subtitle hide-on-mobile">{{ event.subtitle }}</div>
         </div>
         <div class="card-arrow">
           <i class="pi pi-chevron-right" />
@@ -191,7 +191,7 @@ onMounted(() => {
 .page-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin: 0;
 }
 .filters {
@@ -199,7 +199,7 @@ onMounted(() => {
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
 }
 .filter-row {
   display: flex;
@@ -214,7 +214,7 @@ onMounted(() => {
 }
 .filter-item label {
   font-size: 0.8rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 .filter-actions {
@@ -223,12 +223,12 @@ onMounted(() => {
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #52525b;
+  color: var(--text-faint);
 }
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: #52525b;
+  color: var(--text-faint);
   font-size: 0.95rem;
 }
 .timeline-list {
@@ -242,13 +242,13 @@ onMounted(() => {
   gap: 1rem;
   padding: 1rem 1.25rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 .timeline-card:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-hover);
   border-color: rgba(255, 255, 255, 0.1);
 }
 .card-left {
@@ -260,13 +260,13 @@ onMounted(() => {
 }
 .event-date {
   font-size: 0.8rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-weight: 500;
   white-space: nowrap;
 }
 .event-icon {
   font-size: 1.125rem;
-  color: #52525b;
+  color: var(--text-faint);
 }
 .card-body {
   flex: 1;
@@ -278,21 +278,21 @@ onMounted(() => {
 .event-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #e4e4e7;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .event-subtitle {
   font-size: 0.8rem;
-  color: #71717a;
+  color: var(--text-muted);
   margin-top: 0.125rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .card-arrow {
-  color: #3f3f46;
+  color: var(--text-faint);
   font-size: 0.875rem;
 }
 .pagination {
@@ -305,6 +305,6 @@ onMounted(() => {
 }
 .page-info {
   font-size: 0.875rem;
-  color: #a1a1aa;
+  color: var(--text-secondary);
 }
 </style>

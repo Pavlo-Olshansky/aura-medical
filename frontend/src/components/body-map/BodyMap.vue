@@ -229,7 +229,7 @@ const tooltipLabel = computed(() => {
 
 .panel-label {
   font-size: 0.6875rem;
-  color: #52525b;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-top: 4px;
@@ -242,7 +242,7 @@ const tooltipLabel = computed(() => {
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: #0a0a0a;
+  background: var(--bg-main);
   color: #334155;
   font-size: 2rem;
 }
@@ -330,7 +330,7 @@ const tooltipLabel = computed(() => {
 }
 
 .hotspot:focus-visible {
-  outline: 2px solid #22d3ee;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -343,6 +343,12 @@ const tooltipLabel = computed(() => {
 
   .panel {
     width: 95%;
+    max-width: 100%;
+  }
+
+  .hotspot {
+    min-width: 32px;
+    min-height: 32px;
   }
 }
 </style>

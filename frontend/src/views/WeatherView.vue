@@ -62,13 +62,13 @@ onMounted(async () => {
 .weather-page h1 {
   font-size: 1.5rem;
   font-weight: 300;
-  color: #e4e4e7;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
   letter-spacing: 0.02em;
 }
 .city-subtitle {
   font-size: 0.875rem;
-  color: #52525b;
+  color: var(--text-faint);
   margin-bottom: 1.5rem;
 }
 .sections-grid {
@@ -79,7 +79,7 @@ onMounted(async () => {
 .loading-state,
 .error-state,
 .empty-state {
-  color: #52525b;
+  color: var(--text-faint);
   font-size: 0.875rem;
   padding: 2rem;
   text-align: center;
@@ -88,7 +88,7 @@ onMounted(async () => {
   margin-right: 0.5rem;
 }
 .error-state {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 @media (max-width: 768px) {
