@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "DEBUG"
     SKYPULSE_API_KEY: str = ""
     WEATHER_CITY: str = "Kyiv"
+    VAPID_MAILTO: str = "mailto:noreply@example.com"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
