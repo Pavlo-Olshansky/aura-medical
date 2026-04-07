@@ -16,6 +16,12 @@ dev: ## Start both backend and frontend
 	$(MAKE) backend &
 	$(MAKE) frontend
 
+dev-pwa: ## Start backend + production frontend build (for testing push notifications)
+	@echo "Building frontend and starting PWA mode..."
+	cd frontend && npm run build
+	$(MAKE) backend &
+	cd frontend && npx serve dist -l 5173
+
 # --- Testing ---
 
 test: test-backend ## Run all tests
