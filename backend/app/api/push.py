@@ -1,5 +1,6 @@
 import asyncio
 import json
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -88,6 +89,8 @@ async def test_push(
         })
         for sub in subs:
             try:
+                parsed = urlparse(sub.endpoint)
+                aud = f"{parsed.scheme}://{parsed.netloc}"
                 webpush(
                     subscription_info={
                         "endpoint": sub.endpoint,
@@ -95,7 +98,7 @@ async def test_push(
                     },
                     data=payload,
                     vapid_private_key=vapid_keys["private_key"],
-                    vapid_claims={"sub": settings.VAPID_MAILTO},
+                    vapid_claims={"sub": settings.VAPID_MAILTO, "aud": aud},
                 )
             except WebPushException:
                 pass

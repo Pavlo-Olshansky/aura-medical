@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from urllib.parse import urlparse
 
 import structlog
 from pywebpush import WebPushException, webpush
@@ -60,6 +61,8 @@ async def send_push_reminders() -> None:
 
                 for sub in subs:
                     try:
+                        parsed = urlparse(sub.endpoint)
+                        aud = f"{parsed.scheme}://{parsed.netloc}"
                         webpush(
                             subscription_info={
                                 "endpoint": sub.endpoint,
@@ -67,7 +70,7 @@ async def send_push_reminders() -> None:
                             },
                             data=payload,
                             vapid_private_key=vapid_keys["private_key"],
-                            vapid_claims={"sub": settings.VAPID_MAILTO},
+                            vapid_claims={"sub": settings.VAPID_MAILTO, "aud": aud},
                         )
                         logger.info(
                             "push_sent",
