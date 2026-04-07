@@ -1,6 +1,6 @@
 # MedTracker
 
-Personal medical records tracker with an interactive body map, visit history, treatment monitoring, and document management. Built with FastAPI and Vue.js. All UI labels in Ukrainian.
+Personal medical records tracker with an interactive body map, visit history, treatment monitoring, lab results, push notification reminders, and PWA support. Built with FastAPI and Vue.js. Installable on iOS and Android without app store. All UI labels in Ukrainian.
 
 ## Demo
 
@@ -22,42 +22,54 @@ Personal medical records tracker with an interactive body map, visit history, tr
 - **Document Management** — upload and preview medical documents (images, PDFs) attached to visits and vaccinations
 - **Reference Data** — manage doctor specialties, procedures, clinics, cities, biomarker references, and metric types with inline CRUD
 - **Filtering & Search** — visits filterable by date range, clinic, city, procedure, doctor specialty; treatments by status
+- **Push Notification Reminders** — Web Push via VAPID for receiving reminders on phone 1 day and 1 hour before visits, treatment starts, and vaccination due dates. Works with browser closed on Android; on iOS requires PWA installation. Device-specific setup guide auto-detects platform
+- **Progressive Web App (PWA)** — installable on iOS (Safari → Add to Home Screen) and Android (Chrome → Install app) without app store. Offline shell caching via service worker, standalone mode without browser chrome
+- **Dark / Light Theme** — toggle between dark, light, and system-auto modes. Persists across sessions, no flash on page reload. All components adapted via CSS variables
+- **Responsive Mobile Design** — drawer sidebar with hamburger menu on tablets/phones, column hiding in tables, stacked form layouts, scrollable charts, 44px touch targets
+- **Health Check Endpoints** — `/health` liveness and `/health/ready` readiness probes for Docker healthchecks and monitoring
 
 ## Tech Stack
 
 | Layer | Technologies |
 |-------|-------------|
-| **Frontend** | Vue.js 3, TypeScript, PrimeVue, Pinia, Vue Router, Vite, Chart.js |
+| **Frontend** | Vue.js 3, TypeScript, PrimeVue 4.5, Pinia, Vue Router, Vite 7, Chart.js |
 | **Backend** | Python 3.14+, FastAPI, SQLAlchemy 2.0 (async), Pydantic v2, Alembic |
-| **Database** | PostgreSQL 15+ |
+| **Database** | PostgreSQL 15+, psycopg v3 (async) |
 | **Auth** | JWT tokens (PyJWT), bcrypt password hashing |
-| **DB Driver** | psycopg v3 (async) |
+| **Push** | pywebpush, VAPID (auto-generated), APScheduler |
+| **PWA** | vite-plugin-pwa, Workbox, service worker |
 | **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
+| **Testing** | pytest, pytest-asyncio (97 tests) |
+| **Infra** | Docker Compose, GitHub Actions CI |
 
 ## Architecture
 
 ```
 backend/
   app/
-    api/              # Route handlers (auth, visits, treatments, lab results, health metrics, etc.)
-    application/      # Application services and commands
+    api/              # Route handlers (auth, visits, treatments, push, notifications, health, etc.)
+    application/      # Application services, commands, push scheduler
     domain/           # Domain entities, value objects, repository interfaces, exceptions
-    infrastructure/   # Database engine, ORM models, repository implementations, JWT
-      models/         # SQLAlchemy ORM models
+    infrastructure/   # Database engine, ORM models, repositories, JWT, VAPID manager
+      models/         # SQLAlchemy ORM models (12 models)
       repositories/   # Repository implementations
     schemas/          # Pydantic request/response schemas
-  alembic/            # Database migrations
-  tests/              # pytest test suite
+  alembic/            # Database migrations (9 migrations)
+  tests/              # pytest test suite (97 tests)
 
 frontend/
+  public/
+    icons/            # PWA icons (72, 192, 512, maskable, apple-touch)
+    sw-push.js        # Push notification service worker handler
   src/
-    views/            # Page components (Dashboard, Visits, Treatments, Lab Results, Timeline, etc.)
-    components/       # Reusable UI (BodyMap, Charts, AppLayout, DocumentPreview)
+    views/            # Page components (11 pages, 27 routes)
+    components/       # AppLayout, BodyMap, Charts, ThemeToggle, NotificationBell, PushSetupGuide
+    composables/      # useTheme, useOnlineStatus, usePushNotifications, useUrlFilters
     api/              # Axios client with JWT interceptor
     stores/           # Pinia state management
     router/           # Vue Router with auth guards
     types/            # TypeScript interfaces and payload types
-    utils/            # Shared utilities (date formatting, chart setup)
+    utils/            # Date formatting, chart setup
 ```
 
 ## Getting Started
@@ -102,6 +114,7 @@ Backend runs at `http://localhost:8000` (API docs at `/docs`), frontend at `http
 
 ```bash
 make dev              # Start backend + frontend
+make dev-pwa          # Production build + backend (for testing push/PWA)
 make backend          # Start backend only
 make frontend         # Start frontend only
 make seed             # Create default admin/admin user
@@ -117,6 +130,17 @@ make docker-up        # Start dev environment (PostgreSQL + backend + frontend)
 make docker-down      # Stop Docker services
 make docker-seed      # Create admin user in Docker
 make docker-logs      # Tail Docker logs
+```
+
+### Testing Push Notifications
+
+Push requires a production frontend build (service worker is not active in dev mode):
+
+```bash
+# Set TEST_MODE=true in backend/.env
+make dev-pwa
+# Open http://localhost:5173, enable notifications in Profile
+# Click "Test push" button on dashboard — notification in 30 seconds
 ```
 
 ## License
