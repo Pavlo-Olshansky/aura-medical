@@ -12,7 +12,7 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
 import { BODY_REGION_OPTIONS, SPECIALTY_REGION_MAP } from '@/components/body-map/body-regions'
-import { formatDateForApi } from '@/utils/dateUtils'
+import { formatDateTimeForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -70,7 +70,7 @@ async function handleSubmit() {
   errorMessage.value = ''
 
   const formData = new FormData()
-  formData.append('date', formatDateForApi(date.value))
+  formData.append('date', formatDateTimeForApi(date.value))
   if (positionId.value) formData.append('position_id', String(positionId.value))
   if (doctor.value) formData.append('doctor', doctor.value)
   if (procedureId.value) formData.append('procedure_id', String(procedureId.value))
@@ -142,8 +142,10 @@ onMounted(async () => {
             id="date"
             v-model="date"
             dateFormat="dd.mm.yy"
+            showTime
+            hourFormat="24"
             showIcon
-            placeholder="Оберіть дату"
+            placeholder="Оберіть дату та час"
           />
         </div>
 
