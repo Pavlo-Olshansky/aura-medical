@@ -15,12 +15,16 @@ import DashboardRecentVisits from '@/components/dashboard/DashboardRecentVisits.
 import DashboardActiveTreatments from '@/components/dashboard/DashboardActiveTreatments.vue'
 import DashboardBodyMap from '@/components/dashboard/DashboardBodyMap.vue'
 import NotificationBanner from '@/components/NotificationBanner.vue'
+import { getTestMode, sendTestPush } from '@/api/push'
 
 const router = useRouter()
 const auth = useAuthStore()
 const vaccinationsStore = useVaccinationsStore()
 
 const loading = ref(true)
+const testMode = ref(false)
+const testPushSending = ref(false)
+const testPushMessage = ref('')
 const totalVisits = ref(0)
 const activeTreatmentsCount = ref(0)
 const totalTreatments = ref(0)
@@ -136,6 +140,19 @@ async function onMetricSaved() {
   }
 }
 
+async function handleTestPush() {
+  testPushSending.value = true
+  testPushMessage.value = ''
+  try {
+    const result = await sendTestPush()
+    testPushMessage.value = `Сповіщення прийде через ${result.delay_seconds} сек`
+  } catch {
+    testPushMessage.value = 'Помилка. Перевірте підписку на push.'
+  } finally {
+    testPushSending.value = false
+  }
+}
+
 onMounted(async () => {
   try {
     if (!auth.user) {
@@ -170,6 +187,11 @@ onMounted(async () => {
     } catch {
       // Weather unavailable — card will be hidden
     }
+    try {
+      testMode.value = await getTestMode()
+    } catch {
+      // silent
+    }
   } catch {
     // silent fail — dashboard is informational
   } finally {
@@ -181,6 +203,13 @@ onMounted(async () => {
 <template>
   <div class="dashboard">
     <NotificationBanner />
+    <div v-if="testMode" class="test-push-bar">
+      <button class="test-push-btn" @click="handleTestPush" :disabled="testPushSending">
+        <i class="pi pi-bell" />
+        {{ testPushSending ? 'Заплановано...' : 'Тестове push-сповіщення (30 сек)' }}
+      </button>
+      <span v-if="testPushMessage" class="test-push-msg">{{ testPushMessage }}</span>
+    </div>
     <h1>Головна</h1>
 
     <DashboardSummaryCards
@@ -232,6 +261,37 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.test-push-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.test-push-btn {
+  background: var(--bg-card);
+  border: 1px dashed var(--accent);
+  color: var(--accent);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.15s;
+}
+.test-push-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.test-push-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+.test-push-msg {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
 .dashboard {
   max-width: 1100px;
 }

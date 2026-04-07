@@ -21,3 +21,13 @@ export async function unsubscribePush(endpoint: string): Promise<void> {
     data: { endpoint },
   })
 }
+
+export async function getTestMode(): Promise<boolean> {
+  const { data } = await apiClient.get<{ test_mode: boolean }>('/api/v1/push/test-mode')
+  return data.test_mode
+}
+
+export async function sendTestPush(): Promise<{ status: string; delay_seconds: number }> {
+  const { data } = await apiClient.post('/api/v1/push/test')
+  return data
+}

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     SKYPULSE_API_KEY: str = ""
     WEATHER_CITY: str = "Kyiv"
     VAPID_MAILTO: str = "mailto:noreply@example.com"
+    TEST_MODE: bool = False
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
