@@ -29,12 +29,17 @@ def get_vapid_keys() -> dict:
     vapid = Vapid()
     vapid.generate_keys()
 
-    private_pem = vapid.private_pem()
+    # Private key: raw 32-byte EC scalar, base64url (format pywebpush expects)
+    priv_numbers = vapid.private_key.private_numbers()
+    priv_bytes = priv_numbers.private_value.to_bytes(32, "big")
+    priv_b64 = base64.urlsafe_b64encode(priv_bytes).rstrip(b"=").decode()
+
+    # Public key: uncompressed EC point, base64url
     pub_bytes = vapid.public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint)
     pub_b64 = base64.urlsafe_b64encode(pub_bytes).rstrip(b"=").decode()
 
     _cached_keys = {
-        "private_key": private_pem.decode() if isinstance(private_pem, bytes) else private_pem,
+        "private_key": priv_b64,
         "public_key": pub_b64,
     }
 
