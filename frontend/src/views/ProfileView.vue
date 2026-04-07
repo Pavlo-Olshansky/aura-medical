@@ -11,6 +11,7 @@ import Button from 'primevue/button'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { apiClient } from '@/api/client'
 import { usePushNotifications } from '@/composables/usePushNotifications'
+import PushSetupGuide from '@/components/PushSetupGuide.vue'
 import { useAuthStore } from '@/stores/auth'
 import type { ProfileData } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
@@ -281,6 +282,7 @@ onMounted(() => {
               </span>
             </div>
           </div>
+          <PushSetupGuide />
         </template>
       </Card>
 

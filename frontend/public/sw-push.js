@@ -13,16 +13,18 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const url = event.notification.data?.url || '/'
+  const path = event.notification.data?.url || '/'
+  const targetUrl = new URL(path, self.location.origin).href
+
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((windowClients) => {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       for (const client of windowClients) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.navigate(url)
+        if (new URL(client.url).origin === self.location.origin && 'focus' in client) {
+          client.navigate(targetUrl)
           return client.focus()
         }
       }
-      return clients.openWindow(url)
+      return clients.openWindow(targetUrl)
     })
   )
 })
