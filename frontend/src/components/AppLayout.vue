@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
+const sidebarOpen = ref(false)
+
+router.afterEach(() => {
+  sidebarOpen.value = false
+})
 
 async function handleLogout() {
   auth.logout()
@@ -13,7 +20,14 @@ async function handleLogout() {
 
 <template>
   <div class="app-layout">
-    <aside class="sidebar">
+    <header class="mobile-header">
+      <button class="hamburger-btn" @click="sidebarOpen = !sidebarOpen">
+        <i class="pi pi-bars" />
+      </button>
+      <span class="mobile-title">Aura</span>
+    </header>
+    <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
+    <aside class="sidebar" :class="{ open: sidebarOpen }">
       <h2 class="sidebar-title">Aura</h2>
       <nav>
         <RouterLink to="/" class="nav-link">
@@ -45,6 +59,7 @@ async function handleLogout() {
         </RouterLink>
       </nav>
       <div class="sidebar-footer">
+        <ThemeToggle />
         <RouterLink to="/profile" class="nav-link profile-link">
           <i class="pi pi-user" /> Профіль
         </RouterLink>
@@ -65,18 +80,25 @@ async function handleLogout() {
   display: flex;
   min-height: 100vh;
 }
+.mobile-header {
+  display: none;
+}
+.sidebar-overlay {
+  display: none;
+}
 .sidebar {
   width: 240px;
-  background: #080808;
-  color: #a1a1aa;
+  background: var(--bg-sidebar);
+  color: var(--text-secondary);
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--border-subtle);
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  transition: transform 0.3s ease;
 }
 .sidebar-title {
   font-size: 1.25rem;
@@ -84,7 +106,7 @@ async function handleLogout() {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   margin-bottom: 2rem;
-  color: #fff;
+  color: var(--text-primary);
 }
 .nav-link {
   display: flex;
@@ -92,7 +114,7 @@ async function handleLogout() {
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-radius: 2px;
-  color: #71717a;
+  color: var(--text-muted);
   text-decoration: none;
   margin-bottom: 0.25rem;
   transition: all 0.2s;
@@ -101,18 +123,18 @@ async function handleLogout() {
   letter-spacing: 0.05em;
 }
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #d4d4d8;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 .nav-link.router-link-active {
-  background: rgba(34, 211, 238, 0.08);
-  color: #22d3ee;
-  border-right: 2px solid #22d3ee;
+  background: var(--bg-active);
+  color: var(--accent);
+  border-right: 2px solid var(--accent);
 }
 .sidebar-footer {
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-subtle);
 }
 .profile-link {
   margin-bottom: 0.75rem;
@@ -120,13 +142,13 @@ async function handleLogout() {
 .username {
   display: block;
   font-size: 0.875rem;
-  color: #52525b;
+  color: var(--text-faint);
   margin-bottom: 0.5rem;
 }
 .logout-btn {
   background: none;
   border: none;
-  color: #71717a;
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 0.875rem;
   display: flex;
@@ -136,11 +158,79 @@ async function handleLogout() {
   transition: color 0.2s;
 }
 .logout-btn:hover {
-  color: #ef4444;
+  color: var(--danger);
 }
 .main-content {
   flex: 1;
   padding: 2rem;
-  background: #0a0a0a;
+  background: var(--bg-main);
+}
+
+/* Tablet + Mobile */
+@media (max-width: 1024px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .hamburger-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobile-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+  }
+  .main-content {
+    padding: 1rem;
+  }
+  .nav-link {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
+  }
 }
 </style>

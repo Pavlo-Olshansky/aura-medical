@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -27,6 +28,9 @@ async function handleLogin() {
 
 <template>
   <div class="login-container">
+    <div class="login-theme-toggle">
+      <ThemeToggle />
+    </div>
     <div class="login-card">
       <h1>Aura</h1>
       <p class="subtitle">Вхід до системи</p>
@@ -66,13 +70,19 @@ async function handleLogin() {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #050505;
+  background: var(--bg-body);
+  position: relative;
+}
+.login-theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 .login-card {
-  background: #0c0c0c;
+  background: var(--bg-card);
   padding: 2.5rem;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   width: 100%;
   max-width: 400px;
@@ -82,11 +92,11 @@ async function handleLogin() {
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 .subtitle {
-  color: #52525b;
+  color: var(--text-faint);
   margin-bottom: 1.5rem;
   font-size: 0.8125rem;
   text-transform: uppercase;
@@ -100,7 +110,7 @@ async function handleLogin() {
   font-size: 0.6875rem;
   font-weight: 500;
   margin-bottom: 0.375rem;
-  color: #52525b;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
@@ -112,15 +122,15 @@ async function handleLogin() {
   font-size: 0.875rem;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.03);
-  color: #d4d4d8;
+  color: var(--text-primary);
   transition: border-color 0.2s;
 }
 .field input:focus {
   outline: none;
-  border-color: #22d3ee;
+  border-color: var(--accent);
 }
 .error {
-  color: #ef4444;
+  color: var(--danger);
   font-size: 0.8125rem;
   margin-bottom: 0.75rem;
 }
@@ -139,7 +149,7 @@ async function handleLogin() {
   transition: background 0.2s;
 }
 .login-btn:hover {
-  background: #22d3ee;
+  background: var(--accent);
 }
 .login-btn:disabled {
   opacity: 0.4;
