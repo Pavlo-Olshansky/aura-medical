@@ -2,6 +2,8 @@
 
 Personal medical records tracker with an interactive body map, visit history, treatment monitoring, lab results, push notification reminders, and PWA support. Built with FastAPI and Vue.js. Installable on iOS and Android without app store. All UI labels in Ukrainian.
 
+📖 [Documentation (Notion)](https://www.notion.so/Aura-Medical-33bfc4c0841280d0a57cdd4d5df8d9c7)
+
 ## Demo
 
 ![Demo](medical.gif)
@@ -9,7 +11,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 
 ## Features
 
-- **Interactive Body Map** — sex-aware anatomical visualization (front, back, face) with 50+ clickable hotspots mapped to body regions. Highlights areas with active treatments, supports click-to-filter visits by region
+- **Interactive Body Map** — sex-aware anatomical visualization (front, back, face) with 40+ clickable hotspots mapped to body regions. Highlights areas with active treatments, supports click-to-filter visits by region
 - **Visit Records** — track doctor visits with date, specialty, procedure, clinic, city, body region, comments, and attached documents
 - **Treatment Tracking** — medication courses with automatic status calculation (active/completed) based on start date and duration
 - **Lab Results & Biomarker Trends** — blood tests with reference ranges, out-of-range highlighting, and trend charts per biomarker over time
@@ -39,7 +41,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 | **Push** | pywebpush, VAPID (auto-generated), APScheduler |
 | **PWA** | vite-plugin-pwa, Workbox, service worker |
 | **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
-| **Testing** | pytest, pytest-asyncio (97 tests) |
+| **Testing** | pytest, pytest-asyncio (98 tests) |
 | **Infra** | Docker Compose, GitHub Actions CI |
 
 ## Architecture
@@ -55,7 +57,7 @@ backend/
       repositories/   # Repository implementations
     schemas/          # Pydantic request/response schemas
   alembic/            # Database migrations (9 migrations)
-  tests/              # pytest test suite (97 tests)
+  tests/              # pytest test suite (98 tests)
 
 frontend/
   public/
@@ -108,7 +110,7 @@ make seed             # Creates admin/admin user
 make dev
 ```
 
-Backend runs at `http://localhost:8000` (API docs at `/docs`), frontend at `http://localhost:5173`.
+Backend runs at `http://localhost:8000` (Swagger UI at `/docs`), frontend at `http://localhost:5173`.
 
 ## Available Commands
 
