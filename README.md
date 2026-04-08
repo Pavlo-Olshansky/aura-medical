@@ -24,7 +24,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 - **Document Management** — upload and preview medical documents (images, PDFs) attached to visits and vaccinations
 - **Reference Data** — manage doctor specialties, procedures, clinics, cities, biomarker references, and metric types with inline CRUD
 - **Filtering & Search** — visits filterable by date range, clinic, city, procedure, doctor specialty; treatments by status
-- **Push Notification Reminders** — Web Push via VAPID for receiving reminders on phone 1 day and 1 hour before visits, treatment starts, and vaccination due dates. Works with browser closed on Android; on iOS requires PWA installation. Device-specific setup guide auto-detects platform
+- **Push Notification Reminders** — Web Push via VAPID for receiving reminders on phone 1 day and 1 hour before visits, treatment starts, and vaccination due dates. Jobs persist across restarts (PostgreSQL-backed APScheduler). Multi-worker safe via advisory locks (exactly-once execution). Works with browser closed on Android; on iOS requires PWA installation. Device-specific setup guide auto-detects platform
 - **Progressive Web App (PWA)** — installable on iOS (Safari → Add to Home Screen) and Android (Chrome → Install app) without app store. Offline shell caching via service worker, standalone mode without browser chrome
 - **Dark / Light Theme** — toggle between dark, light, and system-auto modes. Persists across sessions, no flash on page reload. All components adapted via CSS variables
 - **Responsive Mobile Design** — drawer sidebar with hamburger menu on tablets/phones, column hiding in tables, stacked form layouts, scrollable charts, 44px touch targets
@@ -38,10 +38,10 @@ Personal medical records tracker with an interactive body map, visit history, tr
 | **Backend** | Python 3.14+, FastAPI, SQLAlchemy 2.0 (async), Pydantic v2, Alembic |
 | **Database** | PostgreSQL 15+, psycopg v3 (async) |
 | **Auth** | JWT tokens (PyJWT), bcrypt password hashing |
-| **Push** | pywebpush, VAPID (auto-generated), APScheduler |
+| **Push** | pywebpush, VAPID (auto-generated), APScheduler (PostgreSQL-backed persistence, advisory locks) |
 | **PWA** | vite-plugin-pwa, Workbox, service worker |
 | **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
-| **Testing** | pytest, pytest-asyncio (98 tests) |
+| **Testing** | pytest, pytest-asyncio (106 tests) |
 | **Infra** | Docker Compose, GitHub Actions CI |
 
 ## Architecture
@@ -52,12 +52,12 @@ backend/
     api/              # Route handlers (auth, visits, treatments, push, notifications, health, etc.)
     application/      # Application services, commands, push scheduler
     domain/           # Domain entities, value objects, repository interfaces, exceptions
-    infrastructure/   # Database engine, ORM models, repositories, JWT, VAPID manager
+    infrastructure/   # Database engine, ORM models, repositories, JWT, VAPID manager, scheduler
       models/         # SQLAlchemy ORM models (12 models)
       repositories/   # Repository implementations
     schemas/          # Pydantic request/response schemas
-  alembic/            # Database migrations (9 migrations)
-  tests/              # pytest test suite (98 tests)
+  alembic/            # Database migrations (10 migrations)
+  tests/              # pytest test suite (106 tests)
 
 frontend/
   public/
