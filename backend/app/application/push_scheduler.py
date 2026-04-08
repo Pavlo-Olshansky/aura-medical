@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 import structlog
 from pywebpush import WebPushException, webpush
+from sqlalchemy.exc import IntegrityError
 
 from app.application.notification_service import NotificationAppService
 from app.config import settings
@@ -87,9 +88,18 @@ async def send_push_reminders() -> None:
                         else:
                             logger.error("push_failed", sub_id=sub.id, error=str(e))
 
-                await push_repo.log_sent(
-                    user_id,
-                    reminder["entity_type"],
-                    reminder["entity_id"],
-                    reminder["reminder_type"],
-                )
+                try:
+                    await push_repo.log_sent(
+                        user_id,
+                        reminder["entity_type"],
+                        reminder["entity_id"],
+                        reminder["reminder_type"],
+                    )
+                except IntegrityError:
+                    logger.info(
+                        "push_already_logged",
+                        user_id=user_id,
+                        entity=f"{reminder['entity_type']}/{reminder['entity_id']}",
+                        type=reminder["reminder_type"],
+                    )
+                    await session.rollback()
