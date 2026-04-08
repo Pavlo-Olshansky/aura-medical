@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     WEATHER_CITY: str = "Kyiv"
     VAPID_MAILTO: str = "mailto:noreply@example.com"
     TEST_MODE: bool = False
+    SCHEDULER_LOCK_KEY: int = 918018
+    SCHEDULER_LOCK_TIMEOUT: int = 600
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
