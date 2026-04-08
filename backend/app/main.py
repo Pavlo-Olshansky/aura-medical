@@ -33,21 +33,12 @@ async def lifespan(app: FastAPI):
     app.state.skypulse = skypulse_client
     app.state.started_at = time.time()
 
-    scheduler = None
-    try:
-        from apscheduler.schedulers.asyncio import AsyncIOScheduler
-        from app.application.push_scheduler import send_push_reminders
-
-        scheduler = AsyncIOScheduler()
-        scheduler.add_job(send_push_reminders, "interval", minutes=15)
-        scheduler.start()
-    except Exception:
-        pass
+    from app.infrastructure.scheduler import init_scheduler, shutdown_scheduler
+    init_scheduler()
 
     yield
 
-    if scheduler:
-        scheduler.shutdown(wait=False)
+    shutdown_scheduler()
     if skypulse_client:
         await skypulse_client.close()
     await engine.dispose()
