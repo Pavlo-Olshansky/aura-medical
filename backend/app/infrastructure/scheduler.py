@@ -78,14 +78,15 @@ def init_scheduler() -> bool:
         return False
 
 
-def register_jobs() -> None:
+async def _locked_push_reminders() -> None:
     from app.application.push_scheduler import send_push_reminders
 
-    async def locked_push_reminders():
-        await _run_with_lock(send_push_reminders, "push_reminders")
+    await _run_with_lock(send_push_reminders, "push_reminders")
 
+
+def register_jobs() -> None:
     _scheduler.add_job(
-        locked_push_reminders,
+        f"{__name__}:_locked_push_reminders",
         "interval",
         minutes=15,
         id="push_reminders",
