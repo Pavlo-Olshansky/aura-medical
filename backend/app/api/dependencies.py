@@ -113,6 +113,11 @@ def get_timeline_service(session: AsyncSession = Depends(get_session)) -> Timeli
     )
 
 
+def get_calendar_service(session: AsyncSession = Depends(get_session)):
+    from app.application.calendar_service import CalendarAppService
+    return CalendarAppService(session)
+
+
 def get_dashboard_service(session: AsyncSession = Depends(get_session)) -> DashboardAppService:
     return DashboardAppService(
         SqlAlchemyVisitRepository(session),
