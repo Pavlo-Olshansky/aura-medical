@@ -38,6 +38,7 @@ const selectedFile = ref<File | null>(null)
 
 const saving = ref(false)
 const errorMessage = ref('')
+const textareaFocused = ref(false)
 
 // Auto-suggest body region when position changes
 watch(positionId, (newVal) => {
@@ -182,7 +183,16 @@ onMounted(async () => {
 
         <div class="form-field full-width">
           <label for="procedureDetails">Деталі процедури</label>
-          <Textarea id="procedureDetails" v-model="procedureDetails" rows="3" placeholder="Деталі процедури" />
+          <Textarea
+            id="procedureDetails"
+            v-model="procedureDetails"
+            rows="3"
+            placeholder="Деталі процедури"
+            @focus="textareaFocused = true"
+            @blur="textareaFocused = false"
+            @keydown.ctrl.enter.prevent="handleSubmit"
+            @keydown.meta.enter.prevent="handleSubmit"
+          />
         </div>
 
         <div class="form-field">
@@ -231,7 +241,16 @@ onMounted(async () => {
 
         <div class="form-field full-width">
           <label for="comment">Коментар</label>
-          <Textarea id="comment" v-model="comment" rows="3" placeholder="Коментар до візиту" />
+          <Textarea
+            id="comment"
+            v-model="comment"
+            rows="3"
+            placeholder="Коментар до візиту"
+            @focus="textareaFocused = true"
+            @blur="textareaFocused = false"
+            @keydown.ctrl.enter.prevent="handleSubmit"
+            @keydown.meta.enter.prevent="handleSubmit"
+          />
         </div>
 
         <div class="form-field full-width">
@@ -257,7 +276,7 @@ onMounted(async () => {
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <div class="form-actions">
-        <Button type="submit" :label="isEdit ? 'Зберегти' : 'Створити'" icon="pi pi-check" :loading="saving" />
+        <Button type="submit" :label="(isEdit ? 'Зберегти' : 'Створити') + (textareaFocused ? ' (Ctrl+Enter)' : '')" icon="pi pi-check" :loading="saving" />
         <Button label="Скасувати" severity="secondary" outlined @click="router.back()" />
       </div>
     </form>

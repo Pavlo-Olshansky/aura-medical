@@ -27,6 +27,7 @@ const receipt = ref('')
 
 const saving = ref(false)
 const errorMessage = ref('')
+const textareaFocused = ref(false)
 
 async function handleSubmit() {
   if (!name.value.trim()) {
@@ -139,14 +140,23 @@ onMounted(async () => {
 
         <div class="form-field full-width">
           <label for="receipt">Рецепт</label>
-          <Textarea id="receipt" v-model="receipt" rows="4" placeholder="Опис рецепту" />
+          <Textarea
+            id="receipt"
+            v-model="receipt"
+            rows="4"
+            placeholder="Опис рецепту"
+            @focus="textareaFocused = true"
+            @blur="textareaFocused = false"
+            @keydown.ctrl.enter.prevent="handleSubmit"
+            @keydown.meta.enter.prevent="handleSubmit"
+          />
         </div>
       </div>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <div class="form-actions">
-        <Button type="submit" :label="isEdit ? 'Зберегти' : 'Створити'" icon="pi pi-check" :loading="saving" />
+        <Button type="submit" :label="(isEdit ? 'Зберегти' : 'Створити') + (textareaFocused ? ' (Ctrl+Enter)' : '')" icon="pi pi-check" :loading="saving" />
         <Button label="Скасувати" severity="secondary" outlined @click="router.back()" />
       </div>
     </form>

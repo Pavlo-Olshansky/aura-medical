@@ -42,6 +42,7 @@ const filteredBiomarkers = ref<BiomarkerReference[]>([])
 
 const saving = ref(false)
 const errorMessage = ref('')
+const textareaFocused = ref(false)
 
 function formatVisitLabel(visit: { id: number; date: string; procedure?: { name: string } | null }): string {
   const d = new Date(visit.date)
@@ -207,7 +208,16 @@ onMounted(async () => {
 
         <div class="form-field full-width">
           <label for="notes">Примітки</label>
-          <Textarea id="notes" v-model="notes" rows="3" placeholder="Примітки до аналізу" />
+          <Textarea
+            id="notes"
+            v-model="notes"
+            rows="3"
+            placeholder="Примітки до аналізу"
+            @focus="textareaFocused = true"
+            @blur="textareaFocused = false"
+            @keydown.ctrl.enter.prevent="handleSubmit"
+            @keydown.meta.enter.prevent="handleSubmit"
+          />
         </div>
       </div>
 
@@ -281,7 +291,7 @@ onMounted(async () => {
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <div class="form-actions">
-        <Button type="submit" :label="isEdit ? 'Зберегти' : 'Створити'" icon="pi pi-check" :loading="saving" />
+        <Button type="submit" :label="(isEdit ? 'Зберегти' : 'Створити') + (textareaFocused ? ' (Ctrl+Enter)' : '')" icon="pi pi-check" :loading="saving" />
         <Button label="Скасувати" severity="secondary" outlined @click="router.back()" />
       </div>
     </form>

@@ -34,6 +34,7 @@ async function togglePush(val: boolean) {
   pushToggleLoading.value = false
 }
 const saving = ref(false)
+const textareaFocused = ref(false)
 
 const sex = ref<string>('male')
 const dateOfBirth = ref<Date | null>(null)
@@ -209,11 +210,27 @@ onMounted(() => {
           <div class="form-grid">
             <div class="field full-width">
               <label>Алергії</label>
-              <Textarea v-model="allergies" rows="3" class="w-full" />
+              <Textarea
+                v-model="allergies"
+                rows="3"
+                class="w-full"
+                @focus="textareaFocused = true"
+                @blur="textareaFocused = false"
+                @keydown.ctrl.enter.prevent="saveProfile"
+                @keydown.meta.enter.prevent="saveProfile"
+              />
             </div>
             <div class="field full-width">
               <label>Хронічні захворювання</label>
-              <Textarea v-model="chronicConditions" rows="3" class="w-full" />
+              <Textarea
+                v-model="chronicConditions"
+                rows="3"
+                class="w-full"
+                @focus="textareaFocused = true"
+                @blur="textareaFocused = false"
+                @keydown.ctrl.enter.prevent="saveProfile"
+                @keydown.meta.enter.prevent="saveProfile"
+              />
             </div>
           </div>
         </template>
@@ -287,7 +304,7 @@ onMounted(() => {
       </Card>
 
       <div class="actions">
-        <Button label="Зберегти" icon="pi pi-check" :loading="saving" @click="saveProfile" />
+        <Button :label="textareaFocused ? 'Зберегти (Ctrl+Enter)' : 'Зберегти'" icon="pi pi-check" :loading="saving" @click="saveProfile" />
       </div>
     </div>
   </div>

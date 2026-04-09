@@ -33,6 +33,7 @@ const selectedFile = ref<File | null>(null)
 
 const saving = ref(false)
 const errorMessage = ref('')
+const textareaFocused = ref(false)
 
 function onFileSelect(event: FileUploadSelectEvent) {
   if (event.files && event.files.length > 0) {
@@ -182,7 +183,16 @@ onMounted(async () => {
 
         <div class="form-field full-width">
           <label for="notes">Примітки</label>
-          <Textarea id="notes" v-model="notes" rows="3" placeholder="Примітки" />
+          <Textarea
+            id="notes"
+            v-model="notes"
+            rows="3"
+            placeholder="Примітки"
+            @focus="textareaFocused = true"
+            @blur="textareaFocused = false"
+            @keydown.ctrl.enter.prevent="handleSubmit"
+            @keydown.meta.enter.prevent="handleSubmit"
+          />
         </div>
 
         <div class="form-field full-width">
@@ -203,7 +213,7 @@ onMounted(async () => {
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <div class="form-actions">
-        <Button type="submit" :label="isEdit ? 'Зберегти' : 'Створити'" icon="pi pi-check" :loading="saving" />
+        <Button type="submit" :label="(isEdit ? 'Зберегти' : 'Створити') + (textareaFocused ? ' (Ctrl+Enter)' : '')" icon="pi pi-check" :loading="saving" />
         <Button label="Скасувати" severity="secondary" outlined @click="router.back()" />
       </div>
     </form>
