@@ -6,7 +6,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ukLocale from '@fullcalendar/core/locales/uk'
-import type { EventClickArg, DateClickArg, DatesSetArg, EventInput } from '@fullcalendar/core'
+import type { EventClickArg, DatesSetArg, EventInput } from '@fullcalendar/core'
+import type { DateClickArg } from '@fullcalendar/interaction'
 import Button from 'primevue/button'
 import CalendarEventPopover from '@/components/CalendarEventPopover.vue'
 import CalendarSidePanel from '@/components/CalendarSidePanel.vue'
@@ -161,7 +162,7 @@ function refetchEvents() {
 }
 
 function formatDateParam(d: Date): string {
-  return d.toISOString().split('T')[0]
+  return d.toISOString().split('T')[0]!
 }
 
 function handleAddAppointment() {
