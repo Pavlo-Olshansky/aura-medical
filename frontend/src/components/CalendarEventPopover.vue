@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import Button from 'primevue/button'
 import type { CalendarEvent } from '@/types'
+import { BODY_REGION_LABELS } from '@/components/body-map/body-regions'
 
 const props = defineProps<{
   event: CalendarEvent | null
@@ -17,6 +18,11 @@ const emit = defineEmits<{
 }>()
 
 const isVisit = computed(() => props.event?.event_type === 'visit')
+const bodyRegionLabel = computed(() => {
+  const key = props.event?.extra.body_region
+  if (!key) return null
+  return (BODY_REGION_LABELS as Record<string, string>)[key] ?? key
+})
 const isFuture = computed(() => {
   if (!props.event) return false
   return new Date(props.event.start) > new Date()
@@ -70,9 +76,9 @@ function handleExportIcs() {
             <span class="detail-label">Місто</span>
             <span>{{ event.extra.city }}</span>
           </div>
-          <div v-if="event.extra.body_region" class="detail-row">
+          <div v-if="bodyRegionLabel" class="detail-row">
             <span class="detail-label">Ділянка</span>
-            <span>{{ event.extra.body_region }}</span>
+            <span>{{ bodyRegionLabel }}</span>
           </div>
           <div v-if="event.extra.doctor" class="detail-row">
             <span class="detail-label">Лікар</span>

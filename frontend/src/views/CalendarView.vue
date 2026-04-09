@@ -76,6 +76,7 @@ async function fetchEvents(
       end: e.end,
       allDay: e.all_day,
       color: e.color,
+      classNames: e.event_type === 'treatment' ? ['fc-treatment-event'] : [],
       extendedProps: {
         calendarEvent: e,
       },
@@ -299,6 +300,12 @@ onMounted(() => {
 :deep(.fc .fc-more-link) {
   color: var(--accent);
   font-size: 0.75rem;
+}
+:deep(.fc-treatment-event) {
+  opacity: 0.45;
+  font-style: italic;
+  border-left: 2px dashed rgba(255, 167, 38, 0.7) !important;
+  font-size: 0.7rem !important;
 }
 
 /* Mobile: show dots instead of full event blocks */

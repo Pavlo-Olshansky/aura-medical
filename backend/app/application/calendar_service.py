@@ -97,7 +97,7 @@ class CalendarAppService:
                 end=end_date,
                 all_day=True,
                 color=COLOR_TREATMENT,
-                url=f"/treatments/{t.id}",
+                url=f"/treatments/{t.id}/edit",
                 extra={"body_region": t.body_region} if t.body_region else {},
             ))
 
