@@ -11,7 +11,6 @@ from app.application.health_metric_service import HealthMetricAppService
 from app.application.lab_result_service import LabResultAppService
 from app.application.metric_type_service import MetricTypeAppService
 from app.application.reference_service import ReferenceAppService
-from app.application.timeline_service import TimelineAppService
 from app.application.treatment_service import TreatmentAppService
 from app.application.vaccination_service import VaccinationAppService
 from app.application.visit_service import VisitAppService
@@ -102,15 +101,6 @@ def get_health_metric_service(session: AsyncSession = Depends(get_session)) -> H
 def get_vaccination_service(session: AsyncSession = Depends(get_session)) -> VaccinationAppService:
     storage = LocalDocumentStorage(settings.DOCUMENTS_DIR, session)
     return VaccinationAppService(SqlAlchemyVaccinationRepository(session), storage)
-
-
-def get_timeline_service(session: AsyncSession = Depends(get_session)) -> TimelineAppService:
-    return TimelineAppService(
-        SqlAlchemyVisitRepository(session),
-        SqlAlchemyTreatmentRepository(session),
-        SqlAlchemyLabResultRepository(session),
-        SqlAlchemyVaccinationRepository(session),
-    )
 
 
 def get_calendar_service(session: AsyncSession = Depends(get_session)):

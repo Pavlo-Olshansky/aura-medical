@@ -40,7 +40,5 @@ class VisitModel(SoftDeleteModel):
     city = relationship("CityModel", lazy="selectin")
 
     __table_args__ = (
-        Index("ix_visit_user_id", "user_id"),
-        Index("ix_visit_date", "date"),
         Index("ix_visit_user_date", "user_id", "date"),
     )

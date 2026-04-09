@@ -154,16 +154,6 @@ export interface Vaccination {
   updated: string
 }
 
-export interface TimelineEvent {
-  event_type: 'visit' | 'treatment' | 'lab_result' | 'vaccination'
-  event_id: number
-  date: string
-  title: string
-  subtitle: string
-  body_region: string | null
-  route: string
-}
-
 export interface CalendarEvent {
   id: number
   event_type: 'visit' | 'treatment'
