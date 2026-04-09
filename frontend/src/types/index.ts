@@ -164,6 +164,24 @@ export interface TimelineEvent {
   route: string
 }
 
+export interface CalendarEvent {
+  id: number
+  event_type: 'visit' | 'treatment'
+  title: string
+  start: string
+  end: string
+  all_day: boolean
+  color: string
+  url: string
+  extra: Record<string, string>
+}
+
+export interface CalendarEventsResponse {
+  events: CalendarEvent[]
+  date_from: string
+  date_to: string
+}
+
 export interface DashboardData {
   recent_visits: Visit[]
   active_treatments: Treatment[]

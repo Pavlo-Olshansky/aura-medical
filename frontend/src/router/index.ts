@@ -82,10 +82,14 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/timeline',
-      name: 'timeline',
-      component: () => import('@/views/TimelineView.vue'),
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/CalendarView.vue'),
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/timeline',
+      redirect: '/calendar',
     },
     {
       path: '/vaccinations',
