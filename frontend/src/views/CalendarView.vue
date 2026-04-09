@@ -304,12 +304,12 @@ onMounted(() => {
 :deep(.fc-treatment-event) {
   background: repeating-linear-gradient(
     -45deg,
-    rgba(255, 167, 38, 0.18),
-    rgba(255, 167, 38, 0.18) 4px,
-    rgba(255, 167, 38, 0.08) 4px,
-    rgba(255, 167, 38, 0.08) 8px
+    rgba(255, 167, 38, 0.35),
+    rgba(255, 167, 38, 0.35) 4px,
+    rgba(255, 167, 38, 0.15) 4px,
+    rgba(255, 167, 38, 0.15) 8px
   ) !important;
-  border: 1px solid rgba(255, 167, 38, 0.35) !important;
+  border: 1px solid rgba(255, 167, 38, 0.5) !important;
   border-radius: 3px !important;
   box-shadow: none !important;
 }
