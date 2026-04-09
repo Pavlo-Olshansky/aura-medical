@@ -29,6 +29,17 @@ const currentPage = ref(1)
 const pageSize = ref(20)
 
 const modalVisible = ref(false)
+const editingMetric = ref<HealthMetric | null>(null)
+
+function openAdd() {
+  editingMetric.value = null
+  modalVisible.value = true
+}
+
+function openEdit(metric: HealthMetric) {
+  editingMetric.value = metric
+  modalVisible.value = true
+}
 
 function formatDateTime(dateStr: string): string {
   const d = new Date(dateStr)
@@ -168,7 +179,7 @@ onMounted(async () => {
     <AppConfirmDialog />
     <div class="page-header">
       <h1>Показники здоров'я</h1>
-      <Button label="Новий показник" icon="pi pi-plus" @click="modalVisible = true" />
+      <Button label="Новий показник" icon="pi pi-plus" @click="openAdd" />
     </div>
 
     <!-- Metric type filter buttons -->
@@ -231,8 +242,9 @@ onMounted(async () => {
             <span class="notes-text">{{ data.notes || '-' }}</span>
           </template>
         </Column>
-        <Column header="Дії" style="width: 80px; text-align: center">
+        <Column header="Дії" style="width: 110px; text-align: center">
           <template #body="{ data }">
+            <Button icon="pi pi-pencil" text severity="info" @click="openEdit(data)" />
             <Button icon="pi pi-trash" text severity="danger" @click="confirmDelete(data)" />
           </template>
         </Column>
@@ -242,6 +254,7 @@ onMounted(async () => {
     <HealthMetricModal
       v-model:visible="modalVisible"
       :preselectedType="selectedType"
+      :editMetric="editingMetric"
       @saved="onModalSaved"
     />
   </div>

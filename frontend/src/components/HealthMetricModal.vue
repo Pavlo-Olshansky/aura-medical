@@ -10,12 +10,14 @@ import Button from 'primevue/button'
 import { useToast } from 'primevue/usetoast'
 import { useHealthMetricsStore } from '@/stores/healthMetrics'
 import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
-import type { MetricType } from '@/types'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
+import type { MetricType, HealthMetric } from '@/types'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 
 const props = defineProps<{
   visible: boolean
   preselectedType?: MetricType | null
+  editMetric?: HealthMetric | null
 }>()
 
 const emit = defineEmits<{
@@ -33,6 +35,9 @@ const date = ref<Date>(new Date())
 const notes = ref('')
 const saving = ref(false)
 
+const isEdit = computed(() => !!props.editMetric)
+const dialogTitle = computed(() => isEdit.value ? 'Редагувати показник' : "Додати показник здоров'я")
+
 const dialogVisible = computed({
   get: () => props.visible,
   set: (val: boolean) => emit('update:visible', val),
@@ -49,6 +54,7 @@ const { capture, confirmDiscard, setupEscapeHandler } = useFormDirtyCheck(() => 
 
 const visibleRef = computed(() => props.visible)
 setupEscapeHandler(visibleRef, () => emit('update:visible', false))
+useEnterSubmit(handleSave, visibleRef)
 
 const showSecondary = computed(() => selectedMetricType.value?.has_secondary_value ?? false)
 
@@ -65,11 +71,21 @@ watch(() => props.visible, async (val) => {
 })
 
 function resetForm() {
-  selectedMetricType.value = props.preselectedType ?? null
-  value.value = null
-  secondaryValue.value = null
-  date.value = new Date()
-  notes.value = ''
+  if (props.editMetric) {
+    selectedMetricType.value = healthMetricsStore.metricTypes.find(
+      (t) => t.id === props.editMetric!.metric_type_id,
+    ) ?? props.editMetric.metric_type ?? null
+    value.value = props.editMetric.value
+    secondaryValue.value = props.editMetric.secondary_value ?? null
+    date.value = new Date(props.editMetric.date)
+    notes.value = props.editMetric.notes || ''
+  } else {
+    selectedMetricType.value = props.preselectedType ?? null
+    value.value = null
+    secondaryValue.value = null
+    date.value = new Date()
+    notes.value = ''
+  }
 }
 
 async function handleSave() {
@@ -87,12 +103,16 @@ async function handleSave() {
       payload.secondary_value = secondaryValue.value
     }
 
-    await healthMetricsStore.createHealthMetric(payload)
+    if (isEdit.value && props.editMetric) {
+      await healthMetricsStore.updateHealthMetric(props.editMetric.id, payload)
+    } else {
+      await healthMetricsStore.createHealthMetric(payload)
+    }
 
     toast.add({
       severity: 'success',
       summary: 'Збережено',
-      detail: 'Показник успішно додано',
+      detail: isEdit.value ? 'Показник успішно оновлено' : 'Показник успішно додано',
       life: 3000,
     })
 
@@ -116,7 +136,7 @@ async function handleSave() {
   <AppConfirmDialog />
   <Dialog
     v-model:visible="dialogVisible"
-    header="Додати показник здоров'я"
+    :header="dialogTitle"
     modal
     dismissableMask
     :closeOnEscape="false"
