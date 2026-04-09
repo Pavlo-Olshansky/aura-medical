@@ -6,7 +6,7 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import type { DataTablePageEvent } from 'primevue/datatable'
 import { useConfirm } from 'primevue/useconfirm'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { useToast } from 'primevue/usetoast'
 import { useHealthMetricsStore } from '@/stores/healthMetrics'
 import type { MetricType, HealthMetric } from '@/types'
@@ -165,7 +165,7 @@ onMounted(async () => {
 
 <template>
   <div class="health-metrics-view">
-    <ConfirmDialog />
+    <AppConfirmDialog />
     <div class="page-header">
       <h1>Показники здоров'я</h1>
       <Button label="Новий показник" icon="pi pi-plus" @click="modalVisible = true" />

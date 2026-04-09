@@ -6,7 +6,7 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Tag from 'primevue/tag'
 import { useConfirm } from 'primevue/useconfirm'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { useLabResultsStore } from '@/stores/labResults'
 import type { BiomarkerTrendPoint } from '@/api/labResults'
 import BiomarkerChart from '@/components/BiomarkerChart.vue'
@@ -57,7 +57,7 @@ onMounted(async () => {
 
 <template>
   <div class="lab-result-detail">
-    <ConfirmDialog />
+    <AppConfirmDialog />
     <div class="page-header">
       <h1>Деталі аналізу</h1>
       <div class="actions">

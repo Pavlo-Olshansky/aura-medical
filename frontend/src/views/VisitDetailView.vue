@@ -5,7 +5,7 @@ import Button from 'primevue/button'
 import { useVisitsStore } from '@/stores/visits'
 import DocumentPreview from '@/components/DocumentPreview.vue'
 import { useConfirm } from 'primevue/useconfirm'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDate } from '@/utils/dateUtils'
 import { apiClient } from '@/api/client'
 
@@ -51,7 +51,7 @@ onMounted(async () => {
 
 <template>
   <div class="visit-detail">
-    <ConfirmDialog />
+    <AppConfirmDialog />
     <div class="page-header">
       <h1>Деталі візиту</h1>
       <div class="actions">

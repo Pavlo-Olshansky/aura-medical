@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick } from 'vue'
 import Dialog from 'primevue/dialog'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import Calendar from 'primevue/calendar'
@@ -113,7 +113,7 @@ async function handleSave() {
 </script>
 
 <template>
-  <ConfirmDialog />
+  <AppConfirmDialog />
   <Dialog
     v-model:visible="dialogVisible"
     header="Додати показник здоров'я"

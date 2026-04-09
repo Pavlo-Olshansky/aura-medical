@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import Drawer from 'primevue/drawer'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import Calendar from 'primevue/calendar'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
@@ -177,7 +177,7 @@ async function handleDelete() {
 </script>
 
 <template>
-  <ConfirmDialog />
+  <AppConfirmDialog />
   <Drawer
     :visible="visible"
     position="right"

@@ -8,7 +8,7 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import { useTreatmentsStore } from '@/stores/treatments'
 import { useConfirm } from 'primevue/useconfirm'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
@@ -98,7 +98,7 @@ onMounted(async () => {
 
 <template>
   <div class="treatment-form">
-    <ConfirmDialog />
+    <AppConfirmDialog />
     <div class="page-header">
       <h1>{{ pageTitle }}</h1>
       <div class="header-actions">

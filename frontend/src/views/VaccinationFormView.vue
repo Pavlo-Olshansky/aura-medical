@@ -10,7 +10,7 @@ import Button from 'primevue/button'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import { useConfirm } from 'primevue/useconfirm'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
 
 const route = useRoute()
@@ -120,7 +120,7 @@ onMounted(async () => {
 
 <template>
   <div class="vaccination-form">
-    <ConfirmDialog />
+    <AppConfirmDialog />
     <div class="page-header">
       <h1>{{ pageTitle }}</h1>
       <div class="header-actions">

@@ -10,7 +10,7 @@ import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import { useConfirm } from 'primevue/useconfirm'
-import ConfirmDialog from 'primevue/confirmdialog'
+import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { useToast } from 'primevue/usetoast'
 import ReferenceTable from '@/components/references/ReferenceTable.vue'
 import { useReferencesStore } from '@/stores/references'
@@ -324,7 +324,7 @@ onMounted(async () => {
 
 <template>
   <div class="references-view">
-    <ConfirmDialog />
+    <AppConfirmDialog />
     <h1>Довідники</h1>
 
     <TabView v-model:value="activeTab">
