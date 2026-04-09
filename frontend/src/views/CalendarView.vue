@@ -302,10 +302,22 @@ onMounted(() => {
   font-size: 0.75rem;
 }
 :deep(.fc-treatment-event) {
-  opacity: 0.45;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 167, 38, 0.18),
+    rgba(255, 167, 38, 0.18) 4px,
+    rgba(255, 167, 38, 0.08) 4px,
+    rgba(255, 167, 38, 0.08) 8px
+  ) !important;
+  border: 1px solid rgba(255, 167, 38, 0.35) !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+}
+:deep(.fc-treatment-event .fc-event-main) {
+  color: var(--text-secondary) !important;
+  font-size: 0.7rem;
   font-style: italic;
-  border-left: 2px dashed rgba(255, 167, 38, 0.7) !important;
-  font-size: 0.7rem !important;
+  opacity: 0.85;
 }
 
 /* Mobile: show dots instead of full event blocks */

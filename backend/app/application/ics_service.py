@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from icalendar import Calendar, Event
 
 from app.domain.entities import Visit
+from app.domain.value_objects import BODY_REGION_LABELS
 
 KYIV_TZ = ZoneInfo("Europe/Kyiv")
 DEFAULT_DURATION = timedelta(hours=1)
@@ -35,7 +36,8 @@ def derive_description(visit: Visit) -> Optional[str]:
     if visit.doctor:
         lines.append(f"Лікар: {visit.doctor}")
     if visit.body_region:
-        lines.append(f"Область: {visit.body_region}")
+        label = BODY_REGION_LABELS.get(visit.body_region, visit.body_region)
+        lines.append(f"Область: {label}")
     if visit.comment:
         lines.append(visit.comment)
     return "\n".join(lines) if lines else None
