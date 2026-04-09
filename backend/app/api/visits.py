@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from app.api.dependencies import get_current_user, get_visit_service
 from app.application.commands import CreateVisitCommand, UpdateVisitCommand, VisitFilter
@@ -112,3 +112,19 @@ async def get_visit_document(
     if not path or not os.path.exists(path):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No document attached")
     return FileResponse(path)
+
+
+@router.get("/{visit_id}/ics")
+async def export_visit_ics(
+    visit_id: int,
+    current_user: User = Depends(get_current_user),
+    service: VisitAppService = Depends(get_visit_service),
+):
+    from app.application.ics_service import generate_ics
+    visit = await service.get(visit_id, current_user.id)
+    ics_bytes = generate_ics(visit)
+    return Response(
+        content=ics_bytes,
+        media_type="text/calendar; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="visit-{visit_id}.ics"'},
+    )

@@ -7,6 +7,7 @@ import DocumentPreview from '@/components/DocumentPreview.vue'
 import { useConfirm } from 'primevue/useconfirm'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { formatDate } from '@/utils/dateUtils'
+import { apiClient } from '@/api/client'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,6 +15,19 @@ const visitsStore = useVisitsStore()
 const confirm = useConfirm()
 
 const visitId = Number(route.params.id)
+
+async function handleExportIcs() {
+  const response = await apiClient.get(`/api/v1/visits/${visitId}/ics`, {
+    responseType: 'blob',
+  })
+  const blob = new Blob([response.data], { type: 'text/calendar' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `visit-${visitId}.ics`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 async function handleDelete() {
   confirm.require({
@@ -42,6 +56,7 @@ onMounted(async () => {
       <h1>Деталі візиту</h1>
       <div class="actions">
         <Button label="Редагувати" icon="pi pi-pencil" @click="router.push({ name: 'visit-edit', params: { id: visitId } })" />
+        <Button label=".ics" icon="pi pi-download" severity="secondary" outlined @click="handleExportIcs" />
         <Button label="Видалити" icon="pi pi-trash" severity="danger" outlined @click="handleDelete" />
         <Button label="Назад" icon="pi pi-arrow-left" severity="secondary" text @click="router.push({ name: 'visits' })" />
       </div>

@@ -202,3 +202,27 @@ async def test_calendar_user_ownership(client, auth_headers, session, sample_vis
     )
     event_ids = [e["id"] for e in resp.json()["events"] if e["event_type"] == "visit"]
     assert other_visit.id not in event_ids
+
+
+@pytest.mark.asyncio
+async def test_future_visit_triggers_reminders(session, test_user):
+    """US3: Verify notification service returns reminders for future visits."""
+    from app.application.notification_service import NotificationAppService
+
+    now = datetime.now(KYIV_TZ)
+    # Visit 6 hours from now — should trigger day_before reminder
+    future_visit = VisitModel(
+        user_id=test_user.id,
+        date=now + timedelta(hours=6),
+    )
+    session.add(future_visit)
+    await session.commit()
+    await session.refresh(future_visit)
+
+    svc = NotificationAppService(session)
+    reminders = await svc.get_reminders(test_user.id)
+
+    visit_reminders = [r for r in reminders if r["entity_type"] == "visit" and r["entity_id"] == future_visit.id]
+    assert len(visit_reminders) >= 1
+    reminder_types = {r["reminder_type"] for r in visit_reminders}
+    assert "day_before" in reminder_types
