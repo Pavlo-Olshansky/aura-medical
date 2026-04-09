@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import Dialog from 'primevue/dialog'
+import ConfirmDialog from 'primevue/confirmdialog'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import Calendar from 'primevue/calendar'
@@ -8,6 +9,7 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import { useToast } from 'primevue/usetoast'
 import { useHealthMetricsStore } from '@/stores/healthMetrics'
+import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
 import type { MetricType } from '@/types'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 
@@ -36,6 +38,18 @@ const dialogVisible = computed({
   set: (val: boolean) => emit('update:visible', val),
 })
 
+const textareaFocused = ref(false)
+
+const { capture, confirmDiscard, setupEscapeHandler } = useFormDirtyCheck(() => ({
+  selectedMetricType: selectedMetricType.value?.id ?? null,
+  value: value.value,
+  secondaryValue: secondaryValue.value,
+  notes: notes.value,
+}))
+
+const visibleRef = computed(() => props.visible)
+setupEscapeHandler(visibleRef, () => emit('update:visible', false))
+
 const showSecondary = computed(() => selectedMetricType.value?.has_secondary_value ?? false)
 
 const unitLabel = computed(() => selectedMetricType.value?.unit || '')
@@ -46,6 +60,7 @@ watch(() => props.visible, async (val) => {
       await healthMetricsStore.fetchMetricTypes()
     }
     resetForm()
+    nextTick(() => capture())
   }
 })
 
@@ -98,15 +113,17 @@ async function handleSave() {
 </script>
 
 <template>
+  <ConfirmDialog />
   <Dialog
     v-model:visible="dialogVisible"
     header="Додати показник здоров'я"
     modal
     dismissableMask
+    :closeOnEscape="false"
     :style="{ width: '500px' }"
     :breakpoints="{ '640px': '95vw' }"
   >
-    <div class="modal-form">
+    <form id="healthMetricForm" class="modal-form" @submit.prevent="handleSave">
       <div class="form-field">
         <label>Тип показника *</label>
         <Dropdown
@@ -144,14 +161,22 @@ async function handleSave() {
 
       <div class="form-field">
         <label>Примітки</label>
-        <Textarea v-model="notes" rows="3" placeholder="Необов'язково" />
+        <Textarea
+          v-model="notes"
+          rows="3"
+          placeholder="Необов'язково"
+          @focus="textareaFocused = true"
+          @blur="textareaFocused = false"
+          @keydown.ctrl.enter.prevent="handleSave"
+          @keydown.meta.enter.prevent="handleSave"
+        />
       </div>
-    </div>
+    </form>
 
     <template #footer>
       <Button label="Скасувати" severity="secondary" text @click="dialogVisible = false" />
       <Button
-        label="Зберегти"
+        :label="textareaFocused ? 'Зберегти (Ctrl+Enter)' : 'Зберегти'"
         icon="pi pi-check"
         :loading="saving"
         :disabled="!selectedMetricType || value == null"

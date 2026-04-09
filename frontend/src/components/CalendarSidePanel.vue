@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import Drawer from 'primevue/drawer'
+import ConfirmDialog from 'primevue/confirmdialog'
 import Calendar from 'primevue/calendar'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
@@ -11,6 +12,7 @@ import Button from 'primevue/button'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useReferencesStore } from '@/stores/references'
 import { useVisitsStore } from '@/stores/visits'
+import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
 import { BODY_REGION_OPTIONS } from '@/components/body-map/body-regions'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 
@@ -48,6 +50,24 @@ const errorMessage = ref('')
 
 const isEdit = ref(false)
 const panelTitle = ref('Новий візит')
+const textareaFocused = ref(false)
+
+const { capture, setupEscapeHandler } = useFormDirtyCheck(() => ({
+  formDate: formDate.value?.getTime() ?? null,
+  positionId: positionId.value,
+  doctor: doctor.value,
+  procedureId: procedureId.value,
+  procedureDetails: procedureDetails.value,
+  clinicId: clinicId.value,
+  cityId: cityId.value,
+  comment: comment.value,
+  link: link.value,
+  bodyRegion: bodyRegion.value,
+  price: price.value,
+}))
+
+const visibleRef = computed(() => props.visible)
+setupEscapeHandler(visibleRef, () => emit('close'))
 
 watch(() => props.visible, async (newVal) => {
   if (!newVal) return
@@ -80,6 +100,7 @@ watch(() => props.visible, async (newVal) => {
       formDate.value = new Date(props.date)
     }
   }
+  nextTick(() => capture())
 })
 
 function resetForm() {
@@ -156,11 +177,13 @@ async function handleDelete() {
 </script>
 
 <template>
+  <ConfirmDialog />
   <Drawer
     :visible="visible"
     position="right"
     :header="panelTitle"
     class="calendar-side-panel"
+    :closeOnEscape="false"
     @update:visible="(v: boolean) => { if (!v) emit('close') }"
   >
     <form class="panel-form" @submit.prevent="handleSubmit">
@@ -207,7 +230,15 @@ async function handleDelete() {
 
       <div class="form-field">
         <label>Деталі процедури</label>
-        <Textarea v-model="procedureDetails" rows="2" placeholder="Деталі" />
+        <Textarea
+          v-model="procedureDetails"
+          rows="2"
+          placeholder="Деталі"
+          @focus="textareaFocused = true"
+          @blur="textareaFocused = false"
+          @keydown.ctrl.enter.prevent="handleSubmit"
+          @keydown.meta.enter.prevent="handleSubmit"
+        />
       </div>
 
       <div class="form-field">
@@ -253,7 +284,15 @@ async function handleDelete() {
 
       <div class="form-field">
         <label>Коментар</label>
-        <Textarea v-model="comment" rows="2" placeholder="Коментар" />
+        <Textarea
+          v-model="comment"
+          rows="2"
+          placeholder="Коментар"
+          @focus="textareaFocused = true"
+          @blur="textareaFocused = false"
+          @keydown.ctrl.enter.prevent="handleSubmit"
+          @keydown.meta.enter.prevent="handleSubmit"
+        />
       </div>
 
       <div class="form-field">
@@ -269,7 +308,7 @@ async function handleDelete() {
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <div class="panel-actions">
-        <Button type="submit" :label="isEdit ? 'Зберегти' : 'Створити'" icon="pi pi-check" :loading="saving" />
+        <Button type="submit" :label="(isEdit ? 'Зберегти' : 'Створити') + (textareaFocused ? ' (Ctrl+Enter)' : '')" icon="pi pi-check" :loading="saving" />
         <Button
           v-if="isEdit"
           label="Видалити"

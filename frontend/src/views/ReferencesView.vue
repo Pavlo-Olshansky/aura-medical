@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
 import DataTable from 'primevue/datatable'
@@ -14,6 +14,7 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
 import ReferenceTable from '@/components/references/ReferenceTable.vue'
 import { useReferencesStore } from '@/stores/references'
+import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
 import type { ReferenceResource } from '@/api/references'
 import type { Reference, MetricType, BiomarkerReference } from '@/types'
 import {
@@ -201,6 +202,21 @@ const biomarkerRefsLoading = ref(false)
 const biomarkerEditDialogVisible = ref(false)
 const biomarkerEditItem = ref<Partial<BiomarkerReference> & { _isNew?: boolean }>({})
 
+const { capture: captureBiomarker, setupEscapeHandler: setupBiomarkerEscape } = useFormDirtyCheck(() => ({
+  name: biomarkerEditItem.value.name,
+  abbreviation: biomarkerEditItem.value.abbreviation,
+  unit: biomarkerEditItem.value.unit,
+  category: biomarkerEditItem.value.category,
+  ref_min: biomarkerEditItem.value.ref_min,
+  ref_max: biomarkerEditItem.value.ref_max,
+  ref_min_male: biomarkerEditItem.value.ref_min_male,
+  ref_max_male: biomarkerEditItem.value.ref_max_male,
+  ref_min_female: biomarkerEditItem.value.ref_min_female,
+  ref_max_female: biomarkerEditItem.value.ref_max_female,
+}))
+
+setupBiomarkerEscape(biomarkerEditDialogVisible, () => { biomarkerEditDialogVisible.value = false })
+
 async function loadBiomarkerRefs() {
   biomarkerRefsLoading.value = true
   try {
@@ -225,6 +241,7 @@ function openBiomarkerAdd() {
     ref_max_female: null,
   }
   biomarkerEditDialogVisible.value = true
+  nextTick(() => captureBiomarker())
 }
 
 function openBiomarkerEdit(item: BiomarkerReference) {
@@ -233,6 +250,7 @@ function openBiomarkerEdit(item: BiomarkerReference) {
     _isNew: false,
   }
   biomarkerEditDialogVisible.value = true
+  nextTick(() => captureBiomarker())
 }
 
 async function saveBiomarkerEdit() {
@@ -470,10 +488,11 @@ onMounted(async () => {
       :header="biomarkerEditItem._isNew ? 'Новий біомаркер' : 'Редагувати біомаркер'"
       modal
       dismissableMask
+      :closeOnEscape="false"
       :style="{ width: '600px' }"
       :breakpoints="{ '768px': '95vw' }"
     >
-      <div class="biomarker-form">
+      <form class="biomarker-form" @submit.prevent="saveBiomarkerEdit">
         <div class="form-grid">
           <div class="form-field">
             <label>Назва *</label>
@@ -516,7 +535,7 @@ onMounted(async () => {
             <InputNumber v-model="biomarkerEditItem.ref_max_female" :minFractionDigits="0" :maxFractionDigits="3" />
           </div>
         </div>
-      </div>
+      </form>
       <template #footer>
         <Button label="Скасувати" severity="secondary" text @click="biomarkerEditDialogVisible = false" />
         <Button
