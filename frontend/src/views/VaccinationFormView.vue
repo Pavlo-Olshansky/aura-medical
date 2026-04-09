@@ -12,6 +12,7 @@ import { useVaccinationsStore } from '@/stores/vaccinations'
 import { useConfirm } from 'primevue/useconfirm'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 
 const route = useRoute()
 const router = useRouter()
@@ -34,6 +35,8 @@ const selectedFile = ref<File | null>(null)
 const saving = ref(false)
 const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+useEnterSubmit(handleSubmit)
 
 function onFileSelect(event: FileUploadSelectEvent) {
   if (event.files && event.files.length > 0) {

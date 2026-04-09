@@ -13,6 +13,7 @@ import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
 import { BODY_REGION_OPTIONS, SPECIALTY_REGION_MAP } from '@/components/body-map/body-regions'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 
 const route = useRoute()
 const router = useRouter()
@@ -39,6 +40,8 @@ const selectedFile = ref<File | null>(null)
 const saving = ref(false)
 const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+useEnterSubmit(handleSubmit)
 
 // Auto-suggest body region when position changes
 watch(positionId, (newVal) => {

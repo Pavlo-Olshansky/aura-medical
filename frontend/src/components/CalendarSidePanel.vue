@@ -13,6 +13,7 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useReferencesStore } from '@/stores/references'
 import { useVisitsStore } from '@/stores/visits'
 import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 import { BODY_REGION_OPTIONS } from '@/components/body-map/body-regions'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 
@@ -68,6 +69,7 @@ const { capture, setupEscapeHandler } = useFormDirtyCheck(() => ({
 
 const visibleRef = computed(() => props.visible)
 setupEscapeHandler(visibleRef, () => emit('close'))
+useEnterSubmit(handleSubmit, visibleRef)
 
 watch(() => props.visible, async (newVal) => {
   if (!newVal) return

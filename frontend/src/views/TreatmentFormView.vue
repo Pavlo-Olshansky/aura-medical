@@ -10,6 +10,7 @@ import { useTreatmentsStore } from '@/stores/treatments'
 import { useConfirm } from 'primevue/useconfirm'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 
 const route = useRoute()
 const router = useRouter()
@@ -28,6 +29,8 @@ const receipt = ref('')
 const saving = ref(false)
 const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+useEnterSubmit(handleSubmit)
 
 async function handleSubmit() {
   if (!name.value.trim()) {

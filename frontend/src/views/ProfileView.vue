@@ -15,6 +15,7 @@ import PushSetupGuide from '@/components/PushSetupGuide.vue'
 import { useAuthStore } from '@/stores/auth'
 import type { ProfileData } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 
 const toast = useToast()
 const auth = useAuthStore()
@@ -35,6 +36,8 @@ async function togglePush(val: boolean) {
 }
 const saving = ref(false)
 const textareaFocused = ref(false)
+
+useEnterSubmit(saveProfile)
 
 const sex = ref<string>('male')
 const dateOfBirth = ref<Date | null>(null)

@@ -13,6 +13,7 @@ import { useVisitsStore } from '@/stores/visits'
 import { useAuthStore } from '@/stores/auth'
 import type { BiomarkerReference } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,6 +44,8 @@ const filteredBiomarkers = ref<BiomarkerReference[]>([])
 const saving = ref(false)
 const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+useEnterSubmit(handleSubmit)
 
 function formatVisitLabel(visit: { id: number; date: string; procedure?: { name: string } | null }): string {
   const d = new Date(visit.date)

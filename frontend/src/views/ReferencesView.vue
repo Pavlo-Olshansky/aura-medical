@@ -15,6 +15,7 @@ import { useToast } from 'primevue/usetoast'
 import ReferenceTable from '@/components/references/ReferenceTable.vue'
 import { useReferencesStore } from '@/stores/references'
 import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
+import { useEnterSubmit } from '@/composables/useEnterSubmit'
 import type { ReferenceResource } from '@/api/references'
 import type { Reference, MetricType, BiomarkerReference } from '@/types'
 import {
@@ -216,6 +217,7 @@ const { capture: captureBiomarker, setupEscapeHandler: setupBiomarkerEscape } = 
 }))
 
 setupBiomarkerEscape(biomarkerEditDialogVisible, () => { biomarkerEditDialogVisible.value = false })
+useEnterSubmit(saveBiomarkerEdit, biomarkerEditDialogVisible)
 
 async function loadBiomarkerRefs() {
   biomarkerRefsLoading.value = true
