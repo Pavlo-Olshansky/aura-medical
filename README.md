@@ -17,7 +17,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 - **Lab Results & Biomarker Trends** — blood tests with reference ranges, out-of-range highlighting, and trend charts per biomarker over time
 - **Health Metrics / Vitals Journal** — track heart rate, blood pressure, temperature, weight and other metrics with trend charts and reference range annotations
 - **Vaccination Records** — immunization history with dose tracking, next-due-date alerts, and document attachments
-- **Medical Timeline** — unified chronological view of all events (visits, treatments, lab results, vaccinations) across the full health history
+- **Calendar View** — monthly/weekly calendar (FullCalendar) showing past visits and future appointments with treatments as diagonal-striped date ranges. Click a date to create a visit via side panel, click an event for a popover with details and .ics export. Replaces the former Timeline view
 - **Weather & Environment** — real-time weather, UV index, air quality (AQI with 8 pollutants), geomagnetic storms (Kp index with health impact), and circadian light assessment — powered by [SkyPulse](https://pypi.org/project/skypulse-weather/) by Pavlo Olshansky. Dashboard card opens a detail page with forecast charts, color-coded risk levels, and tooltips explaining every indicator
 - **Dashboard** — summary cards, recent visits, active treatments, expenses, weather at a glance, and body map overview
 - **Health Profile** — demographics, blood type, allergies, chronic conditions, emergency contact, weather city with IP auto-detection
@@ -38,10 +38,11 @@ Personal medical records tracker with an interactive body map, visit history, tr
 | **Backend** | Python 3.14+, FastAPI, SQLAlchemy 2.0 (async), Pydantic v2, Alembic |
 | **Database** | PostgreSQL 15+, psycopg v3 (async) |
 | **Auth** | JWT tokens (PyJWT), bcrypt password hashing |
+| **Calendar** | FullCalendar 6 (Vue 3 adapter), icalendar (Python .ics generation) |
 | **Push** | pywebpush, VAPID (auto-generated), APScheduler (PostgreSQL-backed persistence, advisory locks) |
 | **PWA** | vite-plugin-pwa, Workbox, service worker |
 | **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
-| **Testing** | pytest, pytest-asyncio (106 tests) |
+| **Testing** | pytest, pytest-asyncio (114 tests) |
 | **Infra** | Docker Compose, GitHub Actions CI |
 
 ## Architecture
@@ -49,24 +50,24 @@ Personal medical records tracker with an interactive body map, visit history, tr
 ```
 backend/
   app/
-    api/              # Route handlers (auth, visits, treatments, push, notifications, health, etc.)
+    api/              # Route handlers (auth, visits, treatments, calendar, push, notifications, health, etc.)
     application/      # Application services, commands, push scheduler
     domain/           # Domain entities, value objects, repository interfaces, exceptions
     infrastructure/   # Database engine, ORM models, repositories, JWT, VAPID manager, scheduler
       models/         # SQLAlchemy ORM models (12 models)
       repositories/   # Repository implementations
     schemas/          # Pydantic request/response schemas
-  alembic/            # Database migrations (10 migrations)
-  tests/              # pytest test suite (106 tests)
+  alembic/            # Database migrations (11 migrations)
+  tests/              # pytest test suite (114 tests)
 
 frontend/
   public/
     icons/            # PWA icons (72, 192, 512, maskable, apple-touch)
     sw-push.js        # Push notification service worker handler
   src/
-    views/            # Page components (11 pages, 27 routes)
-    components/       # AppLayout, BodyMap, Charts, ThemeToggle, NotificationBell, PushSetupGuide
-    composables/      # useTheme, useOnlineStatus, usePushNotifications, useUrlFilters
+    views/            # Page components (18 pages, 28 routes)
+    components/       # AppLayout, BodyMap, Calendar, Charts, ThemeToggle, NotificationBell, PushSetupGuide
+    composables/      # useTheme, useOnlineStatus, usePushNotifications, useCalendarLabels, useUrlFilters
     api/              # Axios client with JWT interceptor
     stores/           # Pinia state management
     router/           # Vue Router with auth guards
