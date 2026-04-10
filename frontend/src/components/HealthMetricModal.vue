@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed, nextTick } from 'vue'
 import Dialog from 'primevue/dialog'
-import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import Calendar from 'primevue/calendar'
@@ -133,7 +132,6 @@ async function handleSave() {
 </script>
 
 <template>
-  <AppConfirmDialog />
   <Dialog
     v-model:visible="dialogVisible"
     :header="dialogTitle"
