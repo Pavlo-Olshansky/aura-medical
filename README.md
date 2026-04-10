@@ -23,6 +23,8 @@ Personal medical records tracker with an interactive body map, visit history, tr
 - **Health Profile** — demographics, blood type, allergies, chronic conditions, emergency contact, weather city with IP auto-detection
 - **Document Management** — upload and preview medical documents (images, PDFs) attached to visits and vaccinations
 - **Reference Data** — manage doctor specialties, procedures, clinics, cities, biomarker references, and metric types with inline CRUD
+- **Global Search** — Ctrl+K / Cmd+K opens a Spotlight-style search dialog to find any record across visits, treatments, lab results, and vaccinations. Case-insensitive Cyrillic matching (ICU collation), results grouped by type with match highlighting, full keyboard navigation (arrows + Enter), and click-to-navigate. Search icon also available in the sidebar
+- **Keyboard Shortcuts** — Escape closes modals/drawers with dirty-form confirmation ("Discard unsaved changes?"), Enter submits forms from single-line inputs, Ctrl+Enter submits from textareas (with button hint), Enter confirms dialogs
 - **Filtering & Search** — visits filterable by date range, clinic, city, procedure, doctor specialty; treatments by status
 - **Push Notification Reminders** — Web Push via VAPID for receiving reminders on phone 1 day and 1 hour before visits, treatment starts, and vaccination due dates. Jobs persist across restarts (PostgreSQL-backed APScheduler). Multi-worker safe via advisory locks (exactly-once execution). Works with browser closed on Android; on iOS requires PWA installation. Device-specific setup guide auto-detects platform
 - **Progressive Web App (PWA)** — installable on iOS (Safari → Add to Home Screen) and Android (Chrome → Install app) without app store. Offline shell caching via service worker, standalone mode without browser chrome
@@ -42,7 +44,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 | **Push** | pywebpush, VAPID (auto-generated), APScheduler (PostgreSQL-backed persistence, advisory locks) |
 | **PWA** | vite-plugin-pwa, Workbox, service worker |
 | **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
-| **Testing** | pytest, pytest-asyncio (114 tests) |
+| **Testing** | pytest, pytest-asyncio (127 tests) |
 | **Infra** | Docker Compose, GitHub Actions CI |
 
 ## Architecture
@@ -50,7 +52,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 ```
 backend/
   app/
-    api/              # Route handlers (auth, visits, treatments, calendar, push, notifications, health, etc.)
+    api/              # Route handlers (auth, visits, treatments, calendar, push, notifications, search, health, etc.)
     application/      # Application services, commands, push scheduler
     domain/           # Domain entities, value objects, repository interfaces, exceptions
     infrastructure/   # Database engine, ORM models, repositories, JWT, VAPID manager, scheduler
@@ -58,7 +60,7 @@ backend/
       repositories/   # Repository implementations
     schemas/          # Pydantic request/response schemas
   alembic/            # Database migrations (11 migrations)
-  tests/              # pytest test suite (114 tests)
+  tests/              # pytest test suite (127 tests)
 
 frontend/
   public/
@@ -66,8 +68,8 @@ frontend/
     sw-push.js        # Push notification service worker handler
   src/
     views/            # Page components (18 pages, 28 routes)
-    components/       # AppLayout, BodyMap, Calendar, Charts, ThemeToggle, NotificationBell, PushSetupGuide
-    composables/      # useTheme, useOnlineStatus, usePushNotifications, useCalendarLabels, useUrlFilters
+    components/       # AppLayout, BodyMap, Calendar, Charts, GlobalSearch, ThemeToggle, NotificationBell, PushSetupGuide
+    composables/      # useTheme, useOnlineStatus, usePushNotifications, useCalendarLabels, useUrlFilters, useGlobalSearch, useFormDirtyCheck, useEnterSubmit
     api/              # Axios client with JWT interceptor
     stores/           # Pinia state management
     router/           # Vue Router with auth guards
