@@ -155,7 +155,7 @@ function getItemGlobalIndex(type: string, localIndex: number): number {
 function highlight(text: string | null): string {
   if (!text || !query.value || query.value.trim().length < 2) return text || ''
   const escaped = query.value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const regex = new RegExp(`(${escaped})`, 'gi')
+  const regex = new RegExp(`(${escaped})`, 'giu')
   const safe = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   return safe.replace(regex, '<mark>$1</mark>')
 }
