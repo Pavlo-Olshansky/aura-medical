@@ -32,6 +32,9 @@ async function handleLogout() {
         <i class="pi pi-bars" />
       </button>
       <span class="mobile-title">Aura</span>
+      <button class="mobile-search-btn" @click="openSearch" title="Пошук">
+        <i class="pi pi-search" />
+      </button>
     </header>
     <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
     <aside class="sidebar" :class="{ open: sidebarOpen }">
@@ -252,6 +255,20 @@ async function handleLogout() {
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--text-primary);
+    flex: 1;
+  }
+  .mobile-search-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .sidebar {
     position: fixed;
