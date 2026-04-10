@@ -195,3 +195,23 @@ async def test_search_user_isolation(client: AsyncClient, auth_headers: dict, se
     response = await client.get("/api/v1/search/", params={"q": "Секретний"}, headers=auth_headers)
     data = response.json()
     assert data["visits"]["total"] == 0
+
+
+@pytest.mark.asyncio
+async def test_search_case_insensitive_cyrillic(client: AsyncClient, auth_headers: dict, session, test_user):
+    """Searching lowercase 'біш' must find uppercase clinic 'БІШ'."""
+    clinic = ClinicModel(name="БІШ")
+    session.add(clinic)
+    await session.flush()
+    session.add(VisitModel(
+        user_id=test_user.id,
+        date=datetime(2026, 4, 1, tzinfo=KYIV),
+        clinic_id=clinic.id,
+        doctor="Тест",
+    ))
+    await session.commit()
+
+    response = await client.get("/api/v1/search/", params={"q": "біш"}, headers=auth_headers)
+    data = response.json()
+    assert data["visits"]["total"] == 1
+    assert data["visits"]["items"][0]["clinic_name"] == "БІШ"

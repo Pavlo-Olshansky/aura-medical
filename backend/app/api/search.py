@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -30,6 +30,11 @@ from app.schemas.search import (
 router = APIRouter()
 
 
+def _icontains(column, term: str):
+    """Case-insensitive contains using ICU collation — works with C locale for Cyrillic."""
+    return func.lower(column.collate("und-x-icu")).like(f"%{term}%")
+
+
 @router.get("/", response_model=SearchResponse)
 async def search(
     q: str = Query(..., min_length=2, max_length=200),
@@ -37,12 +42,12 @@ async def search(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    pattern = f"%{q}%"
+    term = q.lower()
 
-    visits = await _search_visits(session, current_user.id, pattern, limit)
-    treatments = await _search_treatments(session, current_user.id, pattern, limit)
-    lab_results = await _search_lab_results(session, current_user.id, pattern, limit)
-    vaccinations = await _search_vaccinations(session, current_user.id, pattern, limit)
+    visits = await _search_visits(session, current_user.id, term, limit)
+    treatments = await _search_treatments(session, current_user.id, term, limit)
+    lab_results = await _search_lab_results(session, current_user.id, term, limit)
+    vaccinations = await _search_vaccinations(session, current_user.id, term, limit)
 
     return SearchResponse(
         visits=visits,
@@ -53,21 +58,21 @@ async def search(
 
 
 async def _search_visits(
-    session: AsyncSession, user_id: int, pattern: str, limit: int,
+    session: AsyncSession, user_id: int, term: str, limit: int,
 ) -> SearchGroup[VisitSearchItem]:
     base_filter = [
         VisitModel.user_id == user_id,
         VisitModel.deleted_at.is_(None),
     ]
     text_filter = or_(
-        VisitModel.doctor.ilike(pattern),
-        VisitModel.comment.ilike(pattern),
-        VisitModel.procedure_details.ilike(pattern),
-        VisitModel.body_region.ilike(pattern),
-        PositionModel.name.ilike(pattern),
-        ProcedureModel.name.ilike(pattern),
-        ClinicModel.name.ilike(pattern),
-        CityModel.name.ilike(pattern),
+        _icontains(VisitModel.doctor, term),
+        _icontains(VisitModel.comment, term),
+        _icontains(VisitModel.procedure_details, term),
+        _icontains(VisitModel.body_region, term),
+        _icontains(PositionModel.name, term),
+        _icontains(ProcedureModel.name, term),
+        _icontains(ClinicModel.name, term),
+        _icontains(CityModel.name, term),
     )
 
     query = (
@@ -117,16 +122,16 @@ async def _search_visits(
 
 
 async def _search_treatments(
-    session: AsyncSession, user_id: int, pattern: str, limit: int,
+    session: AsyncSession, user_id: int, term: str, limit: int,
 ) -> SearchGroup[TreatmentSearchItem]:
     base_filter = [
         TreatmentModel.user_id == user_id,
         TreatmentModel.deleted_at.is_(None),
     ]
     text_filter = or_(
-        TreatmentModel.name.ilike(pattern),
-        TreatmentModel.receipt.ilike(pattern),
-        TreatmentModel.body_region.ilike(pattern),
+        _icontains(TreatmentModel.name, term),
+        _icontains(TreatmentModel.receipt, term),
+        _icontains(TreatmentModel.body_region, term),
     )
 
     query = (
@@ -160,7 +165,7 @@ async def _search_treatments(
 
 
 async def _search_lab_results(
-    session: AsyncSession, user_id: int, pattern: str, limit: int,
+    session: AsyncSession, user_id: int, term: str, limit: int,
 ) -> SearchGroup[LabResultSearchItem]:
     base_filter = [
         LabResultModel.user_id == user_id,
@@ -170,11 +175,11 @@ async def _search_lab_results(
     matching_lab_ids_subq = (
         select(LabTestEntryModel.lab_result_id)
         .join(LabResultModel, LabTestEntryModel.lab_result_id == LabResultModel.id)
-        .where(*base_filter, LabTestEntryModel.biomarker_name.ilike(pattern))
+        .where(*base_filter, _icontains(LabTestEntryModel.biomarker_name, term))
     ).subquery()
 
     text_filter = or_(
-        LabResultModel.notes.ilike(pattern),
+        _icontains(LabResultModel.notes, term),
         LabResultModel.id.in_(select(matching_lab_ids_subq.c.lab_result_id)),
     )
 
@@ -208,16 +213,16 @@ async def _search_lab_results(
 
 
 async def _search_vaccinations(
-    session: AsyncSession, user_id: int, pattern: str, limit: int,
+    session: AsyncSession, user_id: int, term: str, limit: int,
 ) -> SearchGroup[VaccinationSearchItem]:
     base_filter = [
         VaccinationModel.user_id == user_id,
         VaccinationModel.deleted_at.is_(None),
     ]
     text_filter = or_(
-        VaccinationModel.vaccine_name.ilike(pattern),
-        VaccinationModel.manufacturer.ilike(pattern),
-        VaccinationModel.notes.ilike(pattern),
+        _icontains(VaccinationModel.vaccine_name, term),
+        _icontains(VaccinationModel.manufacturer, term),
+        _icontains(VaccinationModel.notes, term),
     )
 
     query = (
