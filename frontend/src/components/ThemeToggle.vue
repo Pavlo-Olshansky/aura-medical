@@ -29,13 +29,14 @@ const label = computed(() => ({
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.2s, background 0.2s;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 .theme-toggle:hover {
   color: var(--accent);

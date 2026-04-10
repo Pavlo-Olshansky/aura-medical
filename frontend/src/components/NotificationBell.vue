@@ -98,12 +98,13 @@ function handleNavigate(route: string) {
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
   position: relative;
   transition: color 0.2s, background 0.2s;
 }
@@ -131,11 +132,12 @@ function handleNavigate(route: string) {
   position: absolute;
   bottom: 100%;
   left: 0;
-  width: 300px;
+  width: max(280px, calc(100vw - 2rem));
+  max-width: 360px;
   max-height: 400px;
   overflow-y: auto;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--text-muted);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   z-index: 1000;

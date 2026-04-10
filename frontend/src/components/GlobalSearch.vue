@@ -350,7 +350,7 @@ function formatDate(dateStr: string): string {
 
 <style scoped>
 :deep(.global-search-dialog) {
-  width: min(600px, 90vw);
+  width: min(680px, 92vw);
   margin-top: 10vh;
   border-radius: 12px;
   overflow: hidden;
@@ -371,20 +371,22 @@ function formatDate(dateStr: string): string {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.25rem;
   width: 100%;
 }
 
 .search-icon {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
 :deep(.global-search-input) {
   flex: 1;
+  min-width: 0;
   border: none;
   box-shadow: none;
-  font-size: 1rem;
+  font-size: 1.125rem;
   padding: 0.5rem 0;
   background: transparent;
   color: var(--text-primary);

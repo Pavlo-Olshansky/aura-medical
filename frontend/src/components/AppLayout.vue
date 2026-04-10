@@ -167,9 +167,10 @@ async function handleLogout() {
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  font-size: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
