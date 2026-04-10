@@ -91,8 +91,7 @@ function handleNavigate(route: string) {
 <style scoped>
 .notification-wrapper {
   position: relative;
-  display: inline-block;
-  margin-bottom: 0.75rem;
+  display: inline-flex;
 }
 .bell-btn {
   background: none;

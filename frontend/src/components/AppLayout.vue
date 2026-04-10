@@ -158,6 +158,7 @@ async function handleLogout() {
 }
 .sidebar-actions {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
@@ -166,16 +167,17 @@ async function handleLogout() {
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0.4rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
   display: flex;
   align-items: center;
-  transition: all 0.2s;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
 }
 .search-btn:hover {
+  color: var(--accent);
   background: var(--bg-hover);
-  color: var(--text-primary);
 }
 .profile-link {
   margin-bottom: 0.75rem;
