@@ -4,9 +4,12 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import NotificationBell from '@/components/NotificationBell.vue'
+import GlobalSearch from '@/components/GlobalSearch.vue'
 import { useOnlineStatus } from '@/composables/useOnlineStatus'
+import { useGlobalSearch } from '@/composables/useGlobalSearch'
 
 const { isOnline } = useOnlineStatus()
+const { visible: searchVisible, open: openSearch } = useGlobalSearch()
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -64,6 +67,9 @@ async function handleLogout() {
       </nav>
       <div class="sidebar-footer">
         <div class="sidebar-actions">
+          <button class="search-btn" @click="openSearch" title="Пошук (Ctrl+K)">
+            <i class="pi pi-search" />
+          </button>
           <NotificationBell />
           <ThemeToggle />
         </div>
@@ -82,6 +88,7 @@ async function handleLogout() {
       </div>
       <slot />
     </main>
+    <GlobalSearch v-model:visible="searchVisible" />
   </div>
 </template>
 
@@ -150,6 +157,22 @@ async function handleLogout() {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+.search-btn {
+  background: none;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+.search-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 .profile-link {
   margin-bottom: 0.75rem;
