@@ -172,6 +172,56 @@ export interface CalendarEventsResponse {
   date_to: string
 }
 
+export interface VisitSearchItem {
+  id: number
+  date: string
+  doctor: string | null
+  position_name: string | null
+  procedure_name: string | null
+  clinic_name: string | null
+  city_name: string | null
+  body_region: string | null
+  comment: string | null
+}
+
+export interface TreatmentSearchItem {
+  id: number
+  date_start: string
+  name: string
+  days: number
+  status: string
+  body_region: string | null
+}
+
+export interface LabResultSearchItem {
+  id: number
+  date: string
+  notes: string | null
+  biomarker_names: string[]
+  visit_id: number | null
+}
+
+export interface VaccinationSearchItem {
+  id: number
+  date: string
+  vaccine_name: string
+  dose_number: number
+  manufacturer: string | null
+  notes: string | null
+}
+
+export interface SearchGroup<T> {
+  items: T[]
+  total: number
+}
+
+export interface SearchResponse {
+  visits: SearchGroup<VisitSearchItem>
+  treatments: SearchGroup<TreatmentSearchItem>
+  lab_results: SearchGroup<LabResultSearchItem>
+  vaccinations: SearchGroup<VaccinationSearchItem>
+}
+
 export interface DashboardData {
   recent_visits: Visit[]
   active_treatments: Treatment[]
