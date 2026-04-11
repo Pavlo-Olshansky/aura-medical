@@ -172,6 +172,7 @@ function formatDate(dateStr: string): string {
     modal
     :closable="false"
     position="top"
+    :style="{ width: 'min(860px, 92vw)' }"
     :pt="{
       root: { class: 'global-search-dialog' },
       content: { class: 'global-search-content' },
@@ -231,12 +232,13 @@ function formatDate(dateStr: string): string {
             @click="navigateTo('visit', item.id)"
             @mouseenter="activeIndex = getItemGlobalIndex('visit', idx)"
           >
-            <div class="result-main" v-html="highlight(item.doctor || item.procedure_name || item.comment || '—')" />
+            <div class="result-main" v-html="highlight(item.doctor || item.procedure_name || '—')" />
             <div class="result-details">
               <span class="result-date">{{ formatDate(item.date) }}</span>
               <span v-if="item.position_name" class="result-tag">{{ item.position_name }}</span>
               <span v-if="item.clinic_name" class="result-tag">{{ item.clinic_name }}</span>
             </div>
+            <div v-if="item.comment" class="result-comment" v-html="highlight(item.comment)" />
           </div>
           <RouterLink
             v-if="results.visits.total > results.visits.items.length"
@@ -350,10 +352,10 @@ function formatDate(dateStr: string): string {
 
 <style scoped>
 :deep(.global-search-dialog) {
-  width: min(680px, 92vw);
-  margin-top: 10vh;
-  border-radius: 12px;
+  margin-top: 8vh;
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 16px 70px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 :deep(.global-search-dialog .p-dialog-header) {
@@ -371,13 +373,13 @@ function formatDate(dateStr: string): string {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 1.25rem;
+  padding: 0.625rem 1rem;
   width: 100%;
 }
 
 .search-icon {
   color: var(--text-muted);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
 }
 
@@ -386,8 +388,8 @@ function formatDate(dateStr: string): string {
   min-width: 0;
   border: none;
   box-shadow: none;
-  font-size: 1.125rem;
-  padding: 0.5rem 0;
+  font-size: 1rem;
+  padding: 0.375rem 0;
   background: transparent;
   color: var(--text-primary);
 }
@@ -398,8 +400,8 @@ function formatDate(dateStr: string): string {
 }
 
 .search-kbd {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  padding: 0.125rem 0.4rem;
   border-radius: 4px;
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
@@ -484,6 +486,15 @@ function formatDate(dateStr: string): string {
   font-size: 0.75rem;
   color: var(--text-muted);
   flex-wrap: wrap;
+}
+
+.result-comment {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .result-date {
