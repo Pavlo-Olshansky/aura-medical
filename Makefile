@@ -1,4 +1,4 @@
-.PHONY: help backend frontend dev test test-backend lint build db-create db-migrate db-revision seed docker-up docker-down docker-seed docker-logs backup install
+.PHONY: help backend frontend dev test test-backend lint build db-create db-migrate db-revision seed docker-up docker-down docker-seed docker-logs backup install prod-up prod-down prod-logs
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -64,6 +64,15 @@ docker-seed: ## Create admin user in Docker backend
 
 docker-logs: ## Tail Docker Compose logs
 	docker compose logs -f
+
+prod-up: ## Start production stack
+	docker compose -f docker-compose.prod.yml up -d --build
+
+prod-down: ## Stop production stack
+	docker compose -f docker-compose.prod.yml down
+
+prod-logs: ## Tail production logs
+	docker compose -f docker-compose.prod.yml logs -f
 
 backup: ## Backup PostgreSQL database to backups/
 	@mkdir -p backups
