@@ -1,8 +1,12 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg_async://postgres:postgres@localhost:5432/medtracker"
+    POOL_SIZE: int = Field(default=5, ge=0)
+    MAX_OVERFLOW: int = Field(default=10, ge=0)
+    POOL_RECYCLE: int = Field(default=3600, ge=-1)
     SECRET_KEY: str
     DOCUMENTS_DIR: str = "../documents"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
