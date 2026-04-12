@@ -1,4 +1,9 @@
+# Production Docker Compose — Aura Medical Tracker
+# Usage: docker compose -f docker-compose.prod.yml up -d --build
+# Requires: .env.prod (copy from .env.prod.example)
+
 services:
+  # PostgreSQL database
   db:
     image: postgres:15-alpine
     restart: unless-stopped
@@ -14,6 +19,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # FastAPI backend (multi-worker uvicorn, no --reload)
   backend:
     build:
       context: ./backend
@@ -34,12 +40,14 @@ services:
       retries: 3
       start_period: 15s
 
+  # Vue.js SPA served by Nginx (multi-stage build, no Node.js runtime)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
     restart: unless-stopped
 
+  # Edge reverse proxy — SSL termination, gzip, routing
   nginx:
     image: nginx:alpine
     restart: unless-stopped
@@ -61,6 +69,7 @@ services:
       timeout: 5s
       retries: 3
 
+  # Automated PostgreSQL backups (cron + optional S3 upload + Telegram alerts)
   backup:
     build: ./backup
     restart: unless-stopped
