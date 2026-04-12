@@ -74,11 +74,14 @@ prod-down: ## Stop production stack
 prod-logs: ## Tail production logs
 	docker compose -f docker-compose.prod.yml logs -f
 
-backup: ## Backup PostgreSQL database to backups/
-	@mkdir -p backups
-	pg_dump -Fc medtracker -f backups/medtracker_$$(date +%Y%m%d_%H%M%S).dump
-	@echo "Backup saved to backups/"
-	# Restore: pg_restore -d medtracker --clean --if-exists backups/<filename>.dump
+ssl-init: ## First-time SSL certificate setup (requires DOMAIN in .env.prod)
+	./bin/init-letsencrypt.sh
+
+backup: ## Backup PostgreSQL database to conf/backups/
+	@mkdir -p conf/backups
+	pg_dump -Fc medtracker -f conf/backups/medtracker_$$(date +%Y%m%d_%H%M%S).dump
+	@echo "Backup saved to conf/backups/"
+	# Restore: pg_restore -d medtracker --clean --if-exists conf/backups/<filename>.dump
 
 # --- Setup ---
 
