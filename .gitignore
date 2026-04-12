@@ -3,6 +3,7 @@ venv3.14/
 __pycache__/
 *.pyc
 .env
+.env.prod
 *.egg-info/
 db.sqlite3
 documents/
