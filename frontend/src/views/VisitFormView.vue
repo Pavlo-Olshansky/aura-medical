@@ -15,11 +15,13 @@ import { isDemoMode } from '@/stores/auth'
 import { BODY_REGION_OPTIONS, SPECIALTY_REGION_MAP } from '@/components/body-map/body-regions'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
+import { useToast } from 'primevue/usetoast'
 
 const route = useRoute()
 const router = useRouter()
 const visitsStore = useVisitsStore()
 const referencesStore = useReferencesStore()
+const toast = useToast()
 
 const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
 const isEdit = computed(() => editId.value !== null)
@@ -91,11 +93,17 @@ async function handleSubmit() {
   try {
     if (isEdit.value && editId.value) {
       await visitsStore.updateVisit(editId.value, formData)
-      router.push({ name: 'visits' })
     } else {
       await visitsStore.createVisit(formData)
-      router.push({ name: 'visits' })
     }
+    if (isDemoMode.value) {
+      toast.add({
+        severity: 'info',
+        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
+        life: 3000,
+      })
+    }
+    router.push({ name: 'visits' })
   } catch (e: any) {
     errorMessage.value = e.response?.data?.detail || 'Помилка збереження візиту'
   } finally {

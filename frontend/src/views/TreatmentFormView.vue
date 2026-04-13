@@ -12,11 +12,13 @@ import { useConfirm } from 'primevue/useconfirm'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
+import { useToast } from 'primevue/usetoast'
 
 const route = useRoute()
 const router = useRouter()
 const treatmentsStore = useTreatmentsStore()
 const confirm = useConfirm()
+const toast = useToast()
 
 const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
 const isEdit = computed(() => editId.value !== null)
@@ -63,6 +65,13 @@ async function handleSubmit() {
     } else {
       await treatmentsStore.createTreatment(payload)
     }
+    if (isDemoMode.value) {
+      toast.add({
+        severity: 'info',
+        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
+        life: 3000,
+      })
+    }
     router.push({ name: 'treatments' })
   } catch (e: any) {
     errorMessage.value = e.response?.data?.detail || 'Помилка збереження лікування'
@@ -82,6 +91,9 @@ async function handleDelete() {
     acceptClass: 'p-button-danger',
     accept: async () => {
       await treatmentsStore.deleteTreatment(editId.value!)
+      if (isDemoMode.value) {
+        toast.add({ severity: 'info', summary: 'Видалено (тимчасово)', life: 3000 })
+      }
       router.push({ name: 'treatments' })
     },
   })

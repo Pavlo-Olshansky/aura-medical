@@ -14,12 +14,14 @@ import { useAuthStore, isDemoMode } from '@/stores/auth'
 import type { BiomarkerReference } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
+import { useToast } from 'primevue/usetoast'
 
 const route = useRoute()
 const router = useRouter()
 const labResultsStore = useLabResultsStore()
 const visitsStore = useVisitsStore()
 const authStore = useAuthStore()
+const toast = useToast()
 
 const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
 const isEdit = computed(() => editId.value !== null)
@@ -131,11 +133,17 @@ async function handleSubmit() {
   try {
     if (isEdit.value && editId.value) {
       await labResultsStore.updateLabResult(editId.value, payload)
-      router.push({ name: 'lab-results' })
     } else {
       await labResultsStore.createLabResult(payload)
-      router.push({ name: 'lab-results' })
     }
+    if (isDemoMode.value) {
+      toast.add({
+        severity: 'info',
+        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
+        life: 3000,
+      })
+    }
+    router.push({ name: 'lab-results' })
   } catch (e: any) {
     errorMessage.value = e.response?.data?.detail || 'Помилка збереження аналізу'
   } finally {
