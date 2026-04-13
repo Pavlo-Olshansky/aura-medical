@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { getVapidKey, subscribePush, unsubscribePush } from '@/api/push'
 import { apiClient } from '@/api/client'
+import { isDemoMode } from '@/stores/auth'
 
 const isSubscribed = ref(false)
 const permissionState = ref<NotificationPermission>('default')
@@ -32,6 +33,11 @@ export function usePushNotifications() {
 
   async function checkSubscription() {
     if (!isSupported.value) return
+    if (isDemoMode.value) {
+      // FR-015: never tie a real VAPID subscription to the fake demo user.
+      isSubscribed.value = false
+      return
+    }
     permissionState.value = Notification.permission
 
     // If SW is active (production build), check browser PushManager
@@ -58,6 +64,7 @@ export function usePushNotifications() {
 
   async function subscribe(): Promise<boolean> {
     if (!isSupported.value) return false
+    if (isDemoMode.value) return false
     try {
       const permission = await Notification.requestPermission()
       permissionState.value = permission
@@ -94,6 +101,10 @@ export function usePushNotifications() {
   }
 
   async function unsubscribe(): Promise<void> {
+    if (isDemoMode.value) {
+      isSubscribed.value = false
+      return
+    }
     try {
       if (hasServiceWorker()) {
         const reg = await navigator.serviceWorker.ready
