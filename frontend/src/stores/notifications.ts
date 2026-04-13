@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import { listReminders, dismissReminder, type Reminder, type DismissRequest } from '@/api/notifications'
 
 export const useNotificationsStore = defineStore('notifications', () => {
@@ -10,6 +12,10 @@ export const useNotificationsStore = defineStore('notifications', () => {
   let pollTimer: ReturnType<typeof setInterval> | null = null
 
   async function fetch() {
+    if (isDemoMode.value) {
+      reminders.value = demo().getNotifications()
+      return
+    }
     try {
       loading.value = true
       const data = await listReminders()
@@ -22,7 +28,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   async function dismiss(req: DismissRequest) {
-    await dismissReminder(req)
+    if (!isDemoMode.value) {
+      await dismissReminder(req)
+    }
     reminders.value = reminders.value.filter(
       (r) =>
         !(r.entity_type === req.entity_type && r.entity_id === req.entity_id && r.reminder_type === req.reminder_type),
@@ -32,6 +40,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
   function startPolling(intervalMs = 5 * 60 * 1000) {
     stopPolling()
     fetch()
+    // No polling in demo mode - data is in-memory and doesn't change.
+    if (isDemoMode.value) return
     pollTimer = setInterval(fetch, intervalMs)
   }
 
