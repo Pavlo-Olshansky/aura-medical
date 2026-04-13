@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Treatment, PaginatedResponse } from '@/types'
 import { getErrorMessage } from '@/types/errors'
+import { isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import {
   listTreatments as apiListTreatments,
   getTreatment as apiGetTreatment,
@@ -11,6 +13,23 @@ import {
   type TreatmentListParams,
   type TreatmentPayload,
 } from '@/api/treatments'
+
+function treatmentFromPayload(data: TreatmentPayload): Omit<Treatment, 'id'> {
+  const now = new Date().toISOString()
+  const start = new Date(data.date_start)
+  const end = new Date(start.getTime() + data.days * 86_400_000)
+  const status: Treatment['status'] = end < new Date() ? 'completed' : 'active'
+  return {
+    date_start: data.date_start,
+    name: data.name,
+    days: data.days,
+    receipt: data.receipt ?? '',
+    status,
+    body_region: data.body_region ?? null,
+    created: now,
+    updated: now,
+  }
+}
 
 export const useTreatmentsStore = defineStore('treatments', () => {
   const treatments = ref<Treatment[]>([])
@@ -23,6 +42,18 @@ export const useTreatmentsStore = defineStore('treatments', () => {
   const error = ref<string | null>(null)
 
   async function fetchTreatments(params?: TreatmentListParams) {
+    if (isDemoMode.value) {
+      const all = demo().getTreatments()
+      const pageNum = params?.page ?? 1
+      const sizeNum = params?.size ?? 20
+      const start = (pageNum - 1) * sizeNum
+      treatments.value = all.slice(start, start + sizeNum)
+      total.value = all.length
+      page.value = pageNum
+      size.value = sizeNum
+      pages.value = Math.max(1, Math.ceil(all.length / sizeNum))
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -41,6 +72,10 @@ export const useTreatmentsStore = defineStore('treatments', () => {
   }
 
   async function fetchTreatment(id: number) {
+    if (isDemoMode.value) {
+      currentTreatment.value = demo().getTreatments().find((t) => t.id === id) ?? null
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -54,6 +89,11 @@ export const useTreatmentsStore = defineStore('treatments', () => {
   }
 
   async function createTreatment(data: TreatmentPayload) {
+    if (isDemoMode.value) {
+      const created = demo().create(demo().getTreatments(), treatmentFromPayload(data))
+      treatments.value = [...demo().getTreatments()]
+      return created
+    }
     loading.value = true
     error.value = null
     try {
@@ -68,6 +108,12 @@ export const useTreatmentsStore = defineStore('treatments', () => {
   }
 
   async function updateTreatment(id: number, data: TreatmentPayload) {
+    if (isDemoMode.value) {
+      const updated = demo().update(demo().getTreatments(), id, treatmentFromPayload(data))
+      if (updated) currentTreatment.value = updated
+      treatments.value = [...demo().getTreatments()]
+      return updated as Treatment
+    }
     loading.value = true
     error.value = null
     try {
@@ -83,6 +129,12 @@ export const useTreatmentsStore = defineStore('treatments', () => {
   }
 
   async function deleteTreatment(id: number) {
+    if (isDemoMode.value) {
+      demo().remove(demo().getTreatments(), id)
+      treatments.value = [...demo().getTreatments()]
+      currentTreatment.value = null
+      return
+    }
     loading.value = true
     error.value = null
     try {

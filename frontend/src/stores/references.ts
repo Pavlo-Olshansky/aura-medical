@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Reference } from '@/types'
 import { getErrorMessage } from '@/types/errors'
+import { isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import {
   listResource,
   createResource,
@@ -46,6 +48,13 @@ export const useReferencesStore = defineStore('references', () => {
   }
 
   async function fetchAll() {
+    if (isDemoMode.value) {
+      positions.value = demo().getReferences('positions')
+      procedures.value = demo().getReferences('procedures')
+      clinics.value = demo().getReferences('clinics')
+      cities.value = demo().getReferences('cities')
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -68,6 +77,15 @@ export const useReferencesStore = defineStore('references', () => {
   }
 
   async function fetchResource(resource: ReferenceResource, search?: string) {
+    if (isDemoMode.value) {
+      let items = demo().getReferences(resource)
+      if (search) {
+        const q = search.toLowerCase()
+        items = items.filter((r) => r.name.toLowerCase().includes(q))
+      }
+      setList(resource, items)
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -82,6 +100,16 @@ export const useReferencesStore = defineStore('references', () => {
   }
 
   async function addResource(resource: ReferenceResource, name: string) {
+    if (isDemoMode.value) {
+      const now = new Date().toISOString()
+      const created = demo().create(demo().getReferences(resource), {
+        name,
+        created: now,
+        updated: now,
+      })
+      setList(resource, [...demo().getReferences(resource)])
+      return created
+    }
     loading.value = true
     error.value = null
     try {
@@ -98,6 +126,14 @@ export const useReferencesStore = defineStore('references', () => {
   }
 
   async function editResource(resource: ReferenceResource, id: number, name: string) {
+    if (isDemoMode.value) {
+      const updated = demo().update(demo().getReferences(resource), id, {
+        name,
+        updated: new Date().toISOString(),
+      })
+      setList(resource, [...demo().getReferences(resource)])
+      return updated as Reference
+    }
     loading.value = true
     error.value = null
     try {
@@ -117,6 +153,11 @@ export const useReferencesStore = defineStore('references', () => {
   }
 
   async function removeResource(resource: ReferenceResource, id: number) {
+    if (isDemoMode.value) {
+      demo().remove(demo().getReferences(resource), id)
+      setList(resource, [...demo().getReferences(resource)])
+      return
+    }
     loading.value = true
     error.value = null
     try {

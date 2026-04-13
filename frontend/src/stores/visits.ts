@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Visit, PaginatedResponse } from '@/types'
 import { getErrorMessage } from '@/types/errors'
+import { isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import {
   listVisits as apiListVisits,
   getVisit as apiGetVisit,
@@ -22,6 +24,18 @@ export const useVisitsStore = defineStore('visits', () => {
   const error = ref<string | null>(null)
 
   async function fetchVisits(params?: VisitListParams) {
+    if (isDemoMode.value) {
+      const all = demo().getVisits()
+      const pageNum = params?.page ?? 1
+      const sizeNum = params?.size ?? 20
+      const start = (pageNum - 1) * sizeNum
+      visits.value = all.slice(start, start + sizeNum)
+      total.value = all.length
+      page.value = pageNum
+      size.value = sizeNum
+      pages.value = Math.max(1, Math.ceil(all.length / sizeNum))
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -40,6 +54,10 @@ export const useVisitsStore = defineStore('visits', () => {
   }
 
   async function fetchVisit(id: number) {
+    if (isDemoMode.value) {
+      currentVisit.value = demo().getVisits().find((v) => v.id === id) ?? null
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -53,6 +71,9 @@ export const useVisitsStore = defineStore('visits', () => {
   }
 
   async function createVisit(formData: FormData) {
+    if (isDemoMode.value) {
+      return createDemoVisit(formData)
+    }
     loading.value = true
     error.value = null
     try {
@@ -67,6 +88,9 @@ export const useVisitsStore = defineStore('visits', () => {
   }
 
   async function updateVisit(id: number, formData: FormData) {
+    if (isDemoMode.value) {
+      return updateDemoVisit(id, formData)
+    }
     loading.value = true
     error.value = null
     try {
@@ -82,6 +106,12 @@ export const useVisitsStore = defineStore('visits', () => {
   }
 
   async function deleteVisit(id: number) {
+    if (isDemoMode.value) {
+      demo().remove(demo().getVisits(), id)
+      visits.value = [...demo().getVisits()]
+      currentVisit.value = null
+      return
+    }
     loading.value = true
     error.value = null
     try {
@@ -93,6 +123,46 @@ export const useVisitsStore = defineStore('visits', () => {
     } finally {
       loading.value = false
     }
+  }
+
+  function visitFromFormData(formData: FormData): Omit<Visit, 'id'> {
+    const now = new Date().toISOString()
+    const get = (k: string) => {
+      const v = formData.get(k)
+      return typeof v === 'string' && v.length > 0 ? v : null
+    }
+    const file = formData.get('document')
+    const documentName = file instanceof File ? file.name : null
+    return {
+      date: get('date') ?? now.slice(0, 10),
+      position: null,
+      doctor: get('doctor'),
+      procedure: null,
+      procedure_details: get('procedure_details'),
+      clinic: null,
+      city: null,
+      document: documentName,
+      has_document: !!documentName,
+      body_region: get('body_region'),
+      link: get('link'),
+      comment: get('comment'),
+      price: get('price') ? Number(get('price')) : null,
+      created: now,
+      updated: now,
+    }
+  }
+
+  function createDemoVisit(formData: FormData): Visit {
+    const created = demo().create(demo().getVisits(), visitFromFormData(formData))
+    visits.value = [...demo().getVisits()]
+    return created
+  }
+
+  function updateDemoVisit(id: number, formData: FormData): Visit | null {
+    const updated = demo().update(demo().getVisits(), id, visitFromFormData(formData))
+    if (updated) currentVisit.value = updated
+    visits.value = [...demo().getVisits()]
+    return updated ?? null
   }
 
   return {
