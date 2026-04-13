@@ -8,7 +8,8 @@ import type { DashboardData, Visit, Vaccination, PaginatedResponse } from '@/typ
 import type { WeatherSummary } from '@/types/weather'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import type { BodyRegionKey } from '@/components/body-map/types'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore, isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import HealthMetricModal from '@/components/HealthMetricModal.vue'
 import DashboardSummaryCards from '@/components/dashboard/DashboardSummaryCards.vue'
 import DashboardRecentVisits from '@/components/dashboard/DashboardRecentVisits.vue'
@@ -59,6 +60,14 @@ const modalLoading = ref(false)
 async function fetchModalVisits() {
   if (!selectedRegion.value) return
   modalLoading.value = true
+  if (isDemoMode.value) {
+    const all = demo().getVisits().filter((v) => v.body_region === selectedRegion.value)
+    const start = (modalPage.value - 1) * modalPageSize.value
+    modalVisits.value = all.slice(start, start + modalPageSize.value)
+    modalTotal.value = all.length
+    modalLoading.value = false
+    return
+  }
   try {
     const response = await apiClient.get<PaginatedResponse<Visit>>('/api/v1/visits/', {
       params: {
@@ -131,7 +140,31 @@ function applyDashboardData(data: DashboardData) {
   if (data.overdue_vaccinations) overdueVaccinations.value = data.overdue_vaccinations
 }
 
+function buildDemoDashboard(): DashboardData {
+  const visits = demo().getVisits()
+  const treatments = demo().getTreatments()
+  const vaccinations = demo().getVaccinations()
+  const activeTreatments = treatments.filter((t) => t.status === 'active')
+  return {
+    recent_visits: visits.slice(0, 5),
+    active_treatments: activeTreatments,
+    total_visits: visits.length,
+    total_treatments: treatments.length,
+    active_treatments_count: activeTreatments.length,
+    upcoming_vaccinations: vaccinations.filter((v) => v.status === 'upcoming'),
+    overdue_vaccinations: vaccinations.filter((v) => v.status === 'overdue'),
+    expenses_year: visits
+      .filter((v) => v.date.startsWith(String(new Date().getFullYear())))
+      .reduce((sum, v) => sum + (v.price ?? 0), 0),
+    expenses_total: visits.reduce((sum, v) => sum + (v.price ?? 0), 0),
+  }
+}
+
 async function onMetricSaved() {
+  if (isDemoMode.value) {
+    applyDashboardData(buildDemoDashboard())
+    return
+  }
   try {
     const dashResponse = await apiClient.get<DashboardData>('/api/v1/dashboard/')
     applyDashboardData(dashResponse.data)
@@ -154,6 +187,11 @@ async function handleTestPush() {
 }
 
 onMounted(async () => {
+  if (isDemoMode.value) {
+    applyDashboardData(buildDemoDashboard())
+    loading.value = false
+    return
+  }
   try {
     if (!auth.user) {
       await auth.fetchUser()

@@ -5,6 +5,8 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import ProgressSpinner from 'primevue/progressspinner'
 import { globalSearch } from '@/api/search'
+import { isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import type {
   SearchResponse,
   VisitSearchItem,
@@ -12,6 +14,74 @@ import type {
   LabResultSearchItem,
   VaccinationSearchItem,
 } from '@/types'
+
+function demoSearch(q: string): SearchResponse {
+  const needle = q.toLowerCase()
+  const visits: VisitSearchItem[] = demo()
+    .getVisits()
+    .filter((v) =>
+      [v.doctor, v.position?.name, v.procedure?.name, v.clinic?.name, v.city?.name, v.body_region, v.comment]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(needle)),
+    )
+    .map((v) => ({
+      id: v.id,
+      date: v.date,
+      doctor: v.doctor,
+      position_name: v.position?.name ?? null,
+      procedure_name: v.procedure?.name ?? null,
+      clinic_name: v.clinic?.name ?? null,
+      city_name: v.city?.name ?? null,
+      body_region: v.body_region,
+      comment: v.comment,
+    }))
+  const treatments: TreatmentSearchItem[] = demo()
+    .getTreatments()
+    .filter((t) => t.name.toLowerCase().includes(needle))
+    .map((t) => ({
+      id: t.id,
+      date_start: t.date_start,
+      name: t.name,
+      days: t.days,
+      status: t.status,
+      body_region: t.body_region,
+    }))
+  const labResults: LabResultSearchItem[] = demo()
+    .getLabResults()
+    .filter((r) =>
+      (r.notes?.toLowerCase().includes(needle) ?? false) ||
+      r.entries.some((e) => e.biomarker_name.toLowerCase().includes(needle)),
+    )
+    .map((r) => ({
+      id: r.id,
+      date: r.date,
+      notes: r.notes,
+      entries_count: r.entries.length,
+      biomarker_names: r.entries.map((e) => e.biomarker_name),
+      visit_id: r.visit_id,
+    }))
+  const vaccinations: VaccinationSearchItem[] = demo()
+    .getVaccinations()
+    .filter(
+      (v) =>
+        v.vaccine_name.toLowerCase().includes(needle) ||
+        (v.manufacturer?.toLowerCase().includes(needle) ?? false),
+    )
+    .map((v) => ({
+      id: v.id,
+      date: v.date,
+      vaccine_name: v.vaccine_name,
+      dose_number: v.dose_number,
+      manufacturer: v.manufacturer,
+      notes: v.notes,
+    }))
+  return {
+    visits: { items: visits, total: visits.length },
+    treatments: { items: treatments, total: treatments.length },
+    lab_results: { items: labResults, total: labResults.length },
+    vaccinations: { items: vaccinations, total: vaccinations.length },
+  }
+}
 
 const visible = defineModel<boolean>('visible', { required: true })
 const router = useRouter()
@@ -61,7 +131,9 @@ watch(query, (val) => {
   error.value = false
   debounceTimer = setTimeout(async () => {
     try {
-      results.value = await globalSearch(val.trim())
+      results.value = isDemoMode.value
+        ? demoSearch(val.trim())
+        : await globalSearch(val.trim())
       error.value = false
     } catch {
       error.value = true

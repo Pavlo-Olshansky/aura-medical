@@ -12,7 +12,8 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import { apiClient } from '@/api/client'
 import { usePushNotifications } from '@/composables/usePushNotifications'
 import PushSetupGuide from '@/components/PushSetupGuide.vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore, isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import type { ProfileData } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
@@ -95,6 +96,11 @@ function populateForm(data: ProfileData) {
 }
 
 async function loadProfile() {
+  if (isDemoMode.value) {
+    populateForm(demo().getProfile())
+    loading.value = false
+    return
+  }
   loading.value = true
   try {
     const response = await apiClient.get<ProfileData>('/api/v1/profile/')
@@ -109,6 +115,10 @@ async function loadProfile() {
 async function saveProfile() {
   if (!dateOfBirth.value) {
     toast.add({ severity: 'warn', summary: 'Увага', detail: 'Дата народження обов\'язкова', life: 3000 })
+    return
+  }
+  if (isDemoMode.value) {
+    toast.add({ severity: 'info', summary: 'Збережено', detail: 'Збережено в демо-режимі (тимчасово)', life: 3000 })
     return
   }
   saving.value = true
