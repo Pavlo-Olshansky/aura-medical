@@ -9,6 +9,7 @@ import FileUpload from 'primevue/fileupload'
 import Button from 'primevue/button'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVaccinationsStore } from '@/stores/vaccinations'
+import { isDemoMode } from '@/stores/auth'
 import { useConfirm } from 'primevue/useconfirm'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
@@ -215,6 +216,10 @@ onMounted(async () => {
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
+      <p v-if="isDemoMode" class="demo-notice">
+        <i class="pi pi-info-circle" /> Зміни не зберігаються в демо-режимі
+      </p>
+
       <div class="form-actions">
         <Button type="submit" :label="(isEdit ? 'Зберегти' : 'Створити') + (textareaFocused ? ' (Ctrl+Enter)' : '')" icon="pi pi-check" :loading="saving" />
         <Button label="Скасувати" severity="secondary" outlined @click="router.back()" />
@@ -275,6 +280,17 @@ onMounted(async () => {
   color: #dc2626;
   font-size: 0.875rem;
   margin-top: 1rem;
+}
+.demo-notice {
+  color: #ca8a04;
+  background: rgba(250, 204, 21, 0.1);
+  border-left: 3px solid #facc15;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .form-actions {
   display: flex;
