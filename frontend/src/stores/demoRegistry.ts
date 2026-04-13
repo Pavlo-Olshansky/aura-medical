@@ -17,6 +17,7 @@ import type {
   User,
 } from '@/types'
 import type { Reminder } from '@/api/notifications'
+import type { WeatherSummary, WeatherDetail } from '@/types/weather'
 
 export interface DemoAccessors {
   getUser: () => User
@@ -31,6 +32,8 @@ export interface DemoAccessors {
   getVaccinations: () => Vaccination[]
   getCalendarEvents: (from: string, to: string) => CalendarEvent[]
   getNotifications: () => Reminder[]
+  getWeatherSummary: () => WeatherSummary
+  getWeatherDetail: () => WeatherDetail
   create: <T extends { id: number }>(collection: T[], record: Omit<T, 'id'>) => T
   update: <T extends { id: number }>(collection: T[], id: number, patch: Partial<T>) => T | undefined
   remove: <T extends { id: number }>(collection: T[], id: number) => boolean

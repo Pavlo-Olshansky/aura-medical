@@ -14,6 +14,7 @@ import { getDemoMetricTypes, getDemoHealthMetrics } from './data/healthMetrics'
 import { getDemoVaccinations } from './data/vaccinations'
 import { getDemoCalendarEvents } from './data/calendar'
 import { getDemoNotifications } from './data/notifications'
+import { getDemoWeatherSummary, getDemoWeatherDetail } from './data/weather'
 import { demoCreate, demoUpdate, demoDelete } from './mutations'
 import { clearDemoCache } from './cache'
 
@@ -31,6 +32,8 @@ function registerAll(): void {
     getVaccinations: getDemoVaccinations,
     getCalendarEvents: getDemoCalendarEvents,
     getNotifications: getDemoNotifications,
+    getWeatherSummary: getDemoWeatherSummary,
+    getWeatherDetail: getDemoWeatherDetail,
     create: demoCreate,
     update: demoUpdate,
     remove: demoDelete,
