@@ -43,7 +43,8 @@ export const useTreatmentsStore = defineStore('treatments', () => {
 
   async function fetchTreatments(params?: TreatmentListParams) {
     if (isDemoMode.value) {
-      const all = demo().getTreatments()
+      let all = demo().getTreatments()
+      if (params?.status) all = all.filter((t) => t.status === params.status)
       const pageNum = params?.page ?? 1
       const sizeNum = params?.size ?? 20
       const start = (pageNum - 1) * sizeNum

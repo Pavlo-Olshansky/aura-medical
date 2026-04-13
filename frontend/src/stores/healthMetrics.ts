@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import type { HealthMetric, MetricType, PaginatedResponse } from '@/types'
 import { getErrorMessage } from '@/types/errors'
 import { isDemoMode } from '@/stores/auth'
-import { demo } from '@/stores/demoRegistry'
+import { demo, demoSort } from '@/stores/demoRegistry'
 import {
   listHealthMetrics as apiListHealthMetrics,
   getHealthMetric as apiGetHealthMetric,
@@ -31,9 +31,10 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
   async function fetchHealthMetrics(params?: HealthMetricListParams) {
     if (isDemoMode.value) {
       let all = demo().getHealthMetrics()
-      if (params?.metric_type_id) {
-        all = all.filter((m) => m.metric_type_id === params.metric_type_id)
-      }
+      if (params?.metric_type_id) all = all.filter((m) => m.metric_type_id === params.metric_type_id)
+      if (params?.date_from) all = all.filter((m) => m.date >= params.date_from!)
+      if (params?.date_to) all = all.filter((m) => m.date <= params.date_to!)
+      all = demoSort(all, params?.sort_by ?? 'date', params?.sort_order ?? 'desc')
       const pageNum = params?.page ?? 1
       const sizeNum = params?.size ?? 20
       const start = (pageNum - 1) * sizeNum

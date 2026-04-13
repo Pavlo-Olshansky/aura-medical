@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import type { Visit, PaginatedResponse } from '@/types'
 import { getErrorMessage } from '@/types/errors'
 import { isDemoMode } from '@/stores/auth'
-import { demo } from '@/stores/demoRegistry'
+import { demo, demoSort } from '@/stores/demoRegistry'
 import {
   listVisits as apiListVisits,
   getVisit as apiGetVisit,
@@ -23,9 +23,17 @@ export const useVisitsStore = defineStore('visits', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  async function fetchVisits(params?: VisitListParams) {
+  async function fetchVisits(params?: VisitListParams & { body_region?: string }) {
     if (isDemoMode.value) {
-      const all = demo().getVisits()
+      let all = demo().getVisits()
+      if (params?.date_from) all = all.filter((v) => v.date >= params.date_from!)
+      if (params?.date_to) all = all.filter((v) => v.date <= params.date_to!)
+      if (params?.clinic_id) all = all.filter((v) => v.clinic?.id === params.clinic_id)
+      if (params?.city_id) all = all.filter((v) => v.city?.id === params.city_id)
+      if (params?.procedure_id) all = all.filter((v) => v.procedure?.id === params.procedure_id)
+      if (params?.position_id) all = all.filter((v) => v.position?.id === params.position_id)
+      if (params?.body_region) all = all.filter((v) => v.body_region === params.body_region)
+      all = demoSort(all, params?.sort_by ?? 'date', params?.sort_order ?? 'desc')
       const pageNum = params?.page ?? 1
       const sizeNum = params?.size ?? 20
       const start = (pageNum - 1) * sizeNum

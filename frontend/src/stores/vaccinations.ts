@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import type { Vaccination, PaginatedResponse } from '@/types'
 import { getErrorMessage } from '@/types/errors'
 import { isDemoMode } from '@/stores/auth'
-import { demo } from '@/stores/demoRegistry'
+import { demo, demoSort } from '@/stores/demoRegistry'
 import {
   listVaccinations as apiListVaccinations,
   getVaccination as apiGetVaccination,
@@ -54,6 +54,9 @@ export const useVaccinationsStore = defineStore('vaccinations', () => {
     if (isDemoMode.value) {
       let all = demo().getVaccinations()
       if (params?.status) all = all.filter((v) => v.status === params.status)
+      if (params?.date_from) all = all.filter((v) => v.date >= params.date_from!)
+      if (params?.date_to) all = all.filter((v) => v.date <= params.date_to!)
+      all = demoSort(all, params?.sort_by ?? 'date', params?.sort_order ?? 'desc')
       const pageNum = params?.page ?? 1
       const sizeNum = params?.size ?? 20
       const start = (pageNum - 1) * sizeNum

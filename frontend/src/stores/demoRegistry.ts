@@ -55,3 +55,14 @@ export function demo(): DemoAccessors {
   }
   return registry
 }
+
+// Sort an array of records by a string-keyed field. Used by every list
+// store's demo branch to honor sort_by/sort_order from filter params.
+export function demoSort<T>(items: T[], sortBy: string, sortOrder: 'asc' | 'desc' = 'desc'): T[] {
+  const dir = sortOrder === 'asc' ? 1 : -1
+  return [...items].sort((a, b) => {
+    const av = (a as unknown as Record<string, unknown>)[sortBy] ?? ''
+    const bv = (b as unknown as Record<string, unknown>)[sortBy] ?? ''
+    return String(av).localeCompare(String(bv)) * dir
+  })
+}
