@@ -1,4 +1,6 @@
 import { apiClient } from '@/api/client'
+import { isDemoMode } from '@/stores/auth'
+import { demo } from '@/stores/demoRegistry'
 import type { HealthMetric, MetricType, PaginatedResponse } from '@/types'
 import type { HealthMetricPayload, MetricTypePayload } from '@/types/payloads'
 
@@ -65,6 +67,14 @@ export async function getMetricTrend(params: MetricTrendParams): Promise<MetricT
 
 // Metric types
 export async function listMetricTypes(search?: string): Promise<MetricType[]> {
+  if (isDemoMode.value) {
+    let items = demo().getMetricTypes()
+    if (search) {
+      const q = search.toLowerCase()
+      items = items.filter((t) => t.name.toLowerCase().includes(q))
+    }
+    return items
+  }
   const response = await apiClient.get('/api/v1/metric-types/', {
     params: search ? { search } : {},
   })

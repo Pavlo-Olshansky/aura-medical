@@ -148,6 +148,11 @@ async function saveProfile() {
 }
 
 async function detectCity() {
+  if (isDemoMode.value) {
+    weatherCity.value = 'Київ'
+    toast.add({ severity: 'success', summary: 'Визначено', detail: 'Місто: Київ (демо)', life: 3000 })
+    return
+  }
   detecting.value = true
   try {
     const response = await apiClient.post<{ city: string | null; saved: boolean }>('/api/v1/weather/detect-city')
