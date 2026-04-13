@@ -89,7 +89,24 @@ export function getDemoWeatherDetail(): WeatherDetail {
         affected_systems: [],
         recommendations: [],
         disclaimer: null,
-        forecast: [],
+        // 8 three-hour windows centered on "now" so the chart renders the
+        // standard ~24h Kp forecast curve (WeatherStormSection only renders
+        // the chart when forecast.length > 0).
+        forecast: Array.from({ length: 8 }, (_, i) => {
+          const windowStart = new Date(now + (i - 3) * 3 * 3600_000)
+          const windowEnd = new Date(windowStart.getTime() + 3 * 3600_000)
+          // Gentle wave 1.5–4.5 — stays sub-storm (Kp<5) for the calm baseline,
+          // bumps a little so the line isn't flat.
+          const predicted_kp = Math.round((2.5 + Math.sin(i / 1.5) * 1.5) * 10) / 10
+          return {
+            predicted_kp,
+            g_scale: predicted_kp >= 5 ? 'G1' : 'G0',
+            severity: predicted_kp >= 5 ? 'minor' : 'quiet',
+            is_storm: predicted_kp >= 5,
+            period_start: windowStart.toISOString(),
+            period_end: windowEnd.toISOString(),
+          }
+        }),
       },
       city: 'Київ',
     }
