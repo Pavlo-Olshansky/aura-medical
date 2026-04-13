@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore, isDemoMode } from '@/stores/auth'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import NotificationBell from '@/components/NotificationBell.vue'
 import GlobalSearch from '@/components/GlobalSearch.vue'
+import DemoBanner from '@/components/DemoBanner.vue'
 import { useOnlineStatus } from '@/composables/useOnlineStatus'
 import { useGlobalSearch } from '@/composables/useGlobalSearch'
 
@@ -14,6 +15,9 @@ const { visible: searchVisible, open: openSearch } = useGlobalSearch()
 const router = useRouter()
 const auth = useAuthStore()
 const sidebarOpen = ref(false)
+
+// Demo banner dismissal is in-memory only (US3.2). Reload restores it.
+const demoBannerDismissed = ref(false)
 
 router.afterEach(() => {
   sidebarOpen.value = false
@@ -38,7 +42,10 @@ async function handleLogout() {
     </header>
     <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false" />
     <aside class="sidebar" :class="{ open: sidebarOpen }">
-      <h2 class="sidebar-title">Aura</h2>
+      <h2 class="sidebar-title">
+        Aura
+        <span v-if="isDemoMode" class="demo-badge" title="Демо-режим">DEMO</span>
+      </h2>
       <nav>
         <RouterLink to="/" class="nav-link">
           <i class="pi pi-home" /> Головна
@@ -86,6 +93,7 @@ async function handleLogout() {
       </div>
     </aside>
     <main class="main-content">
+      <DemoBanner :visible="isDemoMode && !demoBannerDismissed" @dismiss="demoBannerDismissed = true" />
       <div v-if="!isOnline" class="offline-banner">
         <i class="pi pi-wifi" /> Немає з'єднання
       </div>
@@ -127,6 +135,18 @@ async function handleLogout() {
   text-transform: uppercase;
   margin-bottom: 2rem;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.demo-badge {
+  background: #facc15;
+  color: #1f2937;
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.125rem 0.4rem;
+  border-radius: 2px;
+  letter-spacing: 0.1em;
 }
 .nav-link {
   display: flex;
