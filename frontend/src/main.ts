@@ -109,12 +109,17 @@ app.use(ToastService)
 app.directive('tooltip', Tooltip)
 
 // If the user previously activated demo mode, restore the flag + fake user
-// before mounting so the auth guard treats them as authenticated and the
-// dashboard renders demo data on first paint (FR-003, US1.4).
-if (localStorage.getItem('medtracker_demo_mode') === 'true') {
-  import('@/modules/demo').then(({ restoreDemoIfPersisted }) => {
+// AND register the demo accessors BEFORE mounting (FR-003, US1.4). This
+// must be awaited because components mount synchronously after .mount()
+// and immediately start polling stores (e.g. NotificationBell) — without
+// the await, isDemoMode would still be false and the polling would hit
+// the real backend with no token, producing 401s.
+async function bootstrap() {
+  if (localStorage.getItem('medtracker_demo_mode') === 'true') {
+    const { restoreDemoIfPersisted } = await import('@/modules/demo')
     restoreDemoIfPersisted()
-  })
+  }
+  app.mount('#app')
 }
 
-app.mount('#app')
+bootstrap()
