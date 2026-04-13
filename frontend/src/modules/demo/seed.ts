@@ -18,7 +18,7 @@ export function dailySeed(): number {
 }
 
 export function pick<T>(rng: () => number, items: readonly T[]): T {
-  return items[Math.floor(rng() * items.length)]
+  return items[Math.floor(rng() * items.length)] as T
 }
 
 export function intBetween(rng: () => number, min: number, max: number): number {

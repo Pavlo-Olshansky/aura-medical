@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { isDemoMode } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -138,10 +139,13 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const token = localStorage.getItem('access_token')
-  if (to.meta.requiresAuth !== false && !token) {
+  // Demo mode counts as "authenticated" for the purpose of routing (FR-005);
+  // no JWT exists but the user is allowed to see all client-side screens.
+  const authed = !!token || isDemoMode.value
+  if (to.meta.requiresAuth !== false && !authed) {
     return { name: 'login' }
   }
-  if (to.name === 'login' && token) {
+  if (to.name === 'login' && authed) {
     return { name: 'dashboard' }
   }
 })

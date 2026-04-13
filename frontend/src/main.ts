@@ -108,4 +108,13 @@ app.use(ToastService)
 
 app.directive('tooltip', Tooltip)
 
+// If the user previously activated demo mode, restore the flag + fake user
+// before mounting so the auth guard treats them as authenticated and the
+// dashboard renders demo data on first paint (FR-003, US1.4).
+if (localStorage.getItem('medtracker_demo_mode') === 'true') {
+  import('@/modules/demo').then(({ restoreDemoIfPersisted }) => {
+    restoreDemoIfPersisted()
+  })
+}
+
 app.mount('#app')
