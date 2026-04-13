@@ -11,6 +11,11 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
+const demoLoading = ref(false)
+
+// Hide the demo button when a real session is already present in
+// localStorage (Clarification Q5 / FR-002) to prevent cross-state confusion.
+const showDemoButton = ref(!localStorage.getItem('access_token'))
 
 async function handleLogin() {
   error.value = ''
@@ -22,6 +27,18 @@ async function handleLogin() {
     error.value = 'Невірне ім\'я користувача або пароль'
   } finally {
     loading.value = false
+  }
+}
+
+async function handleDemo() {
+  demoLoading.value = true
+  try {
+    // Lazy-load the demo module (FR-018) so non-demo users pay zero cost.
+    const { activateDemo } = await import('@/modules/demo')
+    activateDemo()
+    router.push('/')
+  } finally {
+    demoLoading.value = false
   }
 }
 </script>
@@ -58,6 +75,15 @@ async function handleLogin() {
         <p v-if="error" class="error">{{ error }}</p>
         <button type="submit" :disabled="loading" class="login-btn">
           {{ loading ? 'Вхід...' : 'Увійти' }}
+        </button>
+        <button
+          v-if="showDemoButton"
+          type="button"
+          :disabled="demoLoading"
+          class="demo-btn"
+          @click="handleDemo"
+        >
+          {{ demoLoading ? 'Завантаження...' : 'Спробувати демо' }}
         </button>
       </form>
     </div>
@@ -152,6 +178,29 @@ async function handleLogin() {
   background: var(--accent);
 }
 .login-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.demo-btn {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.875rem;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.demo-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent);
+}
+.demo-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
