@@ -5,10 +5,10 @@ from typing import Optional
 from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.infrastructure.models.base import BaseModel
+from app.infrastructure.models.base import SoftDeleteModel
 
 
-class HealthMetricModel(BaseModel):
+class HealthMetricModel(SoftDeleteModel):
     __tablename__ = "health_metric"
 
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("user.id"), nullable=False)
@@ -27,4 +27,5 @@ class HealthMetricModel(BaseModel):
         Index("ix_health_metric_date", "date"),
         Index("ix_health_metric_metric_type_id", "metric_type_id"),
         Index("ix_health_metric_user_date", "user_id", "date"),
+        Index("ix_health_metric_user_deleted_at", "user_id", "deleted_at"),
     )

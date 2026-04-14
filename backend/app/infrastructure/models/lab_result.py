@@ -25,6 +25,8 @@ class LabResultModel(SoftDeleteModel):
         Index("ix_lab_result_user_id", "user_id"),
         Index("ix_lab_result_date", "date"),
         Index("ix_lab_result_visit_id", "visit_id"),
+        Index("ix_lab_result_user_date", "user_id", "date"),
+        Index("ix_lab_result_user_deleted_at", "user_id", "deleted_at"),
     )
 
 

@@ -41,4 +41,5 @@ class VisitModel(SoftDeleteModel):
 
     __table_args__ = (
         Index("ix_visit_user_date", "user_id", "date"),
+        Index("ix_visit_user_deleted_at", "user_id", "deleted_at"),
     )

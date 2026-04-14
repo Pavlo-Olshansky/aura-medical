@@ -23,4 +23,6 @@ class VaccinationModel(SoftDeleteModel):
     __table_args__ = (
         Index("ix_vaccination_user_id", "user_id"),
         Index("ix_vaccination_date", "date"),
+        Index("ix_vaccination_user_date", "user_id", "date"),
+        Index("ix_vaccination_user_deleted_at", "user_id", "deleted_at"),
     )

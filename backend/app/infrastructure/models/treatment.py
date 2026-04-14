@@ -20,5 +20,6 @@ class TreatmentModel(SoftDeleteModel):
     __table_args__ = (
         Index("ix_treatment_user_id", "user_id"),
         Index("ix_treatment_user_date_start", "user_id", "date_start"),
+        Index("ix_treatment_user_deleted_at", "user_id", "deleted_at"),
         CheckConstraint("days >= 1", name="ck_treatment_days_positive"),
     )
