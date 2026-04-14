@@ -11,12 +11,13 @@ from app.application.commands import CreateVisitCommand, UpdateVisitCommand, Vis
 from app.application.pagination import calculate_pages
 from app.application.visit_service import VisitAppService
 from app.domain.entities import User
-from app.schemas.visit import VisitListResponse, VisitResponse
+from app.schemas.pagination import PaginatedResponse
+from app.schemas.visit import VisitResponse
 
 router = APIRouter()
 
 
-@router.get("/", response_model=VisitListResponse)
+@router.get("/", response_model=PaginatedResponse[VisitResponse])
 async def list_visits(
     page: int = 1, size: int = 20,
     date_from: Optional[date] = None, date_to: Optional[date] = None,
@@ -31,7 +32,7 @@ async def list_visits(
                           body_region=body_region)
     items, total = await service.list(current_user.id, filters, sort, page, size)
     pages = calculate_pages(total, size)
-    return VisitListResponse(items=[VisitResponse.model_validate(v) for v in items], total=total, page=page, size=size, pages=pages)
+    return PaginatedResponse[VisitResponse](items=[VisitResponse.model_validate(v) for v in items], total=total, page=page, size=size, pages=pages)
 
 
 @router.get("/{visit_id}", response_model=VisitResponse)

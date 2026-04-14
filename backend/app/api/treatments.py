@@ -7,12 +7,13 @@ from app.application.commands import CreateTreatmentCommand, UpdateTreatmentComm
 from app.application.pagination import calculate_pages
 from app.application.treatment_service import TreatmentAppService
 from app.domain.entities import User
-from app.schemas.treatment import TreatmentCreate, TreatmentListResponse, TreatmentResponse, TreatmentUpdate
+from app.schemas.pagination import PaginatedResponse
+from app.schemas.treatment import TreatmentCreate, TreatmentResponse, TreatmentUpdate
 
 router = APIRouter()
 
 
-@router.get("/", response_model=TreatmentListResponse)
+@router.get("/", response_model=PaginatedResponse[TreatmentResponse])
 async def list_treatments(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
@@ -23,7 +24,7 @@ async def list_treatments(
 ):
     items, total = await service.list(current_user.id, status_filter, sort, page, size)
     pages = calculate_pages(total, size)
-    return TreatmentListResponse(items=[TreatmentResponse.model_validate(t) for t in items], total=total, page=page, size=size, pages=pages)
+    return PaginatedResponse[TreatmentResponse](items=[TreatmentResponse.model_validate(t) for t in items], total=total, page=page, size=size, pages=pages)
 
 
 @router.get("/{treatment_id}", response_model=TreatmentResponse)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -39,11 +39,3 @@ class VaccinationResponse(BaseModel):
     status: str
     created: datetime
     updated: datetime
-
-
-class VaccinationListResponse(BaseModel):
-    items: List[VaccinationResponse]
-    total: int
-    page: int
-    size: int
-    pages: int

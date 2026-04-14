@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -32,11 +32,3 @@ class TreatmentResponse(BaseModel):
     updated: datetime
 
     model_config = {"from_attributes": True}
-
-
-class TreatmentListResponse(BaseModel):
-    items: List[TreatmentResponse]
-    total: int
-    page: int
-    size: int
-    pages: int

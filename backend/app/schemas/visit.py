@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -59,11 +59,3 @@ class VisitResponse(BaseModel):
     price: Optional[Decimal] = None
     created: datetime
     updated: datetime
-
-
-class VisitListResponse(BaseModel):
-    items: List[VisitResponse]
-    total: int
-    page: int
-    size: int
-    pages: int

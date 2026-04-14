@@ -11,12 +11,13 @@ from app.application.pagination import calculate_pages
 from app.application.vaccination_service import VaccinationAppService
 from app.domain.entities import User
 from app.domain.exceptions import EntityNotFound
-from app.schemas.vaccination import VaccinationListResponse, VaccinationResponse
+from app.schemas.pagination import PaginatedResponse
+from app.schemas.vaccination import VaccinationResponse
 
 router = APIRouter()
 
 
-@router.get("/", response_model=VaccinationListResponse)
+@router.get("/", response_model=PaginatedResponse[VaccinationResponse])
 async def list_vaccinations(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
@@ -26,7 +27,7 @@ async def list_vaccinations(
 ):
     items, total = await service.list(current_user.id, sort, page, size)
     pages = calculate_pages(total, size)
-    return VaccinationListResponse(
+    return PaginatedResponse[VaccinationResponse](
         items=[VaccinationResponse.model_validate(v) for v in items],
         total=total, page=page, size=size, pages=pages,
     )

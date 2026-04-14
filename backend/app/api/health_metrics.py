@@ -10,9 +10,10 @@ from app.application.pagination import calculate_pages
 from app.domain.entities import User
 from app.domain.exceptions import DomainError, EntityNotFound
 from app.schemas.health_metric import (
-    HealthMetricCreate, HealthMetricListResponse, HealthMetricResponse, HealthMetricUpdate,
+    HealthMetricCreate, HealthMetricResponse, HealthMetricUpdate,
     MetricTrendPoint, MetricTrendResponse,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter()
 
@@ -44,7 +45,7 @@ async def metric_trend(
     )
 
 
-@router.get("/", response_model=HealthMetricListResponse)
+@router.get("/", response_model=PaginatedResponse[HealthMetricResponse])
 async def list_health_metrics(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
@@ -57,7 +58,7 @@ async def list_health_metrics(
 ):
     items, total = await service.list(current_user.id, metric_type_id, date_from, date_to, sort, page, size)
     pages = calculate_pages(total, size)
-    return HealthMetricListResponse(
+    return PaginatedResponse[HealthMetricResponse](
         items=[HealthMetricResponse.model_validate(m) for m in items],
         total=total, page=page, size=size, pages=pages,
     )

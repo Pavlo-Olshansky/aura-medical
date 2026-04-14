@@ -68,14 +68,6 @@ class LabResultListItem(BaseModel):
     updated: datetime
 
 
-class LabResultListResponse(BaseModel):
-    items: List[LabResultListItem]
-    total: int
-    page: int
-    size: int
-    pages: int
-
-
 class BiomarkerTrendPoint(BaseModel):
     date: datetime
     value: Decimal

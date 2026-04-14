@@ -37,14 +37,6 @@ class HealthMetricResponse(BaseModel):
     updated: datetime
 
 
-class HealthMetricListResponse(BaseModel):
-    items: List[HealthMetricResponse]
-    total: int
-    page: int
-    size: int
-    pages: int
-
-
 class MetricTrendPoint(BaseModel):
     date: datetime
     value: Decimal

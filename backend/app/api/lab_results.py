@@ -11,9 +11,10 @@ from app.domain.entities import LabResult, User
 from app.domain.exceptions import EntityNotFound
 from app.schemas.lab_result import (
     BiomarkerTrendPoint, BiomarkerTrendResponse,
-    LabResultCreate, LabResultListItem, LabResultListResponse,
+    LabResultCreate, LabResultListItem,
     LabResultResponse, LabResultUpdate,
 )
+from app.schemas.pagination import PaginatedResponse
 
 router = APIRouter()
 
@@ -47,7 +48,7 @@ async def biomarker_trend(
     )
 
 
-@router.get("/", response_model=LabResultListResponse)
+@router.get("/", response_model=PaginatedResponse[LabResultListItem])
 async def list_lab_results(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
@@ -60,7 +61,7 @@ async def list_lab_results(
 ):
     items, total = await service.list(current_user.id, visit_id, date_from, date_to, sort, page, size)
     pages = calculate_pages(total, size)
-    return LabResultListResponse(
+    return PaginatedResponse[LabResultListItem](
         items=[_to_list_item(lr) for lr in items],
         total=total, page=page, size=size, pages=pages,
     )
