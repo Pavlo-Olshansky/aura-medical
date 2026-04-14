@@ -1,9 +1,9 @@
 import { ref, watch, onMounted, type Ref } from 'vue'
 import { useUrlFilters, type FilterDef } from '@/composables/useUrlFilters'
 
-export interface ListViewConfig {
+export interface ListViewConfig<T extends readonly FilterDef[]> {
   fetchList: (params: Record<string, unknown>) => Promise<void>
-  filters: readonly FilterDef[]
+  filters: T
   defaultSize?: number
   defaultSort?: string
   buildParams?: (
@@ -14,7 +14,7 @@ export interface ListViewConfig {
   ) => Record<string, unknown>
 }
 
-export function useListView(config: ListViewConfig) {
+export function useListView<T extends readonly FilterDef[]>(config: ListViewConfig<T>) {
   const filterResult = useUrlFilters(config.filters)
   const { syncToUrl, clearAll: clearFilters, ...filterRefs } = filterResult
 
@@ -60,15 +60,10 @@ export function useListView(config: ListViewConfig) {
       loading.value = false
     }
     // Sync current page/size/sort back to URL filters
-    if ((filterRefs as Record<string, Ref>).page) {
-      ;(filterRefs as Record<string, Ref>).page.value = page.value
-    }
-    if ((filterRefs as Record<string, Ref>).size) {
-      ;(filterRefs as Record<string, Ref>).size.value = size.value
-    }
-    if ((filterRefs as Record<string, Ref>).sort) {
-      ;(filterRefs as Record<string, Ref>).sort.value = sort.value
-    }
+    const refs = filterRefs as Record<string, Ref>
+    if (refs.page) refs.page.value = page.value
+    if (refs.size) refs.size.value = size.value
+    if (refs.sort) refs.sort.value = sort.value
     syncToUrl()
   }
 

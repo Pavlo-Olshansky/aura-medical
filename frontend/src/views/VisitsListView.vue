@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import Calendar from 'primevue/calendar'
 import Dropdown from 'primevue/dropdown'
-import type { DataTablePageEvent, DataTableSortEvent } from 'primevue/datatable'
+import type { DataTableSortEvent } from 'primevue/datatable'
 import { useVisitsStore } from '@/stores/visits'
 import { useReferencesStore } from '@/stores/references'
 import type { Visit } from '@/types'
 import { formatDate } from '@/utils/dateUtils'
-import { useUrlFilters } from '@/composables/useUrlFilters'
+import { useListView } from '@/composables/useListView'
 
 const router = useRouter()
 const visitsStore = useVisitsStore()
@@ -29,8 +29,6 @@ const filterDefs = [
   { name: 'sort_order', type: 'string', default: 'desc' },
 ] as const
 
-const filters = useUrlFilters(filterDefs)
-
 function formatDateParam(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -38,57 +36,38 @@ function formatDateParam(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-async function loadVisits() {
-  const params: Record<string, any> = {
-    page: filters.page.value,
-    size: filters.size.value,
-    sort_by: 'date',
-    sort_order: filters.sort_order.value,
-  }
-  if (filters.date_from.value) params.date_from = formatDateParam(filters.date_from.value)
-  if (filters.date_to.value) params.date_to = formatDateParam(filters.date_to.value)
-  if (filters.clinic_id.value) params.clinic_id = filters.clinic_id.value
-  if (filters.city_id.value) params.city_id = filters.city_id.value
-  if (filters.procedure_id.value) params.procedure_id = filters.procedure_id.value
-  if (filters.position_id.value) params.position_id = filters.position_id.value
-
-  await visitsStore.fetchList(params)
-}
-
-function onPage(event: DataTablePageEvent) {
-  filters.page.value = event.page + 1
-  filters.size.value = event.rows
-  filters.syncToUrl()
-  loadVisits()
-}
+const { filters, onPage, onSort: _onSort, clearFilters, loadData } = useListView({
+  fetchList: (params) => visitsStore.fetchList(params),
+  filters: filterDefs,
+  defaultSort: '-date',
+  buildParams: (filterValues, page, size, sort) => {
+    const params: Record<string, unknown> = {
+      page,
+      size,
+      sort_by: 'date',
+      sort_order: sort.startsWith('-') ? 'desc' : 'asc',
+    }
+    if (filterValues.date_from) params.date_from = formatDateParam(filterValues.date_from as Date)
+    if (filterValues.date_to) params.date_to = formatDateParam(filterValues.date_to as Date)
+    if (filterValues.clinic_id) params.clinic_id = filterValues.clinic_id
+    if (filterValues.city_id) params.city_id = filterValues.city_id
+    if (filterValues.procedure_id) params.procedure_id = filterValues.procedure_id
+    if (filterValues.position_id) params.position_id = filterValues.position_id
+    return params
+  },
+})
 
 function onSort(event: DataTableSortEvent) {
   filters.sort_order.value = event.sortOrder === 1 ? 'asc' : 'desc'
-  filters.syncToUrl()
-  loadVisits()
+  _onSort({ sortField: String(event.sortField ?? 'date'), sortOrder: event.sortOrder ?? -1 })
 }
 
 function onRowClick(event: { data: Visit }) {
   router.push({ name: 'visit-detail', params: { id: event.data.id } })
 }
 
-function clearFilters() {
-  filters.clearAll()
-  loadVisits()
-}
-
-watch(
-  [filters.date_from, filters.date_to, filters.clinic_id, filters.city_id, filters.procedure_id, filters.position_id],
-  () => {
-    filters.page.value = 1
-    filters.syncToUrl()
-    loadVisits()
-  },
-)
-
-onMounted(async () => {
-  await referencesStore.fetchAll()
-  await loadVisits()
+onMounted(() => {
+  referencesStore.fetchAll()
 })
 </script>
 

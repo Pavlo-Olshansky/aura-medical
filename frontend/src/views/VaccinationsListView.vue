@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
-import type { DataTablePageEvent } from 'primevue/datatable'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import type { Vaccination } from '@/types'
 import { formatDate } from '@/utils/dateUtils'
+import { useListView } from '@/composables/useListView'
 
 const router = useRouter()
 const vaccinationsStore = useVaccinationsStore()
 
-const currentPage = ref(1)
-const pageSize = ref(20)
+const filterDefs = [
+  { name: 'page', type: 'number', default: 1 },
+  { name: 'size', type: 'number', default: 20 },
+] as const
 
 function statusLabel(status: string): string {
   switch (status) {
@@ -34,29 +35,21 @@ function statusSeverity(status: string): string {
   }
 }
 
-async function loadVaccinations() {
-  const params: Record<string, any> = {
-    page: currentPage.value,
-    size: pageSize.value,
+const { onPage, size: pageSize } = useListView({
+  fetchList: (params) => vaccinationsStore.fetchList(params),
+  filters: filterDefs,
+  defaultSort: '-date',
+  buildParams: (_filterValues, page, size, sort) => ({
+    page,
+    size,
     sort_by: 'date',
-    sort_order: 'desc',
-  }
-  await vaccinationsStore.fetchList(params)
-}
-
-function onPage(event: DataTablePageEvent) {
-  currentPage.value = event.page + 1
-  pageSize.value = event.rows
-  loadVaccinations()
-}
+    sort_order: sort.startsWith('-') ? 'desc' : 'asc',
+  }),
+})
 
 function onRowClick(event: { data: Vaccination }) {
   router.push({ name: 'vaccination-edit', params: { id: event.data.id } })
 }
-
-onMounted(() => {
-  loadVaccinations()
-})
 </script>
 
 <template>

@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import Calendar from 'primevue/calendar'
 import Tag from 'primevue/tag'
-import type { DataTablePageEvent } from 'primevue/datatable'
 import { useLabResultsStore } from '@/stores/labResults'
 import type { LabResult } from '@/types'
 import { formatDate } from '@/utils/dateUtils'
-import { useUrlFilters } from '@/composables/useUrlFilters'
+import { useListView } from '@/composables/useListView'
 
 const router = useRouter()
 const labResultsStore = useLabResultsStore()
@@ -22,8 +20,6 @@ const filterDefs = [
   { name: 'size', type: 'number', default: 20 },
 ] as const
 
-const filters = useUrlFilters(filterDefs)
-
 function formatDateParam(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -31,44 +27,26 @@ function formatDateParam(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-async function loadLabResults() {
-  const params: Record<string, any> = {
-    page: filters.page.value,
-    size: filters.size.value,
-    sort_by: 'date',
-    sort_order: 'desc',
-  }
-  if (filters.date_from.value) params.date_from = formatDateParam(filters.date_from.value)
-  if (filters.date_to.value) params.date_to = formatDateParam(filters.date_to.value)
-
-  await labResultsStore.fetchList(params)
-}
-
-function onPage(event: DataTablePageEvent) {
-  filters.page.value = event.page + 1
-  filters.size.value = event.rows
-  filters.syncToUrl()
-  loadLabResults()
-}
+const { filters, onPage, clearFilters } = useListView({
+  fetchList: (params) => labResultsStore.fetchList(params),
+  filters: filterDefs,
+  defaultSort: '-date',
+  buildParams: (filterValues, page, size, sort) => {
+    const params: Record<string, unknown> = {
+      page,
+      size,
+      sort_by: 'date',
+      sort_order: sort.startsWith('-') ? 'desc' : 'asc',
+    }
+    if (filterValues.date_from) params.date_from = formatDateParam(filterValues.date_from as Date)
+    if (filterValues.date_to) params.date_to = formatDateParam(filterValues.date_to as Date)
+    return params
+  },
+})
 
 function onRowClick(event: { data: LabResult }) {
   router.push({ name: 'lab-result-detail', params: { id: event.data.id } })
 }
-
-function clearFilters() {
-  filters.clearAll()
-  loadLabResults()
-}
-
-watch([filters.date_from, filters.date_to], () => {
-  filters.page.value = 1
-  filters.syncToUrl()
-  loadLabResults()
-})
-
-onMounted(() => {
-  loadLabResults()
-})
 </script>
 
 <template>

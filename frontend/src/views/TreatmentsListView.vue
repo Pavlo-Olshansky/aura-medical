@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
-import type { DataTablePageEvent } from 'primevue/datatable'
 import { useTreatmentsStore } from '@/stores/treatments'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { formatDate } from '@/utils/dateUtils'
-import { useUrlFilters } from '@/composables/useUrlFilters'
+import { useListView } from '@/composables/useListView'
 
 const router = useRouter()
 const treatmentsStore = useTreatmentsStore()
@@ -20,43 +18,24 @@ const filterDefs = [
   { name: 'size', type: 'number', default: 20 },
 ] as const
 
-const filters = useUrlFilters(filterDefs)
-
 const statusOptions = [
   { label: 'В процесі', value: 'active' },
   { label: 'Готово', value: 'completed' },
 ]
 
-async function loadTreatments() {
-  const params: Record<string, any> = {
-    page: filters.page.value,
-    size: filters.size.value,
-  }
-  if (filters.status.value) params.status = filters.status.value
-
-  await treatmentsStore.fetchList(params)
-}
-
-function onPage(event: DataTablePageEvent) {
-  filters.page.value = event.page + 1
-  filters.size.value = event.rows
-  filters.syncToUrl()
-  loadTreatments()
-}
+const { filters, onPage } = useListView({
+  fetchList: (params) => treatmentsStore.fetchList(params),
+  filters: filterDefs,
+  buildParams: (filterValues, page, size) => {
+    const params: Record<string, unknown> = { page, size }
+    if (filterValues.status) params.status = filterValues.status
+    return params
+  },
+})
 
 function onRowClick(event: { data: { id: number } }) {
   router.push({ name: 'treatment-edit', params: { id: event.data.id } })
 }
-
-watch(filters.status, () => {
-  filters.page.value = 1
-  filters.syncToUrl()
-  loadTreatments()
-})
-
-onMounted(() => {
-  loadTreatments()
-})
 </script>
 
 <template>
