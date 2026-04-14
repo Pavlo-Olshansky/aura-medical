@@ -117,7 +117,7 @@ onMounted(async () => {
       cityId.value = visit.city?.id ?? null
       comment.value = visit.comment || ''
       link.value = visit.link || ''
-      bodyRegion.value = (visit as any).body_region || null
+      bodyRegion.value = visit.body_region || null
       price.value = visit.price ?? null
     }
   }

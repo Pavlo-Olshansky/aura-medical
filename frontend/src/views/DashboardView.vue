@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import type { DataTablePageEvent } from 'primevue/datatable'
 import { apiClient } from '@/api/client'
 import { getWeatherSummary } from '@/api/weather'
-import type { DashboardData, Visit, Vaccination, PaginatedResponse } from '@/types'
+import type { DashboardData, Visit, Treatment, Vaccination, PaginatedResponse } from '@/types'
 import type { WeatherSummary } from '@/types/weather'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import type { BodyRegionKey } from '@/components/body-map/types'
@@ -30,7 +30,7 @@ const totalVisits = ref(0)
 const activeTreatmentsCount = ref(0)
 const totalTreatments = ref(0)
 const recentVisits = ref<Visit[]>([])
-const activeTreatments = ref<any[]>([])
+const activeTreatments = ref<Treatment[]>([])
 
 // Vaccination data
 const upcomingVaccinations = ref<Vaccination[]>([])

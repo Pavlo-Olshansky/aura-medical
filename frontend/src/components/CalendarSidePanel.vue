@@ -16,6 +16,7 @@ import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
 import { BODY_REGION_OPTIONS } from '@/components/body-map/body-regions'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
+import { getErrorMessage } from '@/types/errors'
 
 const props = defineProps<{
   visible: boolean
@@ -92,7 +93,7 @@ watch(() => props.visible, async (newVal) => {
       cityId.value = v.city?.id ?? null
       comment.value = v.comment || ''
       link.value = v.link || ''
-      bodyRegion.value = (v as any).body_region || null
+      bodyRegion.value = v.body_region || null
       price.value = v.price ?? null
     }
   } else {
@@ -157,8 +158,8 @@ async function handleSubmit() {
       await visitsStore.create(formData)
     }
     emit('saved')
-  } catch (e: any) {
-    errorMessage.value = e.response?.data?.detail || 'Помилка збереження'
+  } catch (e: unknown) {
+    errorMessage.value = getErrorMessage(e, 'Помилка збереження')
   } finally {
     saving.value = false
   }
@@ -170,8 +171,8 @@ async function handleDelete() {
   try {
     await visitsStore.remove(props.visitId)
     emit('deleted')
-  } catch (e: any) {
-    errorMessage.value = e.response?.data?.detail || 'Помилка видалення'
+  } catch (e: unknown) {
+    errorMessage.value = getErrorMessage(e, 'Помилка видалення')
   } finally {
     deleting.value = false
   }

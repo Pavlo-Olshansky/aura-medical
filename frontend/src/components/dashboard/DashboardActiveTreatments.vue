@@ -3,9 +3,10 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { formatDate } from '@/utils/dateUtils'
+import type { Treatment } from '@/types'
 
 defineProps<{
-  activeTreatments: any[]
+  activeTreatments: Treatment[]
   loading: boolean
 }>()
 </script>

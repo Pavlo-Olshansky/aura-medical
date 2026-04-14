@@ -80,7 +80,7 @@ export function useUrlFilters<T extends readonly FilterDef[]>(
 
   function clearAll() {
     for (const filter of filters) {
-      refs[filter.name]!.value = filter.default as any
+      refs[filter.name]!.value = filter.default
     }
     router.replace({ query: {} })
   }

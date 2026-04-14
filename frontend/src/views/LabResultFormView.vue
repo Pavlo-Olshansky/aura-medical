@@ -7,11 +7,12 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
 import AutoComplete from 'primevue/autocomplete'
+import type { AutoCompleteOptionSelectEvent } from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import { useLabResultsStore } from '@/stores/labResults'
 import { useVisitsStore } from '@/stores/visits'
 import { useAuthStore, isDemoMode } from '@/stores/auth'
-import type { BiomarkerReference } from '@/types'
+import type { BiomarkerReference, Visit } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
 import { useFormSubmit } from '@/composables/useFormSubmit'
@@ -204,7 +205,7 @@ onMounted(async () => {
             id="visit"
             v-model="visitId"
             :options="visitsStore.items"
-            :optionLabel="(v: any) => formatVisitLabel(v)"
+            :optionLabel="(v: Visit) => formatVisitLabel(v)"
             optionValue="id"
             placeholder="Оберіть візит"
             showClear
@@ -245,7 +246,7 @@ onMounted(async () => {
               optionLabel="name"
               placeholder="Назва біомаркера"
               @complete="searchBiomarkers"
-              @item-select="(e: any) => onBiomarkerSelect(index, e.value)"
+              @item-select="(e: AutoCompleteOptionSelectEvent) => onBiomarkerSelect(index, e.value)"
               :forceSelection="false"
             />
           </div>

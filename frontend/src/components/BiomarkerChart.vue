@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import '@/utils/chartSetup'
 import Chart from 'primevue/chart'
 import { formatDate } from '@/utils/dateUtils'
+import type { AnnotationOptions } from 'chartjs-plugin-annotation'
 
 interface DataPoint {
   date: string
@@ -57,7 +58,7 @@ const chartOptions = computed(() => {
   const refMin = sorted.find((p) => p.ref_min != null)?.ref_min ?? null
   const refMax = sorted.find((p) => p.ref_max != null)?.ref_max ?? null
 
-  const annotations: Record<string, any> = {}
+  const annotations: Record<string, AnnotationOptions> = {}
   if (refMin != null && refMax != null) {
     annotations.refRange = {
       type: 'box',
