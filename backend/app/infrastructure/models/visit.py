@@ -33,7 +33,7 @@ class VisitModel(SoftDeleteModel):
     body_region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
     price: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
 
-    user = relationship("UserModel", lazy="selectin")
+    user = relationship("UserModel", lazy="select")
     position = relationship("PositionModel", lazy="selectin")
     procedure = relationship("ProcedureModel", lazy="selectin")
     clinic = relationship("ClinicModel", lazy="selectin")
