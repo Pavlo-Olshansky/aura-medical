@@ -11,6 +11,22 @@ const props = defineProps<{
 
 const riskColor = computed(() => getUvRiskColor(props.data.risk_level))
 
+const UV_ZONES = [
+  { min: 0, max: 3, color: 'rgba(34, 197, 94, 0.08)', label: 'Низький' },
+  { min: 3, max: 6, color: 'rgba(234, 179, 8, 0.08)', label: 'Помірний' },
+  { min: 6, max: 8, color: 'rgba(249, 115, 22, 0.10)', label: 'Високий' },
+  { min: 8, max: 11, color: 'rgba(239, 68, 68, 0.10)', label: 'Дуже високий' },
+  { min: 11, max: 14, color: 'rgba(168, 85, 247, 0.12)', label: 'Екстремальний' },
+]
+
+const UV_ZONE_LABEL_COLORS: Record<string, string> = {
+  'Низький': '#22c55e',
+  'Помірний': '#eab308',
+  'Високий': '#f97316',
+  'Дуже високий': '#ef4444',
+  'Екстремальний': '#a855f7',
+}
+
 const chartData = computed(() => {
   const forecast = props.data.forecast.slice(0, 24)
   return {
@@ -28,7 +44,34 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = createWeatherChartOptions({ yMin: 0, maxXTicks: 8 })
+const chartOptions = computed(() => {
+  const maxValue = Math.max(...props.data.forecast.slice(0, 24).map(p => p.value), props.data.value)
+  const yMax = Math.max(Math.ceil(maxValue) + 1, 4)
+
+  const annotations: Record<string, unknown> = {}
+  for (const zone of UV_ZONES) {
+    if (zone.min >= yMax) continue
+    const boxMax = Math.min(zone.max, yMax)
+    annotations[`zone_${zone.min}`] = {
+      type: 'box',
+      yMin: zone.min,
+      yMax: boxMax,
+      backgroundColor: zone.color,
+      borderWidth: 0,
+      label: {
+        display: boxMax - zone.min >= 1,
+        content: zone.label,
+        position: { x: 'end', y: 'center' },
+        color: UV_ZONE_LABEL_COLORS[zone.label],
+        font: { size: 9, weight: 'normal' },
+        backgroundColor: 'transparent',
+        padding: { right: 4 },
+      },
+    }
+  }
+
+  return createWeatherChartOptions({ yMin: 0, yMax, yStepSize: 1, maxXTicks: 8, annotations })
+})
 </script>
 
 <template>
