@@ -14,17 +14,30 @@ import { useAuthStore, isDemoMode } from '@/stores/auth'
 import type { BiomarkerReference } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
-import { useToast } from 'primevue/usetoast'
+import { useFormSubmit } from '@/composables/useFormSubmit'
+
+interface LabResultPayload {
+  date: string
+  visit_id: number | null
+  notes: string | null
+  entries: {
+    biomarker_id: number | null
+    biomarker_name: string
+    value: number
+    unit: string
+    ref_min: number | null
+    ref_max: number | null
+  }[]
+}
 
 const route = useRoute()
 const router = useRouter()
 const labResultsStore = useLabResultsStore()
 const visitsStore = useVisitsStore()
 const authStore = useAuthStore()
-const toast = useToast()
 
-const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
-const isEdit = computed(() => editId.value !== null)
+const editId = computed(() => (route.params.id ? Number(route.params.id) : undefined))
+const isEdit = computed(() => editId.value !== undefined)
 const pageTitle = computed(() => (isEdit.value ? 'Редагувати аналіз' : 'Новий аналіз'))
 
 const date = ref<Date | null>(null)
@@ -43,9 +56,40 @@ interface EntryRow {
 const entries = ref<EntryRow[]>([])
 const filteredBiomarkers = ref<BiomarkerReference[]>([])
 
-const saving = ref(false)
-const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+const { submitting: saving, error: errorMessage, handleSubmit } = useFormSubmit<LabResultPayload>({
+  store: {
+    create: (data) => labResultsStore.create(data),
+    update: (id, data) => labResultsStore.update(id, data),
+  },
+  buildPayload: () => {
+    const validEntries = entries.value.filter((e) => e.biomarkerName.trim() && e.value != null)
+    return {
+      date: formatDateForApi(date.value!),
+      visit_id: visitId.value,
+      notes: notes.value || null,
+      entries: validEntries.map((e) => ({
+        biomarker_id: e.biomarkerRef?.id || null,
+        biomarker_name: e.biomarkerName,
+        value: e.value!,
+        unit: e.unit,
+        ref_min: e.ref_min,
+        ref_max: e.ref_max,
+      })),
+    }
+  },
+  validate: () => {
+    if (!date.value) return 'Дата є обов\'язковою'
+    const validEntries = entries.value.filter((e) => e.biomarkerName.trim() && e.value != null)
+    if (validEntries.length === 0) return 'Додайте хоча б один показник'
+    return null
+  },
+  successRoute: { name: 'lab-results' },
+  entityLabel: 'Аналіз',
+  isEdit,
+  editId,
+})
 
 useEnterSubmit(handleSubmit)
 
@@ -99,56 +143,6 @@ function onBiomarkerSelect(index: number, biomarker: BiomarkerReference) {
 async function searchBiomarkers(event: { query: string }) {
   await labResultsStore.fetchBiomarkerReferences(event.query)
   filteredBiomarkers.value = labResultsStore.biomarkerReferences
-}
-
-async function handleSubmit() {
-  if (!date.value) {
-    errorMessage.value = 'Дата є обов\'язковою'
-    return
-  }
-
-  const validEntries = entries.value.filter((e) => e.biomarkerName.trim() && e.value != null)
-  if (validEntries.length === 0) {
-    errorMessage.value = 'Додайте хоча б один показник'
-    return
-  }
-
-  saving.value = true
-  errorMessage.value = ''
-
-  const payload = {
-    date: formatDateForApi(date.value),
-    visit_id: visitId.value,
-    notes: notes.value || null,
-    entries: validEntries.map((e) => ({
-      biomarker_id: e.biomarkerRef?.id || null,
-      biomarker_name: e.biomarkerName,
-      value: e.value!,
-      unit: e.unit,
-      ref_min: e.ref_min,
-      ref_max: e.ref_max,
-    })),
-  }
-
-  try {
-    if (isEdit.value && editId.value) {
-      await labResultsStore.update(editId.value, payload)
-    } else {
-      await labResultsStore.create(payload)
-    }
-    if (isDemoMode.value) {
-      toast.add({
-        severity: 'info',
-        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
-        life: 3000,
-      })
-    }
-    router.push({ name: 'lab-results' })
-  } catch (e: any) {
-    errorMessage.value = e.response?.data?.detail || 'Помилка збереження аналізу'
-  } finally {
-    saving.value = false
-  }
 }
 
 onMounted(async () => {

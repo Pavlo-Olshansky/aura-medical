@@ -10,20 +10,17 @@ import Button from 'primevue/button'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { useVaccinationsStore } from '@/stores/vaccinations'
 import { isDemoMode } from '@/stores/auth'
-import { useConfirm } from 'primevue/useconfirm'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
-import { useToast } from 'primevue/usetoast'
+import { useFormSubmit } from '@/composables/useFormSubmit'
 
 const route = useRoute()
 const router = useRouter()
 const vaccinationsStore = useVaccinationsStore()
-const confirm = useConfirm()
-const toast = useToast()
 
-const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
-const isEdit = computed(() => editId.value !== null)
+const editId = computed(() => (route.params.id ? Number(route.params.id) : undefined))
+const isEdit = computed(() => editId.value !== undefined)
 const pageTitle = computed(() => (isEdit.value ? 'Редагувати вакцинацію' : 'Нова вакцинація'))
 
 const vaccineName = ref('')
@@ -35,9 +32,37 @@ const nextDueDate = ref<Date | null>(null)
 const notes = ref('')
 const selectedFile = ref<File | null>(null)
 
-const saving = ref(false)
-const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+const { submitting: saving, error: errorMessage, handleSubmit, handleDelete } = useFormSubmit<FormData>({
+  store: {
+    create: (data) => vaccinationsStore.create(data),
+    update: (id, data) => vaccinationsStore.update(id, data),
+    remove: (id) => vaccinationsStore.remove(id),
+  },
+  buildPayload: () => {
+    const formData = new FormData()
+    formData.append('vaccine_name', vaccineName.value)
+    formData.append('date', formatDateForApi(date.value!))
+    formData.append('dose_number', String(doseNumber.value!))
+    if (manufacturer.value) formData.append('manufacturer', manufacturer.value)
+    if (lotNumber.value) formData.append('lot_number', lotNumber.value)
+    if (nextDueDate.value) formData.append('next_due_date', formatDateForApi(nextDueDate.value))
+    if (notes.value) formData.append('notes', notes.value)
+    if (selectedFile.value) formData.append('document', selectedFile.value)
+    return formData
+  },
+  validate: () => {
+    if (!vaccineName.value.trim()) return 'Назва вакцини є обов\'язковою'
+    if (!date.value) return 'Дата є обов\'язковою'
+    if (!doseNumber.value || doseNumber.value < 1) return 'Номер дози має бути більше 0'
+    return null
+  },
+  successRoute: { name: 'vaccinations' },
+  entityLabel: 'Вакцинація',
+  isEdit,
+  editId,
+})
 
 useEnterSubmit(handleSubmit)
 
@@ -49,73 +74,6 @@ function onFileSelect(event: FileUploadSelectEvent) {
 
 function onFileClear() {
   selectedFile.value = null
-}
-
-async function handleSubmit() {
-  if (!vaccineName.value.trim()) {
-    errorMessage.value = 'Назва вакцини є обов\'язковою'
-    return
-  }
-  if (!date.value) {
-    errorMessage.value = 'Дата є обов\'язковою'
-    return
-  }
-  if (!doseNumber.value || doseNumber.value < 1) {
-    errorMessage.value = 'Номер дози має бути більше 0'
-    return
-  }
-
-  saving.value = true
-  errorMessage.value = ''
-
-  const formData = new FormData()
-  formData.append('vaccine_name', vaccineName.value)
-  formData.append('date', formatDateForApi(date.value))
-  formData.append('dose_number', String(doseNumber.value))
-  if (manufacturer.value) formData.append('manufacturer', manufacturer.value)
-  if (lotNumber.value) formData.append('lot_number', lotNumber.value)
-  if (nextDueDate.value) formData.append('next_due_date', formatDateForApi(nextDueDate.value))
-  if (notes.value) formData.append('notes', notes.value)
-  if (selectedFile.value) formData.append('document', selectedFile.value)
-
-  try {
-    if (isEdit.value && editId.value) {
-      await vaccinationsStore.update(editId.value, formData)
-    } else {
-      await vaccinationsStore.create(formData)
-    }
-    if (isDemoMode.value) {
-      toast.add({
-        severity: 'info',
-        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
-        life: 3000,
-      })
-    }
-    router.push({ name: 'vaccinations' })
-  } catch (e: any) {
-    errorMessage.value = e.response?.data?.detail || 'Помилка збереження вакцинації'
-  } finally {
-    saving.value = false
-  }
-}
-
-async function handleDelete() {
-  if (!editId.value) return
-  confirm.require({
-    message: 'Ви впевнені, що хочете видалити цю вакцинацію?',
-    header: 'Підтвердження видалення',
-    icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Видалити',
-    rejectLabel: 'Скасувати',
-    acceptClass: 'p-button-danger',
-    accept: async () => {
-      await vaccinationsStore.remove(editId.value!)
-      if (isDemoMode.value) {
-        toast.add({ severity: 'info', summary: 'Видалено (тимчасово)', life: 3000 })
-      }
-      router.push({ name: 'vaccinations' })
-    },
-  })
 }
 
 onMounted(async () => {

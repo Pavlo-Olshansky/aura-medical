@@ -8,20 +8,24 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import { useTreatmentsStore } from '@/stores/treatments'
 import { isDemoMode } from '@/stores/auth'
-import { useConfirm } from 'primevue/useconfirm'
 import AppConfirmDialog from '@/components/AppConfirmDialog.vue'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
-import { useToast } from 'primevue/usetoast'
+import { useFormSubmit } from '@/composables/useFormSubmit'
+
+interface TreatmentPayload {
+  name: string
+  date_start: string
+  days: number
+  receipt: string
+}
 
 const route = useRoute()
 const router = useRouter()
 const treatmentsStore = useTreatmentsStore()
-const confirm = useConfirm()
-const toast = useToast()
 
-const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
-const isEdit = computed(() => editId.value !== null)
+const editId = computed(() => (route.params.id ? Number(route.params.id) : undefined))
+const isEdit = computed(() => editId.value !== undefined)
 const pageTitle = computed(() => (isEdit.value ? 'Редагувати лікування' : 'Нове лікування'))
 
 const name = ref('')
@@ -29,75 +33,33 @@ const dateStart = ref<Date | null>(null)
 const days = ref<number | null>(null)
 const receipt = ref('')
 
-const saving = ref(false)
-const errorMessage = ref('')
 const textareaFocused = ref(false)
 
-useEnterSubmit(handleSubmit)
-
-async function handleSubmit() {
-  if (!name.value.trim()) {
-    errorMessage.value = 'Назва є обов\'язковою'
-    return
-  }
-  if (!dateStart.value) {
-    errorMessage.value = 'Дата початку є обов\'язковою'
-    return
-  }
-  if (!days.value || days.value < 1) {
-    errorMessage.value = 'Тривалість має бути більше 0'
-    return
-  }
-
-  saving.value = true
-  errorMessage.value = ''
-
-  const payload = {
+const { submitting: saving, error: errorMessage, handleSubmit, handleDelete } = useFormSubmit<TreatmentPayload>({
+  store: {
+    create: (data) => treatmentsStore.create(data),
+    update: (id, data) => treatmentsStore.update(id, data),
+    remove: (id) => treatmentsStore.remove(id),
+  },
+  buildPayload: () => ({
     name: name.value,
-    date_start: formatDateForApi(dateStart.value),
-    days: days.value,
+    date_start: formatDateForApi(dateStart.value!),
+    days: days.value!,
     receipt: receipt.value,
-  }
+  }),
+  validate: () => {
+    if (!name.value.trim()) return 'Назва є обов\'язковою'
+    if (!dateStart.value) return 'Дата початку є обов\'язковою'
+    if (!days.value || days.value < 1) return 'Тривалість має бути більше 0'
+    return null
+  },
+  successRoute: { name: 'treatments' },
+  entityLabel: 'Лікування',
+  isEdit,
+  editId,
+})
 
-  try {
-    if (isEdit.value && editId.value) {
-      await treatmentsStore.update(editId.value, payload)
-    } else {
-      await treatmentsStore.create(payload)
-    }
-    if (isDemoMode.value) {
-      toast.add({
-        severity: 'info',
-        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
-        life: 3000,
-      })
-    }
-    router.push({ name: 'treatments' })
-  } catch (e: any) {
-    errorMessage.value = e.response?.data?.detail || 'Помилка збереження лікування'
-  } finally {
-    saving.value = false
-  }
-}
-
-async function handleDelete() {
-  if (!editId.value) return
-  confirm.require({
-    message: 'Ви впевнені, що хочете видалити це лікування?',
-    header: 'Підтвердження видалення',
-    icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Видалити',
-    rejectLabel: 'Скасувати',
-    acceptClass: 'p-button-danger',
-    accept: async () => {
-      await treatmentsStore.remove(editId.value!)
-      if (isDemoMode.value) {
-        toast.add({ severity: 'info', summary: 'Видалено (тимчасово)', life: 3000 })
-      }
-      router.push({ name: 'treatments' })
-    },
-  })
-}
+useEnterSubmit(handleSubmit)
 
 onMounted(async () => {
   if (isEdit.value && editId.value) {

@@ -15,16 +15,15 @@ import { isDemoMode } from '@/stores/auth'
 import { BODY_REGION_OPTIONS, SPECIALTY_REGION_MAP } from '@/components/body-map/body-regions'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
-import { useToast } from 'primevue/usetoast'
+import { useFormSubmit } from '@/composables/useFormSubmit'
 
 const route = useRoute()
 const router = useRouter()
 const visitsStore = useVisitsStore()
 const referencesStore = useReferencesStore()
-const toast = useToast()
 
-const editId = computed(() => (route.params.id ? Number(route.params.id) : null))
-const isEdit = computed(() => editId.value !== null)
+const editId = computed(() => (route.params.id ? Number(route.params.id) : undefined))
+const isEdit = computed(() => editId.value !== undefined)
 const pageTitle = computed(() => (isEdit.value ? 'Редагувати візит' : 'Новий візит'))
 
 const date = ref<Date | null>(null)
@@ -40,9 +39,38 @@ const bodyRegion = ref<string | null>(null)
 const price = ref<number | null>(null)
 const selectedFile = ref<File | null>(null)
 
-const saving = ref(false)
-const errorMessage = ref('')
 const textareaFocused = ref(false)
+
+const { submitting: saving, error: errorMessage, handleSubmit } = useFormSubmit<FormData>({
+  store: {
+    create: (data) => visitsStore.create(data),
+    update: (id, data) => visitsStore.update(id, data),
+  },
+  buildPayload: () => {
+    const formData = new FormData()
+    formData.append('date', formatDateTimeForApi(date.value!))
+    if (positionId.value) formData.append('position_id', String(positionId.value))
+    if (doctor.value) formData.append('doctor', doctor.value)
+    if (procedureId.value) formData.append('procedure_id', String(procedureId.value))
+    if (procedureDetails.value) formData.append('procedure_details', procedureDetails.value)
+    if (clinicId.value) formData.append('clinic_id', String(clinicId.value))
+    if (cityId.value) formData.append('city_id', String(cityId.value))
+    if (comment.value) formData.append('comment', comment.value)
+    if (link.value) formData.append('link', link.value)
+    if (bodyRegion.value) formData.append('body_region', bodyRegion.value)
+    if (price.value !== null) formData.append('price', String(price.value))
+    if (selectedFile.value) formData.append('document', selectedFile.value)
+    return formData
+  },
+  validate: () => {
+    if (!date.value) return 'Дата є обов\'язковою'
+    return null
+  },
+  successRoute: { name: 'visits' },
+  entityLabel: 'Візит',
+  isEdit,
+  editId,
+})
 
 useEnterSubmit(handleSubmit)
 
@@ -65,50 +93,6 @@ function onFileSelect(event: FileUploadSelectEvent) {
 
 function onFileClear() {
   selectedFile.value = null
-}
-
-async function handleSubmit() {
-  if (!date.value) {
-    errorMessage.value = 'Дата є обов\'язковою'
-    return
-  }
-
-  saving.value = true
-  errorMessage.value = ''
-
-  const formData = new FormData()
-  formData.append('date', formatDateTimeForApi(date.value))
-  if (positionId.value) formData.append('position_id', String(positionId.value))
-  if (doctor.value) formData.append('doctor', doctor.value)
-  if (procedureId.value) formData.append('procedure_id', String(procedureId.value))
-  if (procedureDetails.value) formData.append('procedure_details', procedureDetails.value)
-  if (clinicId.value) formData.append('clinic_id', String(clinicId.value))
-  if (cityId.value) formData.append('city_id', String(cityId.value))
-  if (comment.value) formData.append('comment', comment.value)
-  if (link.value) formData.append('link', link.value)
-  if (bodyRegion.value) formData.append('body_region', bodyRegion.value)
-  if (price.value !== null) formData.append('price', String(price.value))
-  if (selectedFile.value) formData.append('document', selectedFile.value)
-
-  try {
-    if (isEdit.value && editId.value) {
-      await visitsStore.update(editId.value, formData)
-    } else {
-      await visitsStore.create(formData)
-    }
-    if (isDemoMode.value) {
-      toast.add({
-        severity: 'info',
-        summary: isEdit.value ? 'Змінено (тимчасово)' : 'Збережено в демо-режимі (тимчасово)',
-        life: 3000,
-      })
-    }
-    router.push({ name: 'visits' })
-  } catch (e: any) {
-    errorMessage.value = e.response?.data?.detail || 'Помилка збереження візиту'
-  } finally {
-    saving.value = false
-  }
 }
 
 onMounted(async () => {
