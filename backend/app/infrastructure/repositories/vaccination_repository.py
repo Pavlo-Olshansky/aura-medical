@@ -2,23 +2,19 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.domain.entities import Vaccination, KYIV_TZ
 from app.infrastructure.models.vaccination import VaccinationModel
+from app.infrastructure.repositories.base_repository import BaseQueryRepository
 
 
-class SqlAlchemyVaccinationRepository:
-    def __init__(self, session: AsyncSession):
-        self._session = session
+class SqlAlchemyVaccinationRepository(BaseQueryRepository[VaccinationModel, Vaccination]):
+    model_class = VaccinationModel
 
     async def get_by_id(self, vaccination_id: int, user_id: int) -> Optional[Vaccination]:
         result = await self._session.execute(
-            select(VaccinationModel).where(
+            self._base_query().where(
                 VaccinationModel.id == vaccination_id,
                 VaccinationModel.user_id == user_id,
-                VaccinationModel.deleted_at.is_(None),
             )
         )
         model = result.scalar_one_or_none()
@@ -32,12 +28,12 @@ class SqlAlchemyVaccinationRepository:
         size: int = 20,
     ) -> tuple[list[Vaccination], int]:
         query = (
-            select(VaccinationModel)
-            .where(VaccinationModel.deleted_at.is_(None), VaccinationModel.user_id == user_id)
+            self._base_query()
+            .where(VaccinationModel.user_id == user_id)
         )
         count_query = (
-            select(func.count()).select_from(VaccinationModel)
-            .where(VaccinationModel.deleted_at.is_(None), VaccinationModel.user_id == user_id)
+            self._base_count()
+            .where(VaccinationModel.user_id == user_id)
         )
 
         sort_map = {
@@ -46,11 +42,10 @@ class SqlAlchemyVaccinationRepository:
             "created": VaccinationModel.created,
             "-created": VaccinationModel.created.desc(),
         }
-        query = query.order_by(sort_map.get(sort, VaccinationModel.date.desc()))
+        query = self._apply_sort(query, sort, sort_map)
 
         total = (await self._session.execute(count_query)).scalar() or 0
-        offset = (page - 1) * size
-        query = query.offset(offset).limit(size)
+        query = self._apply_pagination(query, page, size)
 
         result = await self._session.execute(query)
         models = result.scalars().all()
@@ -75,17 +70,14 @@ class SqlAlchemyVaccinationRepository:
                 notes=vaccination.notes,
                 document_path=vaccination.document_path,
             )
-            self._session.add(model)
-        await self._session.commit()
-        await self._session.refresh(model)
+        model = await self._save_and_refresh(model)
         return self._to_entity(model)
 
     async def list_upcoming(self, user_id: int) -> list[Vaccination]:
         now = datetime.now(KYIV_TZ)
         result = await self._session.execute(
-            select(VaccinationModel).where(
+            self._base_query().where(
                 VaccinationModel.user_id == user_id,
-                VaccinationModel.deleted_at.is_(None),
                 VaccinationModel.next_due_date.isnot(None),
                 VaccinationModel.next_due_date > now,
             ).order_by(VaccinationModel.next_due_date)
@@ -95,9 +87,8 @@ class SqlAlchemyVaccinationRepository:
     async def list_overdue(self, user_id: int) -> list[Vaccination]:
         now = datetime.now(KYIV_TZ)
         result = await self._session.execute(
-            select(VaccinationModel).where(
+            self._base_query().where(
                 VaccinationModel.user_id == user_id,
-                VaccinationModel.deleted_at.is_(None),
                 VaccinationModel.next_due_date.isnot(None),
                 VaccinationModel.next_due_date <= now,
             ).order_by(VaccinationModel.next_due_date)

@@ -1,60 +1,50 @@
 from __future__ import annotations
-import math
-from datetime import date, datetime
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.domain.entities import Reference, Visit
 from app.infrastructure.models.visit import VisitModel
+from app.infrastructure.repositories.base_repository import BaseQueryRepository
 
 
-class SqlAlchemyVisitRepository:
-    def __init__(self, session: AsyncSession):
-        self._session = session
+class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
+    model_class = VisitModel
+
+    _load_options = [
+        selectinload(VisitModel.position),
+        selectinload(VisitModel.procedure),
+        selectinload(VisitModel.clinic),
+        selectinload(VisitModel.city),
+    ]
 
     async def get_by_id(self, visit_id: int, user_id: int) -> Optional[Visit]:
         result = await self._session.execute(
-            select(VisitModel)
-            .where(VisitModel.id == visit_id, VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None))
-            .options(
-                selectinload(VisitModel.position),
-                selectinload(VisitModel.procedure),
-                selectinload(VisitModel.clinic),
-                selectinload(VisitModel.city),
-            )
+            self._base_query()
+            .where(VisitModel.id == visit_id, VisitModel.user_id == user_id)
+            .options(*self._load_options)
         )
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
 
     async def list(self, user_id: int, filters: dict, sort: str, page: int, size: int) -> tuple[list[Visit], int]:
         query = (
-            select(VisitModel)
-            .where(VisitModel.deleted_at.is_(None), VisitModel.user_id == user_id)
-            .options(
-                selectinload(VisitModel.position),
-                selectinload(VisitModel.procedure),
-                selectinload(VisitModel.clinic),
-                selectinload(VisitModel.city),
-            )
+            self._base_query()
+            .where(VisitModel.user_id == user_id)
+            .options(*self._load_options)
         )
         count_query = (
-            select(func.count()).select_from(VisitModel)
-            .where(VisitModel.deleted_at.is_(None), VisitModel.user_id == user_id)
+            self._base_count()
+            .where(VisitModel.user_id == user_id)
         )
 
-        date_from = filters.get("date_from")
-        date_to = filters.get("date_to")
-        if date_from:
-            dt = datetime.combine(date_from, datetime.min.time()) if isinstance(date_from, date) else date_from
-            query = query.where(VisitModel.date >= dt)
-            count_query = count_query.where(VisitModel.date >= dt)
-        if date_to:
-            dt = datetime.combine(date_to, datetime.max.time()) if isinstance(date_to, date) else date_to
-            query = query.where(VisitModel.date <= dt)
-            count_query = count_query.where(VisitModel.date <= dt)
+        query, count_query = self._apply_date_filter(
+            query, count_query, VisitModel.date,
+            filters.get("date_from"), filters.get("date_to"),
+        )
+
         for fk in ("clinic_id", "city_id", "procedure_id", "position_id"):
             val = filters.get(fk)
             if val:
@@ -69,11 +59,10 @@ class SqlAlchemyVisitRepository:
             "date": VisitModel.date, "-date": VisitModel.date.desc(),
             "created": VisitModel.created, "-created": VisitModel.created.desc(),
         }
-        query = query.order_by(sort_map.get(sort, VisitModel.date.desc()))
+        query = self._apply_sort(query, sort, sort_map)
 
         total = (await self._session.execute(count_query)).scalar() or 0
-        offset = (page - 1) * size
-        query = query.offset(offset).limit(size)
+        query = self._apply_pagination(query, page, size)
 
         result = await self._session.execute(query)
         models = result.scalars().all()
@@ -93,15 +82,10 @@ class SqlAlchemyVisitRepository:
                 city_id=visit.city_id, document=visit.document, link=visit.link,
                 comment=visit.comment, body_region=visit.body_region, price=visit.price,
             )
-            self._session.add(model)
-        await self._session.commit()
-        await self._session.refresh(model)
-        result = await self._session.execute(
-            select(VisitModel).where(VisitModel.id == model.id)
-            .options(selectinload(VisitModel.position), selectinload(VisitModel.procedure),
-                     selectinload(VisitModel.clinic), selectinload(VisitModel.city))
+        model = await self._save_and_refresh(
+            model,
+            refresh_attrs=["position", "procedure", "clinic", "city"],
         )
-        model = result.scalar_one()
         return self._to_entity(model)
 
     async def count_by_region(self, user_id: int) -> list[dict]:
@@ -124,8 +108,8 @@ class SqlAlchemyVisitRepository:
 
     async def list_by_region(self, user_id: int, region: str, limit: int = 20, offset: int = 0) -> list[Visit]:
         result = await self._session.execute(
-            select(VisitModel)
-            .where(VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None), VisitModel.body_region == region)
+            self._base_query()
+            .where(VisitModel.user_id == user_id, VisitModel.body_region == region)
             .options(selectinload(VisitModel.position), selectinload(VisitModel.procedure), selectinload(VisitModel.clinic))
             .order_by(VisitModel.date.desc())
             .offset(offset).limit(limit)
@@ -134,29 +118,29 @@ class SqlAlchemyVisitRepository:
 
     async def count_unmapped(self, user_id: int) -> int:
         result = await self._session.execute(
-            select(func.count()).select_from(VisitModel)
-            .where(VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None), VisitModel.body_region.is_(None))
+            self._base_count()
+            .where(VisitModel.user_id == user_id, VisitModel.body_region.is_(None))
         )
         return result.scalar() or 0
 
     async def count_whole_body(self, user_id: int) -> int:
         result = await self._session.execute(
-            select(func.count()).select_from(VisitModel)
-            .where(VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None), VisitModel.body_region == "whole_body")
+            self._base_count()
+            .where(VisitModel.user_id == user_id, VisitModel.body_region == "whole_body")
         )
         return result.scalar() or 0
 
     async def count_total(self, user_id: int) -> int:
         result = await self._session.execute(
-            select(func.count(VisitModel.id))
-            .where(VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None))
+            self._base_count()
+            .where(VisitModel.user_id == user_id)
         )
         return result.scalar() or 0
 
     async def list_recent(self, user_id: int, limit: int = 10) -> list[Visit]:
         result = await self._session.execute(
-            select(VisitModel)
-            .where(VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None))
+            self._base_query()
+            .where(VisitModel.user_id == user_id)
             .options(selectinload(VisitModel.procedure), selectinload(VisitModel.clinic))
             .order_by(VisitModel.date.desc()).limit(limit)
         )

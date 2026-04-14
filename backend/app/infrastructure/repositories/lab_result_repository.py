@@ -2,27 +2,26 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Optional
 
-from sqlalchemy import func, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
-from app.domain.entities import BiomarkerReference, LabResult, LabTestEntry, KYIV_TZ
+from app.domain.entities import LabResult, LabTestEntry, KYIV_TZ
 from app.infrastructure.models.lab_result import LabResultModel, LabTestEntryModel
+from app.infrastructure.repositories.base_repository import BaseQueryRepository
 
 
-class SqlAlchemyLabResultRepository:
-    def __init__(self, session: AsyncSession):
-        self._session = session
+class SqlAlchemyLabResultRepository(BaseQueryRepository[LabResultModel, LabResult]):
+    model_class = LabResultModel
+
+    _load_options = [
+        selectinload(LabResultModel.entries),
+    ]
 
     async def get_by_id(self, lab_result_id: int, user_id: int) -> Optional[LabResult]:
         result = await self._session.execute(
-            select(LabResultModel)
-            .where(
-                LabResultModel.id == lab_result_id,
-                LabResultModel.user_id == user_id,
-                LabResultModel.deleted_at.is_(None),
-            )
-            .options(selectinload(LabResultModel.entries))
+            self._base_query()
+            .where(LabResultModel.id == lab_result_id, LabResultModel.user_id == user_id)
+            .options(*self._load_options)
         )
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
@@ -38,26 +37,22 @@ class SqlAlchemyLabResultRepository:
         size: int = 20,
     ) -> tuple[list[LabResult], int]:
         query = (
-            select(LabResultModel)
-            .where(LabResultModel.deleted_at.is_(None), LabResultModel.user_id == user_id)
-            .options(selectinload(LabResultModel.entries))
+            self._base_query()
+            .where(LabResultModel.user_id == user_id)
+            .options(*self._load_options)
         )
         count_query = (
-            select(func.count()).select_from(LabResultModel)
-            .where(LabResultModel.deleted_at.is_(None), LabResultModel.user_id == user_id)
+            self._base_count()
+            .where(LabResultModel.user_id == user_id)
         )
 
         if visit_id is not None:
             query = query.where(LabResultModel.visit_id == visit_id)
             count_query = count_query.where(LabResultModel.visit_id == visit_id)
-        if date_from:
-            dt = datetime.combine(date_from, datetime.min.time()) if isinstance(date_from, date) and not isinstance(date_from, datetime) else date_from
-            query = query.where(LabResultModel.date >= dt)
-            count_query = count_query.where(LabResultModel.date >= dt)
-        if date_to:
-            dt = datetime.combine(date_to, datetime.max.time()) if isinstance(date_to, date) and not isinstance(date_to, datetime) else date_to
-            query = query.where(LabResultModel.date <= dt)
-            count_query = count_query.where(LabResultModel.date <= dt)
+
+        query, count_query = self._apply_date_filter(
+            query, count_query, LabResultModel.date, date_from, date_to,
+        )
 
         sort_map = {
             "date": LabResultModel.date,
@@ -65,11 +60,10 @@ class SqlAlchemyLabResultRepository:
             "created": LabResultModel.created,
             "-created": LabResultModel.created.desc(),
         }
-        query = query.order_by(sort_map.get(sort, LabResultModel.date.desc()))
+        query = self._apply_sort(query, sort, sort_map)
 
         total = (await self._session.execute(count_query)).scalar() or 0
-        offset = (page - 1) * size
-        query = query.offset(offset).limit(size)
+        query = self._apply_pagination(query, page, size)
 
         result = await self._session.execute(query)
         models = result.scalars().all()
@@ -127,7 +121,7 @@ class SqlAlchemyLabResultRepository:
         result = await self._session.execute(
             select(LabResultModel)
             .where(LabResultModel.id == model.id)
-            .options(selectinload(LabResultModel.entries))
+            .options(*self._load_options)
         )
         model = result.scalar_one()
         return self._to_entity(model)

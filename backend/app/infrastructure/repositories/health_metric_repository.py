@@ -1,25 +1,30 @@
 from __future__ import annotations
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.domain.entities import HealthMetric, MetricType
 from app.infrastructure.models.health_metric import HealthMetricModel
-from app.infrastructure.models.metric_type import MetricTypeModel
+from app.infrastructure.repositories.base_repository import (
+    BaseQueryRepository,
+    normalize_date_to_datetime,
+)
 
 
-class SqlAlchemyHealthMetricRepository:
-    def __init__(self, session: AsyncSession):
-        self._session = session
+class SqlAlchemyHealthMetricRepository(BaseQueryRepository[HealthMetricModel, HealthMetric]):
+    model_class = HealthMetricModel
+
+    _load_options = [
+        selectinload(HealthMetricModel.metric_type),
+    ]
 
     async def get_by_id(self, metric_id: int, user_id: int) -> Optional[HealthMetric]:
         result = await self._session.execute(
-            select(HealthMetricModel)
+            self._base_query()
             .where(HealthMetricModel.id == metric_id, HealthMetricModel.user_id == user_id)
-            .options(selectinload(HealthMetricModel.metric_type))
+            .options(*self._load_options)
         )
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
@@ -35,26 +40,22 @@ class SqlAlchemyHealthMetricRepository:
         size: int = 20,
     ) -> tuple[list[HealthMetric], int]:
         query = (
-            select(HealthMetricModel)
+            self._base_query()
             .where(HealthMetricModel.user_id == user_id)
-            .options(selectinload(HealthMetricModel.metric_type))
+            .options(*self._load_options)
         )
         count_query = (
-            select(func.count()).select_from(HealthMetricModel)
+            self._base_count()
             .where(HealthMetricModel.user_id == user_id)
         )
 
         if metric_type_id is not None:
             query = query.where(HealthMetricModel.metric_type_id == metric_type_id)
             count_query = count_query.where(HealthMetricModel.metric_type_id == metric_type_id)
-        if date_from:
-            dt = datetime.combine(date_from, datetime.min.time()) if isinstance(date_from, date) and not isinstance(date_from, datetime) else date_from
-            query = query.where(HealthMetricModel.date >= dt)
-            count_query = count_query.where(HealthMetricModel.date >= dt)
-        if date_to:
-            dt = datetime.combine(date_to, datetime.max.time()) if isinstance(date_to, date) and not isinstance(date_to, datetime) else date_to
-            query = query.where(HealthMetricModel.date <= dt)
-            count_query = count_query.where(HealthMetricModel.date <= dt)
+
+        query, count_query = self._apply_date_filter(
+            query, count_query, HealthMetricModel.date, date_from, date_to,
+        )
 
         sort_map = {
             "date": HealthMetricModel.date,
@@ -62,11 +63,10 @@ class SqlAlchemyHealthMetricRepository:
             "created": HealthMetricModel.created,
             "-created": HealthMetricModel.created.desc(),
         }
-        query = query.order_by(sort_map.get(sort, HealthMetricModel.date.desc()))
+        query = self._apply_sort(query, sort, sort_map)
 
         total = (await self._session.execute(count_query)).scalar() or 0
-        offset = (page - 1) * size
-        query = query.offset(offset).limit(size)
+        query = self._apply_pagination(query, page, size)
 
         result = await self._session.execute(query)
         models = result.scalars().all()
@@ -86,16 +86,7 @@ class SqlAlchemyHealthMetricRepository:
                 secondary_value=metric.secondary_value,
                 notes=metric.notes,
             )
-            self._session.add(model)
-        await self._session.commit()
-        await self._session.refresh(model)
-        # Re-fetch with eager loaded metric_type
-        result = await self._session.execute(
-            select(HealthMetricModel)
-            .where(HealthMetricModel.id == model.id)
-            .options(selectinload(HealthMetricModel.metric_type))
-        )
-        model = result.scalar_one()
+        model = await self._save_and_refresh(model, refresh_attrs=["metric_type"])
         return self._to_entity(model)
 
     async def delete(self, metric_id: int, user_id: int) -> None:
@@ -124,14 +115,13 @@ class SqlAlchemyHealthMetricRepository:
             .where(
                 HealthMetricModel.user_id == user_id,
                 HealthMetricModel.metric_type_id == metric_type_id,
+                HealthMetricModel.deleted_at.is_(None),
             )
         )
         if date_from:
-            dt = datetime.combine(date_from, datetime.min.time()) if isinstance(date_from, date) and not isinstance(date_from, datetime) else date_from
-            query = query.where(HealthMetricModel.date >= dt)
+            query = query.where(HealthMetricModel.date >= normalize_date_to_datetime(date_from, end=False))
         if date_to:
-            dt = datetime.combine(date_to, datetime.max.time()) if isinstance(date_to, date) and not isinstance(date_to, datetime) else date_to
-            query = query.where(HealthMetricModel.date <= dt)
+            query = query.where(HealthMetricModel.date <= normalize_date_to_datetime(date_to, end=True))
 
         query = query.order_by(HealthMetricModel.date)
         result = await self._session.execute(query)
