@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional
 
 from app.application.commands import CreateVaccinationCommand, UpdateVaccinationCommand
+from app.application.update_utils import apply_update
 from app.domain.entities import Vaccination
 from app.domain.exceptions import EntityNotFound
 from app.domain.repositories import DocumentStorage
@@ -51,13 +52,7 @@ class VaccinationAppService:
         file_data: Optional[tuple[str, bytes]] = None,
     ) -> Vaccination:
         vaccination = await self.get(vaccination_id, user_id)
-        if cmd.date is not None: vaccination.date = cmd.date
-        if cmd.vaccine_name is not None: vaccination.vaccine_name = cmd.vaccine_name
-        if cmd.manufacturer is not None: vaccination.manufacturer = cmd.manufacturer
-        if cmd.lot_number is not None: vaccination.lot_number = cmd.lot_number
-        if cmd.dose_number is not None: vaccination.dose_number = cmd.dose_number
-        if cmd.next_due_date is not None: vaccination.next_due_date = cmd.next_due_date
-        if cmd.notes is not None: vaccination.notes = cmd.notes
+        apply_update(vaccination, cmd)
         if file_data:
             path = await self._storage.save(file_data[0], file_data[1], vaccination.date, None)
             vaccination.document_path = path

@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional
 
 from app.application.commands import CreateLabResultCommand, UpdateLabResultCommand
+from app.application.update_utils import apply_update
 from app.domain.entities import LabResult, LabTestEntry
 from app.domain.exceptions import EntityNotFound
 from app.infrastructure.repositories.lab_result_repository import SqlAlchemyLabResultRepository
@@ -53,9 +54,7 @@ class LabResultAppService:
 
     async def update(self, lab_result_id: int, user_id: int, cmd: UpdateLabResultCommand) -> LabResult:
         lab_result = await self.get(lab_result_id, user_id)
-        if cmd.date is not None: lab_result.date = cmd.date
-        if cmd.visit_id is not None: lab_result.visit_id = cmd.visit_id
-        if cmd.notes is not None: lab_result.notes = cmd.notes
+        apply_update(lab_result, cmd, exclude={"entries"})
         if cmd.entries is not None:
             lab_result.entries = [
                 LabTestEntry(

@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional
 
 from app.application.commands import CreateVisitCommand, UpdateVisitCommand, VisitFilter
+from app.application.update_utils import apply_update
 from app.domain.entities import Visit
 from app.domain.exceptions import EntityNotFound
 from app.domain.repositories import DocumentStorage, VisitRepository
@@ -38,17 +39,9 @@ class VisitAppService:
 
     async def update(self, visit_id: int, user_id: int, cmd: UpdateVisitCommand, file_data: Optional[tuple[str, bytes]] = None) -> Visit:
         visit = await self.get(visit_id, user_id)
-        if cmd.date is not None: visit.date = cmd.date
-        if cmd.position_id is not None: visit.position_id = cmd.position_id
-        if cmd.doctor is not None: visit.doctor = cmd.doctor
-        if cmd.procedure_id is not None: visit.procedure_id = cmd.procedure_id
-        if cmd.procedure_details is not None: visit.procedure_details = cmd.procedure_details
-        if cmd.clinic_id is not None: visit.clinic_id = cmd.clinic_id
-        if cmd.city_id is not None: visit.city_id = cmd.city_id
-        if cmd.link is not None: visit.link = cmd.link
-        if cmd.comment is not None: visit.comment = cmd.comment
-        if cmd.body_region is not None: visit.set_body_region(cmd.body_region)
-        if cmd.price is not None: visit.price = cmd.price
+        apply_update(visit, cmd, exclude={"body_region"})
+        if cmd.body_region is not None:
+            visit.set_body_region(cmd.body_region)
         if file_data:
             path = await self._storage.save(file_data[0], file_data[1], visit.date, visit.procedure_id)
             visit.attach_document(path)

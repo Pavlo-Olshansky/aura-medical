@@ -3,6 +3,7 @@ import math
 from typing import Optional
 
 from app.application.commands import CreateTreatmentCommand, UpdateTreatmentCommand
+from app.application.update_utils import apply_update
 from app.domain.entities import Treatment
 from app.domain.exceptions import EntityNotFound
 from app.domain.repositories import TreatmentRepository
@@ -45,11 +46,7 @@ class TreatmentAppService:
 
     async def update(self, treatment_id: int, user_id: int, cmd: UpdateTreatmentCommand) -> Treatment:
         treatment = await self.get(treatment_id, user_id)
-        if cmd.date_start is not None: treatment.date_start = cmd.date_start
-        if cmd.name is not None: treatment.name = cmd.name
-        if cmd.days is not None: treatment.days = cmd.days
-        if cmd.receipt is not None: treatment.receipt = cmd.receipt
-        if cmd.body_region is not None: treatment.body_region = cmd.body_region
+        apply_update(treatment, cmd)
         return await self._repo.save(treatment)
 
     async def delete(self, treatment_id: int, user_id: int) -> None:

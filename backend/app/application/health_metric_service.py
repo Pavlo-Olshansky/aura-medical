@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional
 
 from app.application.commands import CreateHealthMetricCommand, UpdateHealthMetricCommand
+from app.application.update_utils import apply_update
 from app.domain.entities import HealthMetric
 from app.domain.exceptions import DomainError, EntityNotFound
 from app.infrastructure.repositories.health_metric_repository import SqlAlchemyHealthMetricRepository
@@ -50,11 +51,7 @@ class HealthMetricAppService:
 
     async def update(self, metric_id: int, user_id: int, cmd: UpdateHealthMetricCommand) -> HealthMetric:
         metric = await self.get(metric_id, user_id)
-        if cmd.metric_type_id is not None: metric.metric_type_id = cmd.metric_type_id
-        if cmd.date is not None: metric.date = cmd.date
-        if cmd.value is not None: metric.value = cmd.value
-        if cmd.secondary_value is not None: metric.secondary_value = cmd.secondary_value
-        if cmd.notes is not None: metric.notes = cmd.notes
+        apply_update(metric, cmd)
 
         mt_id = cmd.metric_type_id if cmd.metric_type_id is not None else metric.metric_type_id
         sec_val = cmd.secondary_value if cmd.secondary_value is not None else metric.secondary_value
