@@ -1,13 +1,13 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TreatmentCreate(BaseModel):
     date_start: datetime
     name: str
-    days: int
+    days: int = Field(ge=1)
     receipt: str
     body_region: Optional[str] = None
 
@@ -24,7 +24,7 @@ class TreatmentResponse(BaseModel):
     id: int
     date_start: datetime
     name: str
-    days: int
+    days: int = Field(ge=1)
     receipt: str
     status: str
     body_region: Optional[str] = None

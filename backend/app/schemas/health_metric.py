@@ -12,7 +12,7 @@ class HealthMetricCreate(BaseModel):
     date: datetime
     value: Decimal
     secondary_value: Optional[Decimal] = None
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
 
 
 class HealthMetricUpdate(BaseModel):
@@ -20,7 +20,7 @@ class HealthMetricUpdate(BaseModel):
     date: Optional[datetime] = None
     value: Optional[Decimal] = None
     secondary_value: Optional[Decimal] = None
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
 
 
 class HealthMetricResponse(BaseModel):
@@ -32,7 +32,7 @@ class HealthMetricResponse(BaseModel):
     date: datetime
     value: Decimal
     secondary_value: Optional[Decimal] = None
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
     created: datetime
     updated: datetime
 

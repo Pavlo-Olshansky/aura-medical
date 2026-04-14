@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VaccinationCreate(BaseModel):
@@ -9,7 +9,7 @@ class VaccinationCreate(BaseModel):
     vaccine_name: str
     manufacturer: Optional[str] = None
     lot_number: Optional[str] = None
-    dose_number: int
+    dose_number: int = Field(ge=1)
     next_due_date: Optional[datetime] = None
     notes: Optional[str] = ""
 
@@ -32,7 +32,7 @@ class VaccinationResponse(BaseModel):
     vaccine_name: str
     manufacturer: Optional[str] = None
     lot_number: Optional[str] = None
-    dose_number: int
+    dose_number: int = Field(ge=1)
     next_due_date: Optional[datetime] = None
     notes: Optional[str] = ""
     has_document: bool

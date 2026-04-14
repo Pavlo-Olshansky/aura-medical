@@ -30,14 +30,14 @@ class LabTestEntryResponse(BaseModel):
 class LabResultCreate(BaseModel):
     visit_id: Optional[int] = None
     date: datetime
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
     entries: List[LabTestEntryCreate]
 
 
 class LabResultUpdate(BaseModel):
     visit_id: Optional[int] = None
     date: Optional[datetime] = None
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
     entries: Optional[List[LabTestEntryCreate]] = None
 
 
@@ -47,7 +47,7 @@ class LabResultResponse(BaseModel):
     id: int
     visit_id: Optional[int] = None
     date: datetime
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
     entries: List[LabTestEntryResponse]
     created: datetime
     updated: datetime
@@ -59,7 +59,7 @@ class LabResultListItem(BaseModel):
     id: int
     visit_id: Optional[int] = None
     date: datetime
-    notes: Optional[str] = ""
+    notes: Optional[str] = None
     entries_count: int
     out_of_range_count: int
     visit_date: Optional[str] = None
