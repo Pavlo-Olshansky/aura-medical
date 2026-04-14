@@ -3,11 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Calendar from 'primevue/calendar'
 import Dropdown from 'primevue/dropdown'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import AutoComplete from 'primevue/autocomplete'
-import type { AutoCompleteOptionSelectEvent } from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import { useLabResultsStore } from '@/stores/labResults'
 import { useVisitsStore } from '@/stores/visits'
@@ -16,6 +12,8 @@ import type { BiomarkerReference, Visit } from '@/types'
 import { formatDateForApi } from '@/utils/dateUtils'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
 import { useFormSubmit } from '@/composables/useFormSubmit'
+import BiomarkerEntryRow from '@/components/lab-results/BiomarkerEntryRow.vue'
+import type { EntryData } from '@/components/lab-results/BiomarkerEntryRow.vue'
 
 interface LabResultPayload {
   date: string
@@ -116,6 +114,12 @@ function removeEntry(index: number) {
   entries.value.splice(index, 1)
 }
 
+function updateEntry(index: number, field: keyof EntryData, value: string | number | null) {
+  const entry = entries.value[index]
+  if (!entry) return
+  ;(entry as Record<string, unknown>)[field] = value
+}
+
 function onBiomarkerSelect(index: number, biomarker: BiomarkerReference) {
   const entry = entries.value[index]
   if (!entry) return
@@ -141,8 +145,8 @@ function onBiomarkerSelect(index: number, biomarker: BiomarkerReference) {
   }
 }
 
-async function searchBiomarkers(event: { query: string }) {
-  await labResultsStore.fetchBiomarkerReferences(event.query)
+async function searchBiomarkers(query: string) {
+  await labResultsStore.fetchBiomarkerReferences(query)
   filteredBiomarkers.value = labResultsStore.biomarkerReferences
 }
 
@@ -233,65 +237,18 @@ onMounted(async () => {
           <Button label="Додати показник" icon="pi pi-plus" severity="secondary" outlined size="small" @click="addEntry" />
         </div>
 
-        <div
+        <BiomarkerEntryRow
           v-for="(entry, index) in entries"
           :key="index"
-          class="entry-row"
-        >
-          <div class="entry-field entry-biomarker">
-            <label>Біомаркер</label>
-            <AutoComplete
-              v-model="entry.biomarkerName"
-              :suggestions="filteredBiomarkers"
-              optionLabel="name"
-              placeholder="Назва біомаркера"
-              @complete="searchBiomarkers"
-              @item-select="(e: AutoCompleteOptionSelectEvent) => onBiomarkerSelect(index, e.value)"
-              :forceSelection="false"
-            />
-          </div>
-          <div class="entry-field entry-value">
-            <label>Значення</label>
-            <InputNumber
-              v-model="entry.value"
-              :minFractionDigits="0"
-              :maxFractionDigits="4"
-              placeholder="0"
-            />
-          </div>
-          <div class="entry-field entry-unit">
-            <label>Одиниця</label>
-            <InputText v-model="entry.unit" placeholder="од." />
-          </div>
-          <div class="entry-field entry-ref">
-            <label>Мін</label>
-            <InputNumber
-              v-model="entry.ref_min"
-              :minFractionDigits="0"
-              :maxFractionDigits="4"
-              placeholder="-"
-            />
-          </div>
-          <div class="entry-field entry-ref">
-            <label>Макс</label>
-            <InputNumber
-              v-model="entry.ref_max"
-              :minFractionDigits="0"
-              :maxFractionDigits="4"
-              placeholder="-"
-            />
-          </div>
-          <div class="entry-field entry-delete">
-            <label>&nbsp;</label>
-            <Button
-              icon="pi pi-trash"
-              severity="danger"
-              text
-              @click="removeEntry(index)"
-              :disabled="entries.length <= 1"
-            />
-          </div>
-        </div>
+          :entry="entry"
+          :index="index"
+          :biomarkerSuggestions="filteredBiomarkers"
+          :canRemove="entries.length > 1"
+          @update="updateEntry"
+          @remove="removeEntry"
+          @biomarkerSearch="searchBiomarkers"
+          @biomarkerSelect="onBiomarkerSelect"
+        />
       </div>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -365,42 +322,6 @@ onMounted(async () => {
   color: var(--text-primary);
   margin: 0;
 }
-.entry-row {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-}
-.entry-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-.entry-field label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-.entry-biomarker {
-  flex: 2;
-}
-.entry-value {
-  flex: 1;
-}
-.entry-unit {
-  flex: 0.8;
-}
-.entry-ref {
-  flex: 0.7;
-}
-.entry-delete {
-  flex: 0;
-  min-width: 40px;
-}
 .error-message {
   color: #dc2626;
   font-size: 0.875rem;
@@ -431,17 +352,6 @@ onMounted(async () => {
   }
   .form-field.full-width {
     grid-column: auto;
-  }
-  .entry-row {
-    flex-wrap: wrap;
-  }
-  .entry-biomarker {
-    flex: 1 1 100%;
-  }
-  .entry-value,
-  .entry-unit,
-  .entry-ref {
-    flex: 1 1 auto;
   }
 }
 </style>
