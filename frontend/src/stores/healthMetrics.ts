@@ -1,6 +1,7 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref } from 'vue'
-import type { HealthMetric, MetricType, PaginatedResponse } from '@/types'
+import type { HealthMetric, MetricType } from '@/types'
+import type { HealthMetricPayload } from '@/types/payloads'
 import { getErrorMessage } from '@/types/errors'
 import { isDemoMode } from '@/stores/auth'
 import { demo, demoSort } from '@/stores/demoRegistry'
@@ -12,147 +13,80 @@ import {
   deleteHealthMetric as apiDeleteHealthMetric,
   getMetricTrend as apiGetMetricTrend,
   listMetricTypes as apiListMetricTypes,
-  type HealthMetricListParams,
   type MetricTrendParams,
   type MetricTrendPoint,
 } from '@/api/healthMetrics'
+import { createEntityStore } from '@/stores/factory/useDataStore'
 
-export const useHealthMetricsStore = defineStore('healthMetrics', () => {
-  const healthMetrics = ref<HealthMetric[]>([])
-  const currentMetric = ref<HealthMetric | null>(null)
-  const total = ref(0)
-  const page = ref(1)
-  const size = ref(20)
-  const pages = ref(0)
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-  const metricTypes = ref<MetricType[]>([])
+function healthMetricFromPayload(data: HealthMetricPayload): Omit<HealthMetric, 'id'> {
+  const now = new Date().toISOString()
+  const type = demo().getMetricTypes().find((t) => t.id === data.metric_type_id)
+  const fallbackType = demo().getMetricTypes()[0]!
+  return {
+    metric_type_id: data.metric_type_id,
+    metric_type: type ?? fallbackType,
+    date: data.date,
+    value: data.value,
+    secondary_value: data.secondary_value ?? null,
+    notes: data.notes ?? null,
+    created: now,
+    updated: now,
+  }
+}
 
-  async function fetchHealthMetrics(params?: HealthMetricListParams) {
-    if (isDemoMode.value) {
+const _useBaseStore = createEntityStore<HealthMetric, HealthMetricPayload, Partial<HealthMetricPayload>>({
+  id: 'healthMetrics-base',
+  api: {
+    list: apiListHealthMetrics,
+    get: apiGetHealthMetric,
+    create: apiCreateHealthMetric,
+    update: apiUpdateHealthMetric,
+    delete: apiDeleteHealthMetric,
+  },
+  demo: {
+    list: (params) => {
       let all = demo().getHealthMetrics()
       if (params?.metric_type_id) all = all.filter((m) => m.metric_type_id === params.metric_type_id)
-      if (params?.date_from) all = all.filter((m) => m.date >= params.date_from!)
-      if (params?.date_to) all = all.filter((m) => m.date <= params.date_to!)
-      all = demoSort(all, params?.sort_by ?? 'date', params?.sort_order ?? 'desc')
-      const pageNum = params?.page ?? 1
-      const sizeNum = params?.size ?? 20
+      if (params?.date_from) all = all.filter((m) => m.date >= (params.date_from as string))
+      if (params?.date_to) all = all.filter((m) => m.date <= (params.date_to as string))
+      all = demoSort(all, (params?.sort_by as string) ?? 'date', (params?.sort_order as 'asc' | 'desc') ?? 'desc')
+      const pageNum = (params?.page as number) ?? 1
+      const sizeNum = (params?.size as number) ?? 20
       const start = (pageNum - 1) * sizeNum
-      healthMetrics.value = all.slice(start, start + sizeNum)
-      total.value = all.length
-      page.value = pageNum
-      size.value = sizeNum
-      pages.value = Math.max(1, Math.ceil(all.length / sizeNum))
-      return
-    }
-    loading.value = true
-    error.value = null
-    try {
-      const data: PaginatedResponse<HealthMetric> = await apiListHealthMetrics(params)
-      healthMetrics.value = data.items
-      total.value = data.total
-      page.value = data.page
-      size.value = data.size
-      pages.value = data.pages
-    } catch (e: unknown) {
-      error.value = getErrorMessage(e, 'Помилка завантаження показників здоров\'я')
-      throw e
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function fetchHealthMetric(id: number) {
-    if (isDemoMode.value) {
-      currentMetric.value = demo().getHealthMetrics().find((m) => m.id === id) ?? null
-      return
-    }
-    loading.value = true
-    error.value = null
-    try {
-      currentMetric.value = await apiGetHealthMetric(id)
-    } catch (e: unknown) {
-      error.value = getErrorMessage(e, 'Помилка завантаження показника здоров\'я')
-      throw e
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function createHealthMetric(data: any) {
-    if (isDemoMode.value) {
-      const now = new Date().toISOString()
-      const type = demo().getMetricTypes().find((t) => t.id === data?.metric_type_id)
-      const fallbackType = demo().getMetricTypes()[0]!
-      const created = demo().create(demo().getHealthMetrics(), {
-        metric_type_id: data?.metric_type_id ?? 1,
-        metric_type: type ?? fallbackType,
-        date: data?.date ?? now.slice(0, 10),
-        value: data?.value ?? 0,
-        secondary_value: data?.secondary_value ?? null,
-        notes: data?.notes ?? null,
-        created: now,
-        updated: now,
-      })
-      healthMetrics.value = [...demo().getHealthMetrics()]
-      return created
-    }
-    loading.value = true
-    error.value = null
-    try {
-      const metric = await apiCreateHealthMetric(data)
-      return metric
-    } catch (e: unknown) {
-      error.value = getErrorMessage(e, 'Помилка створення показника здоров\'я')
-      throw e
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function updateHealthMetric(id: number, data: any) {
-    if (isDemoMode.value) {
-      const updated = demo().update(demo().getHealthMetrics(), id, {
+      return {
+        items: all.slice(start, start + sizeNum),
+        total: all.length,
+        page: pageNum,
+        size: sizeNum,
+        pages: Math.max(1, Math.ceil(all.length / sizeNum)),
+      }
+    },
+    get: (id) => demo().getHealthMetrics().find((m) => m.id === id),
+    create: (data) => demo().create(demo().getHealthMetrics(), healthMetricFromPayload(data)),
+    update: (id, data) => {
+      return demo().update(demo().getHealthMetrics(), id, {
         ...data,
         updated: new Date().toISOString(),
       })
-      if (updated) currentMetric.value = updated
-      healthMetrics.value = [...demo().getHealthMetrics()]
-      return updated as HealthMetric
-    }
-    loading.value = true
-    error.value = null
-    try {
-      const metric = await apiUpdateHealthMetric(id, data)
-      currentMetric.value = metric
-      return metric
-    } catch (e: unknown) {
-      error.value = getErrorMessage(e, 'Помилка оновлення показника здоров\'я')
-      throw e
-    } finally {
-      loading.value = false
-    }
-  }
+    },
+    delete: (id) => demo().remove(demo().getHealthMetrics(), id),
+  },
+  errorMessages: {
+    list: 'Помилка завантаження показників здоров\'я',
+    get: 'Помилка завантаження показника здоров\'я',
+    create: 'Помилка створення показника здоров\'я',
+    update: 'Помилка оновлення показника здоров\'я',
+    delete: 'Помилка видалення показника здоров\'я',
+  },
+})
 
-  async function deleteHealthMetric(id: number) {
-    if (isDemoMode.value) {
-      demo().remove(demo().getHealthMetrics(), id)
-      healthMetrics.value = [...demo().getHealthMetrics()]
-      currentMetric.value = null
-      return
-    }
-    loading.value = true
-    error.value = null
-    try {
-      await apiDeleteHealthMetric(id)
-      currentMetric.value = null
-    } catch (e: unknown) {
-      error.value = getErrorMessage(e, 'Помилка видалення показника здоров\'я')
-      throw e
-    } finally {
-      loading.value = false
-    }
-  }
+export const useHealthMetricsStore = defineStore('healthMetrics', () => {
+  const base = _useBaseStore()
+  const {
+    items, currentItem, total, page, size, pages, loading, error,
+  } = storeToRefs(base)
+
+  const metricTypes = ref<MetricType[]>([])
 
   async function fetchMetricTrend(params: MetricTrendParams): Promise<MetricTrendPoint[]> {
     if (isDemoMode.value) {
@@ -198,8 +132,8 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
   }
 
   return {
-    healthMetrics,
-    currentMetric,
+    items,
+    currentItem,
     total,
     page,
     size,
@@ -207,11 +141,11 @@ export const useHealthMetricsStore = defineStore('healthMetrics', () => {
     loading,
     error,
     metricTypes,
-    fetchHealthMetrics,
-    fetchHealthMetric,
-    createHealthMetric,
-    updateHealthMetric,
-    deleteHealthMetric,
+    fetchList: base.fetchList,
+    fetchOne: base.fetchOne,
+    create: base.create,
+    update: base.update,
+    remove: base.remove,
     fetchMetricTrend,
     fetchMetricTypes,
   }
