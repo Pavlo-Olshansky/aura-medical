@@ -1,6 +1,4 @@
 import { apiClient } from '@/api/client'
-import { isDemoMode } from '@/stores/auth'
-import { demo } from '@/stores/demoRegistry'
 import type { LabResult, BiomarkerReference, PaginatedResponse } from '@/types'
 import type { LabResultPayload, BiomarkerReferencePayload } from '@/types/payloads'
 
@@ -54,14 +52,6 @@ export async function getBiomarkerTrend(biomarkerName: string): Promise<Biomarke
 
 // Biomarker references
 export async function listBiomarkerReferences(search?: string): Promise<BiomarkerReference[]> {
-  if (isDemoMode.value) {
-    let items = demo().getBiomarkers()
-    if (search) {
-      const q = search.toLowerCase()
-      items = items.filter((b) => b.name.toLowerCase().includes(q))
-    }
-    return items
-  }
   const response = await apiClient.get('/api/v1/biomarker-references/', {
     params: search ? { search } : {},
   })
