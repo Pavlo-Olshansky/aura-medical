@@ -92,9 +92,9 @@ async function handleSubmit() {
 
   try {
     if (isEdit.value && editId.value) {
-      await visitsStore.updateVisit(editId.value, formData)
+      await visitsStore.update(editId.value, formData)
     } else {
-      await visitsStore.createVisit(formData)
+      await visitsStore.create(formData)
     }
     if (isDemoMode.value) {
       toast.add({
@@ -121,8 +121,8 @@ onMounted(async () => {
   }
 
   if (isEdit.value && editId.value) {
-    await visitsStore.fetchVisit(editId.value)
-    const visit = visitsStore.currentVisit
+    await visitsStore.fetchOne(editId.value)
+    const visit = visitsStore.currentItem
     if (visit) {
       date.value = new Date(visit.date)
       positionId.value = visit.position?.id ?? null
@@ -279,8 +279,8 @@ onMounted(async () => {
             @select="onFileSelect"
             @clear="onFileClear"
           />
-          <small v-if="isEdit && visitsStore.currentVisit?.document" class="existing-file">
-            Поточний файл: {{ visitsStore.currentVisit.document.split('/').pop() }}
+          <small v-if="isEdit && visitsStore.currentItem?.document" class="existing-file">
+            Поточний файл: {{ visitsStore.currentItem.document.split('/').pop() }}
           </small>
         </div>
       </div>

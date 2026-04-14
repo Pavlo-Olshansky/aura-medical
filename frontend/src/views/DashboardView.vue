@@ -203,10 +203,10 @@ onMounted(async () => {
     const data = dashResponse.data
     if (!data.upcoming_vaccinations && !data.overdue_vaccinations) {
       try {
-        await vaccinationsStore.fetchVaccinations({ status: 'upcoming', size: 10 })
-        upcomingVaccinations.value = vaccinationsStore.vaccinations.filter(v => v.status === 'upcoming')
-        await vaccinationsStore.fetchVaccinations({ status: 'overdue', size: 10 })
-        overdueVaccinations.value = vaccinationsStore.vaccinations.filter(v => v.status === 'overdue')
+        await vaccinationsStore.fetchList({ status: 'upcoming', size: 10 })
+        upcomingVaccinations.value = (vaccinationsStore.items ?? []).filter(v => v.status === 'upcoming')
+        await vaccinationsStore.fetchList({ status: 'overdue', size: 10 })
+        overdueVaccinations.value = (vaccinationsStore.items ?? []).filter(v => v.status === 'overdue')
       } catch {
         // silent
       }

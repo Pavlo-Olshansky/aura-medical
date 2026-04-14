@@ -52,7 +52,7 @@ async function loadVisits() {
   if (filters.procedure_id.value) params.procedure_id = filters.procedure_id.value
   if (filters.position_id.value) params.position_id = filters.position_id.value
 
-  await visitsStore.fetchVisits(params)
+  await visitsStore.fetchList(params)
 }
 
 function onPage(event: DataTablePageEvent) {
@@ -160,7 +160,7 @@ onMounted(async () => {
     </div>
 
     <DataTable
-      :value="visitsStore.visits"
+      :value="visitsStore.items"
       :loading="visitsStore.loading"
       :lazy="true"
       :paginator="true"

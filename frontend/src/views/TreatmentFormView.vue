@@ -61,9 +61,9 @@ async function handleSubmit() {
 
   try {
     if (isEdit.value && editId.value) {
-      await treatmentsStore.updateTreatment(editId.value, payload)
+      await treatmentsStore.update(editId.value, payload)
     } else {
-      await treatmentsStore.createTreatment(payload)
+      await treatmentsStore.create(payload)
     }
     if (isDemoMode.value) {
       toast.add({
@@ -90,7 +90,7 @@ async function handleDelete() {
     rejectLabel: 'Скасувати',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      await treatmentsStore.deleteTreatment(editId.value!)
+      await treatmentsStore.remove(editId.value!)
       if (isDemoMode.value) {
         toast.add({ severity: 'info', summary: 'Видалено (тимчасово)', life: 3000 })
       }
@@ -101,8 +101,8 @@ async function handleDelete() {
 
 onMounted(async () => {
   if (isEdit.value && editId.value) {
-    await treatmentsStore.fetchTreatment(editId.value)
-    const treatment = treatmentsStore.currentTreatment
+    await treatmentsStore.fetchOne(editId.value)
+    const treatment = treatmentsStore.currentItem
     if (treatment) {
       name.value = treatment.name
       dateStart.value = new Date(treatment.date_start)

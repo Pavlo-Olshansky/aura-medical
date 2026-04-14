@@ -38,14 +38,14 @@ async function handleDelete() {
     rejectLabel: 'Скасувати',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      await visitsStore.deleteVisit(visitId)
+      await visitsStore.remove(visitId)
       router.push({ name: 'visits' })
     },
   })
 }
 
 onMounted(async () => {
-  await visitsStore.fetchVisit(visitId)
+  await visitsStore.fetchOne(visitId)
 })
 </script>
 
@@ -64,48 +64,48 @@ onMounted(async () => {
 
     <div v-if="visitsStore.loading" class="loading">Завантаження...</div>
 
-    <div v-else-if="visitsStore.currentVisit" class="detail-card">
+    <div v-else-if="visitsStore.currentItem" class="detail-card">
       <div class="detail-grid">
         <div class="detail-item">
           <span class="detail-label">Дата</span>
-          <span class="detail-value">{{ formatDate(visitsStore.currentVisit.date) }}</span>
+          <span class="detail-value">{{ formatDate(visitsStore.currentItem.date) }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Позиція лікаря</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.position?.name || '-' }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.position?.name || '-' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Лікар</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.doctor || '-' }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.doctor || '-' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Процедура</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.procedure?.name || '-' }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.procedure?.name || '-' }}</span>
         </div>
-        <div v-if="visitsStore.currentVisit.procedure_details" class="detail-item full-width">
+        <div v-if="visitsStore.currentItem.procedure_details" class="detail-item full-width">
           <span class="detail-label">Деталі процедури</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.procedure_details }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.procedure_details }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Клініка</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.clinic?.name || '-' }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.clinic?.name || '-' }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Місто</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.city?.name || '-' }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.city?.name || '-' }}</span>
         </div>
-        <div v-if="visitsStore.currentVisit.price != null" class="detail-item">
+        <div v-if="visitsStore.currentItem.price != null" class="detail-item">
           <span class="detail-label">Вартість</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.price }} грн</span>
+          <span class="detail-value">{{ visitsStore.currentItem.price }} грн</span>
         </div>
-        <div v-if="visitsStore.currentVisit.comment" class="detail-item full-width">
+        <div v-if="visitsStore.currentItem.comment" class="detail-item full-width">
           <span class="detail-label">Коментар</span>
-          <span class="detail-value">{{ visitsStore.currentVisit.comment }}</span>
+          <span class="detail-value">{{ visitsStore.currentItem.comment }}</span>
         </div>
-        <div v-if="visitsStore.currentVisit.link" class="detail-item full-width">
+        <div v-if="visitsStore.currentItem.link" class="detail-item full-width">
           <span class="detail-label">Посилання</span>
-          <a :href="visitsStore.currentVisit.link" target="_blank" class="detail-link">
-            {{ visitsStore.currentVisit.link }}
+          <a :href="visitsStore.currentItem.link" target="_blank" class="detail-link">
+            {{ visitsStore.currentItem.link }}
           </a>
         </div>
       </div>
@@ -113,14 +113,14 @@ onMounted(async () => {
       <div class="document-section">
         <h3>Документ</h3>
         <DocumentPreview
-          :documentPath="visitsStore.currentVisit.document"
-          :visitId="visitsStore.currentVisit.id"
+          :documentPath="visitsStore.currentItem.document"
+          :visitId="visitsStore.currentItem.id"
         />
       </div>
 
       <div class="timestamps">
-        <span>Створено: {{ formatDate(visitsStore.currentVisit.created) }}</span>
-        <span>Оновлено: {{ formatDate(visitsStore.currentVisit.updated) }}</span>
+        <span>Створено: {{ formatDate(visitsStore.currentItem.created) }}</span>
+        <span>Оновлено: {{ formatDate(visitsStore.currentItem.updated) }}</span>
       </div>
     </div>
   </div>

@@ -41,7 +41,7 @@ async function loadLabResults() {
   if (filters.date_from.value) params.date_from = formatDateParam(filters.date_from.value)
   if (filters.date_to.value) params.date_to = formatDateParam(filters.date_to.value)
 
-  await labResultsStore.fetchLabResults(params)
+  await labResultsStore.fetchList(params)
 }
 
 function onPage(event: DataTablePageEvent) {
@@ -95,7 +95,7 @@ onMounted(() => {
     </div>
 
     <DataTable
-      :value="labResultsStore.labResults"
+      :value="labResultsStore.items"
       :loading="labResultsStore.loading"
       :lazy="true"
       :paginator="true"

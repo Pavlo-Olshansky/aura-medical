@@ -41,7 +41,7 @@ async function loadVaccinations() {
     sort_by: 'date',
     sort_order: 'desc',
   }
-  await vaccinationsStore.fetchVaccinations(params)
+  await vaccinationsStore.fetchList(params)
 }
 
 function onPage(event: DataTablePageEvent) {
@@ -67,7 +67,7 @@ onMounted(() => {
     </div>
 
     <DataTable
-      :value="vaccinationsStore.vaccinations"
+      :value="vaccinationsStore.items"
       :loading="vaccinationsStore.loading"
       :lazy="true"
       :paginator="true"

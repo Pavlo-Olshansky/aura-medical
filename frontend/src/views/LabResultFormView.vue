@@ -123,7 +123,7 @@ async function handleSubmit() {
     entries: validEntries.map((e) => ({
       biomarker_id: e.biomarkerRef?.id || null,
       biomarker_name: e.biomarkerName,
-      value: e.value,
+      value: e.value!,
       unit: e.unit,
       ref_min: e.ref_min,
       ref_max: e.ref_max,
@@ -132,9 +132,9 @@ async function handleSubmit() {
 
   try {
     if (isEdit.value && editId.value) {
-      await labResultsStore.updateLabResult(editId.value, payload)
+      await labResultsStore.update(editId.value, payload)
     } else {
-      await labResultsStore.createLabResult(payload)
+      await labResultsStore.create(payload)
     }
     if (isDemoMode.value) {
       toast.add({
@@ -156,11 +156,11 @@ onMounted(async () => {
   await labResultsStore.fetchBiomarkerReferences()
 
   // Load visits for the dropdown
-  await visitsStore.fetchVisits({ page: 1, size: 100, sort_by: 'date', sort_order: 'desc' })
+  await visitsStore.fetchList({ page: 1, size: 100, sort_by: 'date', sort_order: 'desc' })
 
   if (isEdit.value && editId.value) {
-    await labResultsStore.fetchLabResult(editId.value)
-    const labResult = labResultsStore.currentLabResult
+    await labResultsStore.fetchOne(editId.value)
+    const labResult = labResultsStore.currentItem
     if (labResult) {
       date.value = new Date(labResult.date)
       visitId.value = labResult.visit_id
@@ -209,7 +209,7 @@ onMounted(async () => {
           <Dropdown
             id="visit"
             v-model="visitId"
-            :options="visitsStore.visits"
+            :options="visitsStore.items"
             :optionLabel="(v: any) => formatVisitLabel(v)"
             optionValue="id"
             placeholder="Оберіть візит"

@@ -80,9 +80,9 @@ async function handleSubmit() {
 
   try {
     if (isEdit.value && editId.value) {
-      await vaccinationsStore.updateVaccination(editId.value, formData)
+      await vaccinationsStore.update(editId.value, formData)
     } else {
-      await vaccinationsStore.createVaccination(formData)
+      await vaccinationsStore.create(formData)
     }
     if (isDemoMode.value) {
       toast.add({
@@ -109,7 +109,7 @@ async function handleDelete() {
     rejectLabel: 'Скасувати',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      await vaccinationsStore.deleteVaccination(editId.value!)
+      await vaccinationsStore.remove(editId.value!)
       if (isDemoMode.value) {
         toast.add({ severity: 'info', summary: 'Видалено (тимчасово)', life: 3000 })
       }
@@ -120,8 +120,8 @@ async function handleDelete() {
 
 onMounted(async () => {
   if (isEdit.value && editId.value) {
-    await vaccinationsStore.fetchVaccination(editId.value)
-    const vaccination = vaccinationsStore.currentVaccination
+    await vaccinationsStore.fetchOne(editId.value)
+    const vaccination = vaccinationsStore.currentItem
     if (vaccination) {
       vaccineName.value = vaccination.vaccine_name
       date.value = new Date(vaccination.date)
@@ -220,7 +220,7 @@ onMounted(async () => {
             @select="onFileSelect"
             @clear="onFileClear"
           />
-          <small v-if="isEdit && vaccinationsStore.currentVaccination?.has_document" class="existing-file">
+          <small v-if="isEdit && vaccinationsStore.currentItem?.has_document" class="existing-file">
             Документ вже прикріплено
           </small>
         </div>

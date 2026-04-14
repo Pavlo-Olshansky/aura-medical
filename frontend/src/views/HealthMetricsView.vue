@@ -80,7 +80,7 @@ async function selectType(type: MetricType) {
 
 async function loadMetrics() {
   if (!selectedType.value) return
-  await healthMetricsStore.fetchHealthMetrics({
+  await healthMetricsStore.fetchList({
     metric_type_id: selectedType.value.id,
     page: currentPage.value,
     size: pageSize.value,
@@ -120,7 +120,7 @@ function confirmDelete(metric: HealthMetric) {
     acceptClass: 'p-button-danger',
     accept: async () => {
       try {
-        await healthMetricsStore.deleteHealthMetric(metric.id)
+        await healthMetricsStore.remove(metric.id)
         toast.add({
           severity: 'success',
           summary: 'Видалено',
@@ -209,7 +209,7 @@ onMounted(async () => {
     <!-- Data table -->
     <div v-if="selectedType" class="table-section">
       <DataTable
-        :value="healthMetricsStore.healthMetrics"
+        :value="healthMetricsStore.items"
         :loading="healthMetricsStore.loading"
         :lazy="true"
         :paginator="true"

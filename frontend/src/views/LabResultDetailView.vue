@@ -32,7 +32,7 @@ async function handleDelete() {
     rejectLabel: 'Скасувати',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      await labResultsStore.deleteLabResult(labResultId)
+      await labResultsStore.remove(labResultId)
       router.push({ name: 'lab-results' })
     },
   })
@@ -51,7 +51,7 @@ async function loadBiomarkerTrend(biomarkerName: string) {
 }
 
 onMounted(async () => {
-  await labResultsStore.fetchLabResult(labResultId)
+  await labResultsStore.fetchOne(labResultId)
 })
 </script>
 
@@ -69,38 +69,38 @@ onMounted(async () => {
 
     <div v-if="labResultsStore.loading" class="loading">Завантаження...</div>
 
-    <div v-else-if="labResultsStore.currentLabResult" class="detail-card">
+    <div v-else-if="labResultsStore.currentItem" class="detail-card">
       <div class="detail-grid">
         <div class="detail-item">
           <span class="detail-label">Дата</span>
-          <span class="detail-value">{{ formatDate(labResultsStore.currentLabResult.date) }}</span>
+          <span class="detail-value">{{ formatDate(labResultsStore.currentItem.date) }}</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Візит</span>
           <span class="detail-value">
-            <template v-if="labResultsStore.currentLabResult.visit_id">
+            <template v-if="labResultsStore.currentItem.visit_id">
               <RouterLink
-                :to="{ name: 'visit-detail', params: { id: labResultsStore.currentLabResult.visit_id } }"
+                :to="{ name: 'visit-detail', params: { id: labResultsStore.currentItem.visit_id } }"
                 class="detail-link"
               >
-                {{ labResultsStore.currentLabResult.visit_date
-                  ? formatDate(labResultsStore.currentLabResult.visit_date)
-                  : `Візит #${labResultsStore.currentLabResult.visit_id}` }}
+                {{ labResultsStore.currentItem.visit_date
+                  ? formatDate(labResultsStore.currentItem.visit_date)
+                  : `Візит #${labResultsStore.currentItem.visit_id}` }}
               </RouterLink>
             </template>
             <template v-else>-</template>
           </span>
         </div>
-        <div v-if="labResultsStore.currentLabResult.notes" class="detail-item full-width">
+        <div v-if="labResultsStore.currentItem.notes" class="detail-item full-width">
           <span class="detail-label">Примітки</span>
-          <span class="detail-value">{{ labResultsStore.currentLabResult.notes }}</span>
+          <span class="detail-value">{{ labResultsStore.currentItem.notes }}</span>
         </div>
       </div>
 
       <div class="entries-section">
         <h3>Показники</h3>
         <DataTable
-          :value="labResultsStore.currentLabResult.entries"
+          :value="labResultsStore.currentItem.entries"
           stripedRows
           class="entries-table"
         >
@@ -146,8 +146,8 @@ onMounted(async () => {
       </div>
 
       <div class="timestamps">
-        <span>Створено: {{ formatDate(labResultsStore.currentLabResult.created) }}</span>
-        <span>Оновлено: {{ formatDate(labResultsStore.currentLabResult.updated) }}</span>
+        <span>Створено: {{ formatDate(labResultsStore.currentItem.created) }}</span>
+        <span>Оновлено: {{ formatDate(labResultsStore.currentItem.updated) }}</span>
       </div>
     </div>
   </div>

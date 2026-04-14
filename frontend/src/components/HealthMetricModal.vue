@@ -11,6 +11,7 @@ import { useHealthMetricsStore } from '@/stores/healthMetrics'
 import { useFormDirtyCheck } from '@/composables/useFormDirtyCheck'
 import { useEnterSubmit } from '@/composables/useEnterSubmit'
 import type { MetricType, HealthMetric } from '@/types'
+import type { HealthMetricPayload } from '@/types/payloads'
 import { formatDateTimeForApi } from '@/utils/dateUtils'
 
 const props = defineProps<{
@@ -92,20 +93,18 @@ async function handleSave() {
 
   saving.value = true
   try {
-    const payload: Record<string, unknown> = {
+    const payload: HealthMetricPayload = {
       metric_type_id: selectedMetricType.value.id,
       value: value.value,
       date: formatDateTimeForApi(date.value),
       notes: notes.value || null,
-    }
-    if (showSecondary.value && secondaryValue.value != null) {
-      payload.secondary_value = secondaryValue.value
+      secondary_value: showSecondary.value ? secondaryValue.value : null,
     }
 
     if (isEdit.value && props.editMetric) {
-      await healthMetricsStore.updateHealthMetric(props.editMetric.id, payload)
+      await healthMetricsStore.update(props.editMetric.id, payload)
     } else {
-      await healthMetricsStore.createHealthMetric(payload)
+      await healthMetricsStore.create(payload)
     }
 
     toast.add({

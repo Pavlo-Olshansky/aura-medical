@@ -80,8 +80,8 @@ watch(() => props.visible, async (newVal) => {
   if (props.visitId) {
     isEdit.value = true
     panelTitle.value = 'Редагувати візит'
-    await visitsStore.fetchVisit(props.visitId)
-    const v = visitsStore.currentVisit
+    await visitsStore.fetchOne(props.visitId)
+    const v = visitsStore.currentItem
     if (v) {
       formDate.value = new Date(v.date)
       positionId.value = v.position?.id ?? null
@@ -152,9 +152,9 @@ async function handleSubmit() {
 
   try {
     if (isEdit.value && props.visitId) {
-      await visitsStore.updateVisit(props.visitId, formData)
+      await visitsStore.update(props.visitId, formData)
     } else {
-      await visitsStore.createVisit(formData)
+      await visitsStore.create(formData)
     }
     emit('saved')
   } catch (e: any) {
@@ -168,7 +168,7 @@ async function handleDelete() {
   if (!props.visitId) return
   deleting.value = true
   try {
-    await visitsStore.deleteVisit(props.visitId)
+    await visitsStore.remove(props.visitId)
     emit('deleted')
   } catch (e: any) {
     errorMessage.value = e.response?.data?.detail || 'Помилка видалення'

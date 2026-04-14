@@ -34,7 +34,7 @@ async function loadTreatments() {
   }
   if (filters.status.value) params.status = filters.status.value
 
-  await treatmentsStore.fetchTreatments(params)
+  await treatmentsStore.fetchList(params)
 }
 
 function onPage(event: DataTablePageEvent) {
@@ -81,7 +81,7 @@ onMounted(() => {
     </div>
 
     <DataTable
-      :value="treatmentsStore.treatments"
+      :value="treatmentsStore.items"
       :loading="treatmentsStore.loading"
       :lazy="true"
       :paginator="true"
