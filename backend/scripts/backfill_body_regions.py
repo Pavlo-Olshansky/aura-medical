@@ -22,7 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 sys.path.insert(0, ".")
 
 from app.constants.body_regions import SPECIALTY_REGION_MAP
-from app.database import async_session
+from app.infrastructure.database import async_session
 from app.infrastructure.models.visit import VisitModel
 
 
