@@ -10,9 +10,8 @@ documents/
 conf/backups/
 conf/certs/
 *.mov
-FEATURE_IDEAS.md
-IMPROVEMENTS.md
-INFRASTRUCTURE_IDEAS.md
+*.md
+!README.md
 .claude
 .agents
 .DS_Store
