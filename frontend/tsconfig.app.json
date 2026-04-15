@@ -6,6 +6,9 @@
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
 
+    // Surface any remaining implicit `any` usage at build time.
+    "noImplicitAny": true,
+
     // Path mapping for cleaner imports.
     "paths": {
       "@/*": ["./src/*"]
