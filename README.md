@@ -30,6 +30,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 - **Progressive Web App (PWA)** — installable on iOS (Safari → Add to Home Screen) and Android (Chrome → Install app) without app store. Offline shell caching via service worker, standalone mode without browser chrome
 - **Dark / Light Theme** — toggle between dark, light, and system-auto modes. Persists across sessions, no flash on page reload. All components adapted via CSS variables
 - **Responsive Mobile Design** — drawer sidebar with hamburger menu on tablets/phones, column hiding in tables, stacked form layouts, scrollable charts, 44px touch targets
+- **Demo Mode** — try the app without registration. "Try Demo" on the login screen loads realistic seeded data (visits, treatments, lab results, vaccinations, health metrics, weather) entirely client-side. Mutations show a "changes not saved" notice; no server calls are made
 - **Health Check Endpoints** — `/health` liveness and `/health/ready` readiness probes for Docker healthchecks and monitoring
 
 ## Tech Stack
@@ -44,7 +45,7 @@ Personal medical records tracker with an interactive body map, visit history, tr
 | **Push** | pywebpush, VAPID (auto-generated), APScheduler (PostgreSQL-backed persistence, advisory locks) |
 | **PWA** | vite-plugin-pwa, Workbox, service worker |
 | **Weather** | [SkyPulse](https://pypi.org/project/skypulse-weather/) — UV, AQI, geomagnetic storms, circadian light |
-| **Testing** | pytest, pytest-asyncio (127 tests) |
+| **Testing** | pytest, pytest-asyncio (135 tests) |
 | **Infra** | Docker Compose, GitHub Actions CI |
 
 ## Architecture
@@ -59,17 +60,17 @@ backend/
       models/         # SQLAlchemy ORM models (12 models)
       repositories/   # Repository implementations
     schemas/          # Pydantic request/response schemas
-  alembic/            # Database migrations (11 migrations)
-  tests/              # pytest test suite (127 tests)
+  alembic/            # Database migrations (12 migrations)
+  tests/              # pytest test suite (135 tests)
 
 frontend/
   public/
     icons/            # PWA icons (72, 192, 512, maskable, apple-touch)
     sw-push.js        # Push notification service worker handler
   src/
-    views/            # Page components (18 pages, 28 routes)
-    components/       # AppLayout, BodyMap, Calendar, Charts, GlobalSearch, ThemeToggle, NotificationBell, PushSetupGuide
-    composables/      # useTheme, useOnlineStatus, usePushNotifications, useCalendarLabels, useUrlFilters, useGlobalSearch, useFormDirtyCheck, useEnterSubmit
+    views/            # Page components (19 pages, 23 routes)
+    components/       # AppLayout, BodyMap, Calendar, Charts, Dashboard, DemoBanner, GlobalSearch, LabResults, References, ThemeToggle, Weather, NotificationBell, PushSetupGuide
+    composables/      # useTheme, useOnlineStatus, usePushNotifications, useCalendarLabels, useUrlFilters, useGlobalSearch, useFormDirtyCheck, useEnterSubmit, useFormSubmit, useListView
     api/              # Axios client with JWT interceptor
     stores/           # Pinia state management
     router/           # Vue Router with auth guards
