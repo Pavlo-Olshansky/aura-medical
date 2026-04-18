@@ -46,23 +46,3 @@ BODY_REGION_LABELS: dict[str, str] = {
     "whole_body": "Все тіло",
 }
 
-SPECIALTY_REGION_MAP: dict[str, list[str]] = {
-    "Кардіолог": ["chest"],
-    "Офтальмолог": ["eyes"],
-    "Стоматолог": ["mouth_teeth"],
-    "Отоларинголог": ["ears", "nose", "neck_throat", "head_face"],
-    "ЛОР": ["ears", "nose", "neck_throat", "head_face"],
-    "Гастроентеролог": ["abdomen_upper", "abdomen_lower"],
-    "Невролог": ["head_cranium", "neck_throat", "back_upper", "back_lower"],
-    "Пульмонолог": ["chest", "back_upper"],
-    "Ендокринолог": ["neck_throat"],
-    "Уролог": ["abdomen_lower", "pelvis"],
-    "Гінеколог": ["pelvis", "abdomen_lower"],
-    "Мамолог": ["chest"],
-    "Нефролог": ["back_lower", "abdomen_lower"],
-    "Психіатр": ["head_cranium"],
-}
-
-BIOMARKER_CATEGORIES = ("cbc", "biochemistry", "thyroid", "vitamins")
-
-VACCINATION_STATUSES = ("upcoming", "overdue", "completed")

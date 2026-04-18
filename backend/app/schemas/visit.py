@@ -5,34 +5,6 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
-class VisitCreate(BaseModel):
-    date: datetime
-    position_id: Optional[int] = None
-    doctor: Optional[str] = None
-    procedure_id: Optional[int] = None
-    procedure_details: Optional[str] = None
-    clinic_id: Optional[int] = None
-    city_id: Optional[int] = None
-    link: Optional[str] = None
-    comment: Optional[str] = None
-    body_region: Optional[str] = None
-    price: Optional[Decimal] = None
-
-
-class VisitUpdate(BaseModel):
-    date: Optional[datetime] = None
-    position_id: Optional[int] = None
-    doctor: Optional[str] = None
-    procedure_id: Optional[int] = None
-    procedure_details: Optional[str] = None
-    clinic_id: Optional[int] = None
-    city_id: Optional[int] = None
-    link: Optional[str] = None
-    comment: Optional[str] = None
-    body_region: Optional[str] = None
-    price: Optional[Decimal] = None
-
-
 class ReferenceInline(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

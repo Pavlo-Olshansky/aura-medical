@@ -4,26 +4,6 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class VaccinationCreate(BaseModel):
-    date: datetime
-    vaccine_name: str
-    manufacturer: Optional[str] = None
-    lot_number: Optional[str] = None
-    dose_number: int = Field(ge=1)
-    next_due_date: Optional[datetime] = None
-    notes: Optional[str] = ""
-
-
-class VaccinationUpdate(BaseModel):
-    date: Optional[datetime] = None
-    vaccine_name: Optional[str] = None
-    manufacturer: Optional[str] = None
-    lot_number: Optional[str] = None
-    dose_number: Optional[int] = None
-    next_due_date: Optional[datetime] = None
-    notes: Optional[str] = ""
-
-
 class VaccinationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
