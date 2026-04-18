@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import builtins
-from datetime import datetime
 from typing import Optional
 
-from app.domain.entities import Vaccination, KYIV_TZ
+from app.domain.entities import Vaccination
 from app.infrastructure.models.vaccination import VaccinationModel
 from app.infrastructure.repositories.base_repository import BaseQueryRepository
 

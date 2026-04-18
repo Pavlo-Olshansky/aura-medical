@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Optional, Type
 
 from sqlalchemy import func, select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities import Reference

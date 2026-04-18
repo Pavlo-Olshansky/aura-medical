@@ -9,7 +9,6 @@ from app.api.dependencies import (
 )
 from app.application.reference_service import ReferenceAppService
 from app.domain.entities import User
-from app.domain.exceptions import EntityNotFound, ReferenceInUse
 from app.schemas.reference import ReferenceCreate, ReferenceResponse, ReferenceUpdate
 
 

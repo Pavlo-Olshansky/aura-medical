@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import builtins
-from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from app.domain.entities import Reference, Visit

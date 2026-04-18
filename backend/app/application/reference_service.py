@@ -1,6 +1,6 @@
 from __future__ import annotations
 from app.domain.entities import Reference
-from app.domain.exceptions import EntityNotFound, ReferenceInUse
+from app.domain.exceptions import EntityNotFound
 from app.domain.repositories import ReferenceRepository
 
 

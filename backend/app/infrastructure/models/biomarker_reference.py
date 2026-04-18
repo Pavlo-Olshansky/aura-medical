@@ -1,8 +1,7 @@
-from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import BigInteger, DateTime, Integer, Numeric, String, UniqueConstraint
+from sqlalchemy import Integer, Numeric, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.models.base import BaseModel
