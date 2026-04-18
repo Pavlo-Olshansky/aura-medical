@@ -76,28 +76,6 @@ class SqlAlchemyVaccinationRepository(BaseQueryRepository[VaccinationModel, Vacc
         model = await self._save_and_refresh(model)
         return self._to_entity(model)
 
-    async def list_upcoming(self, user_id: int) -> builtins.list[Vaccination]:
-        now = datetime.now(KYIV_TZ)
-        result = await self._session.execute(
-            self._base_query().where(
-                VaccinationModel.user_id == user_id,
-                VaccinationModel.next_due_date.isnot(None),
-                VaccinationModel.next_due_date > now,
-            ).order_by(VaccinationModel.next_due_date)
-        )
-        return [self._to_entity(m) for m in result.scalars().all()]
-
-    async def list_overdue(self, user_id: int) -> builtins.list[Vaccination]:
-        now = datetime.now(KYIV_TZ)
-        result = await self._session.execute(
-            self._base_query().where(
-                VaccinationModel.user_id == user_id,
-                VaccinationModel.next_due_date.isnot(None),
-                VaccinationModel.next_due_date <= now,
-            ).order_by(VaccinationModel.next_due_date)
-        )
-        return [self._to_entity(m) for m in result.scalars().all()]
-
     @staticmethod
     def _to_entity(model: VaccinationModel) -> Vaccination:
         return Vaccination(

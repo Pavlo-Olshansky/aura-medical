@@ -91,48 +91,6 @@ class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
         )
         return self._to_entity(model)
 
-    async def count_by_region(self, user_id: int) -> builtins.list[dict]:
-        from app.domain.entities import KYIV_TZ
-        from datetime import timedelta
-        now = datetime.now(KYIV_TZ)
-        one_year_ago = now - timedelta(days=365)
-
-        result = await self._session.execute(
-            select(
-                VisitModel.body_region,
-                func.count().label("visit_count"),
-                func.count().filter(VisitModel.date >= one_year_ago).label("visits_last_year"),
-                func.max(VisitModel.date).label("last_visit_date"),
-            )
-            .where(VisitModel.user_id == user_id, VisitModel.deleted_at.is_(None), VisitModel.body_region.isnot(None))
-            .group_by(VisitModel.body_region)
-        )
-        return [dict(row._mapping) for row in result.all()]
-
-    async def list_by_region(self, user_id: int, region: str, limit: int = 20, offset: int = 0) -> builtins.list[Visit]:
-        result = await self._session.execute(
-            self._base_query()
-            .where(VisitModel.user_id == user_id, VisitModel.body_region == region)
-            .options(selectinload(VisitModel.position), selectinload(VisitModel.procedure), selectinload(VisitModel.clinic))
-            .order_by(VisitModel.date.desc())
-            .offset(offset).limit(limit)
-        )
-        return [self._to_entity(m) for m in result.scalars().all()]
-
-    async def count_unmapped(self, user_id: int) -> int:
-        result = await self._session.execute(
-            self._base_count()
-            .where(VisitModel.user_id == user_id, VisitModel.body_region.is_(None))
-        )
-        return result.scalar() or 0
-
-    async def count_whole_body(self, user_id: int) -> int:
-        result = await self._session.execute(
-            self._base_count()
-            .where(VisitModel.user_id == user_id, VisitModel.body_region == "whole_body")
-        )
-        return result.scalar() or 0
-
     async def count_total(self, user_id: int) -> int:
         result = await self._session.execute(
             self._base_count()

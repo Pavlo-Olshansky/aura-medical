@@ -65,12 +65,6 @@ class VaccinationAppService:
         vaccination.soft_delete()
         await self._repo.save(vaccination)
 
-    async def list_upcoming(self, user_id: int) -> builtins.list[Vaccination]:
-        return await self._repo.list_upcoming(user_id)
-
-    async def list_overdue(self, user_id: int) -> builtins.list[Vaccination]:
-        return await self._repo.list_overdue(user_id)
-
     def get_document_path(self, vaccination: Vaccination) -> Optional[str]:
         if not vaccination.document_path:
             return None

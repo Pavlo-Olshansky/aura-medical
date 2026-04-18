@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import builtins
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from app.domain.entities import LabResult, LabTestEntry, KYIV_TZ
+from app.domain.entities import LabResult, LabTestEntry
 from app.infrastructure.models.lab_result import LabResultModel, LabTestEntryModel
 from app.infrastructure.repositories.base_repository import BaseQueryRepository
 
@@ -128,31 +128,6 @@ class SqlAlchemyLabResultRepository(BaseQueryRepository[LabResultModel, LabResul
         )
         model = result.scalar_one()
         return self._to_entity(model)
-
-    async def soft_delete(self, lab_result_id: int, user_id: int) -> None:
-        now = datetime.now(KYIV_TZ)
-        await self._session.execute(
-            update(LabResultModel)
-            .where(
-                LabResultModel.id == lab_result_id,
-                LabResultModel.user_id == user_id,
-                LabResultModel.deleted_at.is_(None),
-            )
-            .values(deleted_at=now)
-        )
-        await self._session.commit()
-
-    async def cascade_soft_delete_by_visit(self, visit_id: int) -> None:
-        now = datetime.now(KYIV_TZ)
-        await self._session.execute(
-            update(LabResultModel)
-            .where(
-                LabResultModel.visit_id == visit_id,
-                LabResultModel.deleted_at.is_(None),
-            )
-            .values(deleted_at=now)
-        )
-        await self._session.commit()
 
     async def biomarker_trend(self, user_id: int, biomarker_name: str) -> builtins.list[dict]:
         result = await self._session.execute(

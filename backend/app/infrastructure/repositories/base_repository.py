@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import math
 from abc import abstractmethod
 from datetime import date, datetime, time
-from typing import Any, Generic, Optional, Sequence, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -102,21 +101,6 @@ class BaseQueryRepository(Generic[TModel, TEntity]):
     def _apply_pagination(query: Select, page: int, size: int) -> Select:
         offset = (page - 1) * size
         return query.offset(offset).limit(size)
-
-    @staticmethod
-    def _paginated_result(
-        items: Sequence[TEntity],
-        total: int,
-        page: int,
-        size: int,
-    ) -> dict[str, Any]:
-        return {
-            "items": list(items),
-            "total": total,
-            "page": page,
-            "size": size,
-            "pages": math.ceil(total / size) if size else 0,
-        }
 
     # ------------------------------------------------------------------
     # Persistence shortcut

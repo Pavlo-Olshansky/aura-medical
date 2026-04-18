@@ -27,15 +27,6 @@ class SqlAlchemyTreatmentRepository(BaseQueryRepository[TreatmentModel, Treatmen
         )
         return [self._to_entity(m) for m in result.scalars().all()]
 
-    async def list_by_region(self, user_id: int, region: str) -> list[Treatment]:
-        result = await self._session.execute(
-            self._base_query().where(
-                TreatmentModel.user_id == user_id,
-                TreatmentModel.body_region == region,
-            ).order_by(TreatmentModel.date_start.desc())
-        )
-        return [self._to_entity(m) for m in result.scalars().all()]
-
     async def save(self, treatment: Treatment) -> Treatment:
         if treatment.id:
             model = await self._session.get(TreatmentModel, treatment.id)
