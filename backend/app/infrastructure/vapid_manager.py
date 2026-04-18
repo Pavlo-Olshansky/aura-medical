@@ -52,7 +52,3 @@ def get_vapid_keys() -> dict:
 
 def get_vapid_public_key() -> str:
     return str(get_vapid_keys()["public_key"])
-
-
-def get_vapid_private_key() -> str:
-    return str(get_vapid_keys()["private_key"])

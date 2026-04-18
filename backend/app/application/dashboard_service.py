@@ -41,7 +41,6 @@ class DashboardAppService:
         if self._session:
             result.update(await self._get_expenses(user_id))
             result.update(await self._get_vaccination_alerts(user_id))
-            result.update(await self._get_upcoming_visits(user_id))
 
         return result
 
@@ -113,33 +112,3 @@ class DashboardAppService:
             "overdue_vaccinations": overdue,
         }
 
-    async def _get_upcoming_visits(self, user_id: int) -> dict:
-        from app.infrastructure.models.visit import VisitModel
-        from sqlalchemy.orm import selectinload
-        assert self._session is not None
-
-        now = datetime.now(KYIV_TZ)
-
-        result = await self._session.execute(
-            select(VisitModel)
-            .where(
-                VisitModel.user_id == user_id,
-                VisitModel.deleted_at.is_(None),
-                VisitModel.date > now,
-            )
-            .options(selectinload(VisitModel.procedure), selectinload(VisitModel.clinic))
-            .order_by(VisitModel.date)
-            .limit(5)
-        )
-        visits = result.scalars().all()
-        return {
-            "upcoming_visits": [
-                {
-                    "id": v.id,
-                    "date": str(v.date),
-                    "procedure_name": v.procedure.name if v.procedure else None,
-                    "clinic_name": v.clinic.name if v.clinic else None,
-                }
-                for v in visits
-            ],
-        }
