@@ -6,7 +6,7 @@ from httpx import ASGITransport, AsyncClient
 import bcrypt
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.auth.jwt import create_access_token
+from app.infrastructure.jwt_token_service import JoseTokenService
 from app.config import settings
 from app.infrastructure.database import get_session
 from app.main import app
@@ -67,5 +67,5 @@ async def test_user(session):
 
 @pytest_asyncio.fixture
 async def auth_headers(test_user):
-    token = create_access_token(test_user.id)
+    token = JoseTokenService().create_access_token(test_user.id)
     return {"Authorization": f"Bearer {token}"}
