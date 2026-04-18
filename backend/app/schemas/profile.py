@@ -23,7 +23,7 @@ class BloodTypeEnum(str, Enum):
 
 class ProfileResponse(BaseModel):
     sex: str
-    date_of_birth: date
+    date_of_birth: Optional[date] = None
     height_cm: Optional[int] = None
     weight_kg: Optional[float] = None
     blood_type: Optional[str] = None

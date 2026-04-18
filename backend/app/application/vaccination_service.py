@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from typing import Optional
 
 from app.application.commands import CreateVaccinationCommand, UpdateVaccinationCommand
@@ -20,7 +22,7 @@ class VaccinationAppService:
             raise EntityNotFound("Vaccination not found")
         return vaccination
 
-    async def list(self, user_id: int, sort: str = "-date", page: int = 1, size: int = 20) -> tuple[list[Vaccination], int]:
+    async def list(self, user_id: int, sort: str = "-date", page: int = 1, size: int = 20) -> tuple[builtins.list[Vaccination], int]:
         return await self._repo.list(user_id, sort, page, size)
 
     async def create(
@@ -63,10 +65,10 @@ class VaccinationAppService:
         vaccination.soft_delete()
         await self._repo.save(vaccination)
 
-    async def list_upcoming(self, user_id: int) -> list[Vaccination]:
+    async def list_upcoming(self, user_id: int) -> builtins.list[Vaccination]:
         return await self._repo.list_upcoming(user_id)
 
-    async def list_overdue(self, user_id: int) -> list[Vaccination]:
+    async def list_overdue(self, user_id: int) -> builtins.list[Vaccination]:
         return await self._repo.list_overdue(user_id)
 
     def get_document_path(self, vaccination: Vaccination) -> Optional[str]:

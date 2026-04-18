@@ -85,6 +85,7 @@ async def _locked_push_reminders() -> None:
 
 
 def register_jobs() -> None:
+    assert _scheduler is not None
     _scheduler.add_job(
         f"{__name__}:_locked_push_reminders",
         "interval",

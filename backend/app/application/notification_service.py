@@ -11,10 +11,7 @@ from app.infrastructure.models.treatment import TreatmentModel
 from app.infrastructure.models.vaccination import VaccinationModel
 from app.infrastructure.models.visit import VisitModel
 
-try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 KYIV_TZ = ZoneInfo("Europe/Kyiv")
 
@@ -160,6 +157,8 @@ class NotificationAppService:
 
         reminders = []
         for v in vaccinations:
+            if v.next_due_date is None:
+                continue
             for rtype, window in REMINDER_WINDOWS.items():
                 if (v.next_due_date - now) <= window and ("vaccination", v.id, rtype) not in dismissed:
                     reminders.append(self._make_reminder(

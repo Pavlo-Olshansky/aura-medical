@@ -37,13 +37,13 @@ class BaseQueryRepository(Generic[TModel, TEntity]):
     def _base_query(self) -> Select[tuple[TModel]]:
         stmt = select(self.model_class)
         if hasattr(self.model_class, "deleted_at"):
-            stmt = stmt.where(self.model_class.deleted_at.is_(None))  # type: ignore[union-attr]
+            stmt = stmt.where(self.model_class.deleted_at.is_(None))  # type: ignore[attr-defined]
         return stmt
 
     def _base_count(self) -> Select[tuple[int]]:
         stmt = select(func.count()).select_from(self.model_class)
         if hasattr(self.model_class, "deleted_at"):
-            stmt = stmt.where(self.model_class.deleted_at.is_(None))  # type: ignore[union-attr]
+            stmt = stmt.where(self.model_class.deleted_at.is_(None))  # type: ignore[attr-defined]
         return stmt
 
     # ------------------------------------------------------------------
@@ -81,17 +81,17 @@ class BaseQueryRepository(Generic[TModel, TEntity]):
         mc = self.model_class
         if sort_map is None:
             sort_map = {
-                "date": mc.date,
-                "-date": mc.date.desc(),
-                "created": mc.created,
-                "-created": mc.created.desc(),
-                "id": mc.id,
-                "-id": mc.id.desc(),
+                "date": mc.date,  # type: ignore[attr-defined]
+                "-date": mc.date.desc(),  # type: ignore[attr-defined]
+                "created": mc.created,  # type: ignore[attr-defined]
+                "-created": mc.created.desc(),  # type: ignore[attr-defined]
+                "id": mc.id,  # type: ignore[attr-defined]
+                "-id": mc.id.desc(),  # type: ignore[attr-defined]
             }
         order = sort_map.get(sort)
         if order is None:
             # Fallback: descending by date if available, otherwise by id
-            order = sort_map.get("-date", mc.id.desc())
+            order = sort_map.get("-date", mc.id.desc())  # type: ignore[attr-defined]
         return query.order_by(order)
 
     # ------------------------------------------------------------------

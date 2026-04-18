@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, Type
+from typing import Any, Optional, Sequence, Type
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -20,7 +20,7 @@ class QueryParam:
 def create_crud_router(
     *,
     prefix: str,
-    tags: list[str],
+    tags: Sequence[str],
     response_schema: Type[BaseModel],
     list_item_schema: Type[BaseModel],
     create_schema: Optional[Type[BaseModel]] = None,
@@ -29,7 +29,7 @@ def create_crud_router(
     get_current_user: Any,
     list_params: Optional[list[QueryParam]] = None,
 ) -> APIRouter:
-    router = APIRouter(prefix=prefix, tags=tags)
+    router = APIRouter(prefix=prefix, tags=list(tags))
     list_response_model = PaginatedResponse[list_item_schema]  # type: ignore[valid-type]
 
     # ── LIST ──────────────────────────────────────────────────────────

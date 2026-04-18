@@ -8,10 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.repositories import TreatmentRepository, VisitRepository
 
-try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 KYIV_TZ = ZoneInfo("Europe/Kyiv")
 
@@ -50,6 +47,7 @@ class DashboardAppService:
 
     async def _get_expenses(self, user_id: int) -> dict:
         from app.infrastructure.models.visit import VisitModel
+        assert self._session is not None
 
         now = datetime.now(KYIV_TZ)
         current_year = now.year
@@ -78,6 +76,7 @@ class DashboardAppService:
 
     async def _get_vaccination_alerts(self, user_id: int) -> dict:
         from app.infrastructure.models.vaccination import VaccinationModel
+        assert self._session is not None
 
         now = datetime.now(KYIV_TZ)
 
@@ -117,6 +116,7 @@ class DashboardAppService:
     async def _get_upcoming_visits(self, user_id: int) -> dict:
         from app.infrastructure.models.visit import VisitModel
         from sqlalchemy.orm import selectinload
+        assert self._session is not None
 
         now = datetime.now(KYIV_TZ)
 

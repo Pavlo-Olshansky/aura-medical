@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from datetime import date
 from typing import Optional
 
@@ -34,7 +36,7 @@ class HealthMetricAppService:
         sort: str = "-date",
         page: int = 1,
         size: int = 20,
-    ) -> tuple[list[HealthMetric], int]:
+    ) -> tuple[builtins.list[HealthMetric], int]:
         return await self._repo.list(user_id, metric_type_id, date_from, date_to, sort, page, size)
 
     async def create(self, user_id: int, cmd: CreateHealthMetricCommand) -> HealthMetric:
@@ -72,7 +74,7 @@ class HealthMetricAppService:
         metric_type_id: int,
         date_from: Optional[date] = None,
         date_to: Optional[date] = None,
-    ) -> list[dict]:
+    ) -> builtins.list[dict]:
         return await self._repo.trend(user_id, metric_type_id, date_from, date_to)
 
     async def _validate_metric_type(self, metric_type_id: int, secondary_value=None) -> None:

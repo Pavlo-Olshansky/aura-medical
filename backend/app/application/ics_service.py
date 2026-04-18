@@ -65,4 +65,4 @@ def generate_ics(visit: Visit) -> bytes:
         event.add("description", description)
 
     cal.add_component(event)
-    return cal.to_ical()
+    return bytes(cal.to_ical())

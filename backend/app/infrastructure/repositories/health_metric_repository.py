@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from datetime import date
 from typing import Optional
 
@@ -38,7 +40,7 @@ class SqlAlchemyHealthMetricRepository(BaseQueryRepository[HealthMetricModel, He
         sort: str = "-date",
         page: int = 1,
         size: int = 20,
-    ) -> tuple[list[HealthMetric], int]:
+    ) -> tuple[builtins.list[HealthMetric], int]:
         query = (
             self._base_query()
             .where(HealthMetricModel.user_id == user_id)
@@ -75,6 +77,7 @@ class SqlAlchemyHealthMetricRepository(BaseQueryRepository[HealthMetricModel, He
     async def save(self, metric: HealthMetric) -> HealthMetric:
         if metric.id:
             model = await self._session.get(HealthMetricModel, metric.id)
+            assert model is not None
             for attr in ("metric_type_id", "date", "value", "secondary_value", "notes"):
                 setattr(model, attr, getattr(metric, attr))
         else:
@@ -105,7 +108,7 @@ class SqlAlchemyHealthMetricRepository(BaseQueryRepository[HealthMetricModel, He
         metric_type_id: int,
         date_from: Optional[date] = None,
         date_to: Optional[date] = None,
-    ) -> list[dict]:
+    ) -> builtins.list[dict]:
         query = (
             select(
                 HealthMetricModel.date,

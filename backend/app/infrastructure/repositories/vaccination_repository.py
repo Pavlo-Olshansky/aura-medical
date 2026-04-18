@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from datetime import datetime
 from typing import Optional
 
@@ -26,7 +28,7 @@ class SqlAlchemyVaccinationRepository(BaseQueryRepository[VaccinationModel, Vacc
         sort: str = "-date",
         page: int = 1,
         size: int = 20,
-    ) -> tuple[list[Vaccination], int]:
+    ) -> tuple[builtins.list[Vaccination], int]:
         query = (
             self._base_query()
             .where(VaccinationModel.user_id == user_id)
@@ -54,6 +56,7 @@ class SqlAlchemyVaccinationRepository(BaseQueryRepository[VaccinationModel, Vacc
     async def save(self, vaccination: Vaccination) -> Vaccination:
         if vaccination.id:
             model = await self._session.get(VaccinationModel, vaccination.id)
+            assert model is not None
             for attr in ("date", "vaccine_name", "manufacturer", "lot_number",
                          "dose_number", "next_due_date", "notes", "document_path",
                          "deleted_at"):
@@ -73,7 +76,7 @@ class SqlAlchemyVaccinationRepository(BaseQueryRepository[VaccinationModel, Vacc
         model = await self._save_and_refresh(model)
         return self._to_entity(model)
 
-    async def list_upcoming(self, user_id: int) -> list[Vaccination]:
+    async def list_upcoming(self, user_id: int) -> builtins.list[Vaccination]:
         now = datetime.now(KYIV_TZ)
         result = await self._session.execute(
             self._base_query().where(
@@ -84,7 +87,7 @@ class SqlAlchemyVaccinationRepository(BaseQueryRepository[VaccinationModel, Vacc
         )
         return [self._to_entity(m) for m in result.scalars().all()]
 
-    async def list_overdue(self, user_id: int) -> list[Vaccination]:
+    async def list_overdue(self, user_id: int) -> builtins.list[Vaccination]:
         now = datetime.now(KYIV_TZ)
         result = await self._session.execute(
             self._base_query().where(

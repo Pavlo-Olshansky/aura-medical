@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from datetime import date
 from typing import Optional
 
@@ -28,7 +30,7 @@ class LabResultAppService:
         sort: str = "-date",
         page: int = 1,
         size: int = 20,
-    ) -> tuple[list[LabResult], int]:
+    ) -> tuple[builtins.list[LabResult], int]:
         return await self._repo.list(user_id, visit_id, date_from, date_to, sort, page, size)
 
     async def create(self, user_id: int, cmd: CreateLabResultCommand) -> LabResult:
@@ -74,5 +76,5 @@ class LabResultAppService:
         lab_result.soft_delete()
         await self._repo.save(lab_result)
 
-    async def biomarker_trend(self, user_id: int, biomarker_name: str) -> list[dict]:
+    async def biomarker_trend(self, user_id: int, biomarker_name: str) -> builtins.list[dict]:
         return await self._repo.biomarker_trend(user_id, biomarker_name)

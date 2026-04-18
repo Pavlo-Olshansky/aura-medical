@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from datetime import datetime
 from typing import Optional
 
@@ -29,7 +31,7 @@ class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
 
-    async def list(self, user_id: int, filters: dict, sort: str, page: int, size: int) -> tuple[list[Visit], int]:
+    async def list(self, user_id: int, filters: dict, sort: str, page: int, size: int) -> tuple[builtins.list[Visit], int]:
         query = (
             self._base_query()
             .where(VisitModel.user_id == user_id)
@@ -71,6 +73,7 @@ class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
     async def save(self, visit: Visit) -> Visit:
         if visit.id:
             model = await self._session.get(VisitModel, visit.id)
+            assert model is not None
             for attr in ("date", "position_id", "doctor", "procedure_id", "procedure_details",
                          "clinic_id", "city_id", "document", "link", "comment", "body_region", "price", "deleted_at"):
                 setattr(model, attr, getattr(visit, attr))
@@ -88,7 +91,7 @@ class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
         )
         return self._to_entity(model)
 
-    async def count_by_region(self, user_id: int) -> list[dict]:
+    async def count_by_region(self, user_id: int) -> builtins.list[dict]:
         from app.domain.entities import KYIV_TZ
         from datetime import timedelta
         now = datetime.now(KYIV_TZ)
@@ -106,7 +109,7 @@ class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
         )
         return [dict(row._mapping) for row in result.all()]
 
-    async def list_by_region(self, user_id: int, region: str, limit: int = 20, offset: int = 0) -> list[Visit]:
+    async def list_by_region(self, user_id: int, region: str, limit: int = 20, offset: int = 0) -> builtins.list[Visit]:
         result = await self._session.execute(
             self._base_query()
             .where(VisitModel.user_id == user_id, VisitModel.body_region == region)
@@ -137,7 +140,7 @@ class SqlAlchemyVisitRepository(BaseQueryRepository[VisitModel, Visit]):
         )
         return result.scalar() or 0
 
-    async def list_recent(self, user_id: int, limit: int = 10) -> list[Visit]:
+    async def list_recent(self, user_id: int, limit: int = 10) -> builtins.list[Visit]:
         result = await self._session.execute(
             self._base_query()
             .where(VisitModel.user_id == user_id)

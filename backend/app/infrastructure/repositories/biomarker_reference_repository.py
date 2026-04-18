@@ -31,6 +31,7 @@ class SqlAlchemyBiomarkerReferenceRepository:
     async def save(self, ref: BiomarkerReference) -> BiomarkerReference:
         if ref.id:
             model = await self._session.get(BiomarkerReferenceModel, ref.id)
+            assert model is not None
             for attr in ("name", "abbreviation", "unit", "category",
                          "ref_min", "ref_max", "ref_min_male", "ref_max_male",
                          "ref_min_female", "ref_max_female", "sort_order"):

@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import builtins
 from datetime import date, datetime
 from typing import Optional
 
@@ -35,7 +37,7 @@ class SqlAlchemyLabResultRepository(BaseQueryRepository[LabResultModel, LabResul
         sort: str = "-date",
         page: int = 1,
         size: int = 20,
-    ) -> tuple[list[LabResult], int]:
+    ) -> tuple[builtins.list[LabResult], int]:
         query = (
             self._base_query()
             .where(LabResultModel.user_id == user_id)
@@ -72,6 +74,7 @@ class SqlAlchemyLabResultRepository(BaseQueryRepository[LabResultModel, LabResul
     async def save(self, lab_result: LabResult) -> LabResult:
         if lab_result.id:
             model = await self._session.get(LabResultModel, lab_result.id)
+            assert model is not None
             model.date = lab_result.date
             model.visit_id = lab_result.visit_id
             model.notes = lab_result.notes
@@ -151,7 +154,7 @@ class SqlAlchemyLabResultRepository(BaseQueryRepository[LabResultModel, LabResul
         )
         await self._session.commit()
 
-    async def biomarker_trend(self, user_id: int, biomarker_name: str) -> list[dict]:
+    async def biomarker_trend(self, user_id: int, biomarker_name: str) -> builtins.list[dict]:
         result = await self._session.execute(
             select(
                 LabTestEntryModel.value,

@@ -1,5 +1,6 @@
 import logging
 import sys
+from typing import Any
 
 import structlog
 
@@ -18,14 +19,13 @@ def setup_logging() -> None:
         structlog.processors.format_exc_info,
     ]
 
-    if is_production:
-        renderer = structlog.processors.JSONRenderer()
-    else:
+    renderer: Any = structlog.processors.JSONRenderer()
+    if not is_production:
         renderer = structlog.dev.ConsoleRenderer()
 
     structlog.configure(
         processors=[
-            *shared_processors,
+            *shared_processors,  # type: ignore[list-item]
             structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],
         logger_factory=structlog.stdlib.LoggerFactory(),

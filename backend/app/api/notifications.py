@@ -5,7 +5,7 @@ from app.api.dependencies import get_current_user
 from app.application.notification_service import NotificationAppService
 from app.domain.entities import User
 from app.infrastructure.database import get_session
-from app.schemas.notification import DismissRequest, RemindersListResponse
+from app.schemas.notification import DismissRequest, ReminderResponse, RemindersListResponse
 
 router = APIRouter()
 
@@ -20,7 +20,10 @@ async def get_reminders(
     service: NotificationAppService = Depends(get_notification_service),
 ):
     items = await service.get_reminders(current_user.id)
-    return RemindersListResponse(items=items, count=len(items))
+    return RemindersListResponse(
+        items=[ReminderResponse(**r) for r in items],
+        count=len(items),
+    )
 
 
 @router.post("/dismiss", status_code=204)

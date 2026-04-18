@@ -39,6 +39,7 @@ class SqlAlchemyTreatmentRepository(BaseQueryRepository[TreatmentModel, Treatmen
     async def save(self, treatment: Treatment) -> Treatment:
         if treatment.id:
             model = await self._session.get(TreatmentModel, treatment.id)
+            assert model is not None
             for attr in ("date_start", "name", "days", "receipt", "body_region", "deleted_at"):
                 setattr(model, attr, getattr(treatment, attr))
         else:

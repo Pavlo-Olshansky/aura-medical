@@ -35,19 +35,20 @@ class SqlAlchemyReferenceRepository:
                     & (VisitModel.deleted_at.is_(None)),
                 )
                 .group_by(self._model_class.id)
-                .order_by(func.max(VisitModel.date).desc().nulls_last(), self._model_class.name)
+                .order_by(func.max(VisitModel.date).desc().nulls_last(), self._model_class.name)  # type: ignore[attr-defined]
             )
             result = await self._session.execute(stmt)
             return [self._to_entity(row[0]) for row in result.all()]
         result = await self._session.execute(
-            select(self._model_class).order_by(self._model_class.name)
+            select(self._model_class).order_by(self._model_class.name)  # type: ignore[attr-defined, arg-type]
         )
         return [self._to_entity(m) for m in result.scalars().all()]
 
     async def save(self, ref: Reference) -> Reference:
         if ref.id:
             model = await self._session.get(self._model_class, ref.id)
-            model.name = ref.name
+            assert model is not None
+            model.name = ref.name  # type: ignore[attr-defined]
         else:
             model = self._model_class(name=ref.name)
             self._session.add(model)

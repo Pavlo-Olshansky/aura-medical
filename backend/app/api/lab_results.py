@@ -22,6 +22,9 @@ router = APIRouter()
 def _to_list_item(lr: LabResult) -> LabResultListItem:
     entries_count = len(lr.entries) if lr.entries else 0
     out_of_range_count = sum(1 for e in (lr.entries or []) if e.is_normal is False)
+    assert lr.id is not None
+    assert lr.created is not None
+    assert lr.updated is not None
     return LabResultListItem(
         id=lr.id, visit_id=lr.visit_id, date=lr.date, notes=lr.notes,
         entries_count=entries_count, out_of_range_count=out_of_range_count,

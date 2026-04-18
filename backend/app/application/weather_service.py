@@ -116,7 +116,7 @@ def _map_forecast(entries) -> list[dict[str, Any]]:
     ]
 
 
-_EMPTY_DETAIL = {
+_EMPTY_DETAIL: dict[str, Any] = {
     "weather": None, "forecast": [], "uv": None,
     "circadian": None, "air_quality": None, "magnetic_storm": None,
 }
@@ -128,6 +128,7 @@ class WeatherAppService:
         self._city = city
 
     async def _resolve_coords(self) -> tuple[float, float]:
+        assert self._client is not None
         locations = await self._client.geocode(self._city, limit=1)
         if not locations:
             raise ValueError(f"City not found: {self._city}")

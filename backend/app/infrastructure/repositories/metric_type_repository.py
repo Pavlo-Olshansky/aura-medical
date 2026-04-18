@@ -31,6 +31,7 @@ class SqlAlchemyMetricTypeRepository:
     async def save(self, ref: MetricType) -> MetricType:
         if ref.id:
             model = await self._session.get(MetricTypeModel, ref.id)
+            assert model is not None
             for attr in ("name", "unit", "has_secondary_value",
                          "ref_min", "ref_max", "ref_min_secondary",
                          "ref_max_secondary", "sort_order"):
