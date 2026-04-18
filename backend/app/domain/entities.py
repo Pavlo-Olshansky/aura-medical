@@ -8,10 +8,7 @@ from typing import Optional
 from app.domain.exceptions import DomainError
 from app.domain.value_objects import BodyRegion
 
-try:
-    from zoneinfo import ZoneInfo
-except ImportError:
-    from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 KYIV_TZ = ZoneInfo("Europe/Kyiv")
 
