@@ -21,7 +21,7 @@
     "@fullcalendar/timegrid": "^6.1.20",
     "@fullcalendar/vue3": "^6.1.20",
     "@primevue/themes": "^4.5.4",
-    "axios": "^1.14.0",
+    "axios": "^1.15.1",
     "chart.js": "^4.5.1",
     "chartjs-plugin-annotation": "^3.1.0",
     "pinia": "^3.0.4",
